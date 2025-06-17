@@ -1,6 +1,7 @@
 package database;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseInit {
@@ -34,7 +35,7 @@ public class DatabaseInit {
 
                 System.out.println("Successfully created table(s)");
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println("Error creating tables: " + e.getMessage());
         }
     }
