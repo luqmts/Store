@@ -44,4 +44,9 @@ public class Product {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[%s] %s", getSku(), getName());
+    }
 }
