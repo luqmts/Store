@@ -24,7 +24,7 @@ public class ProductTest {
 
     @Test
     @DisplayName("Ensure object is being created correctly")
-    void testProductCreation() {
+    void testProductCreationGrouped() {
         assertAll(
             () -> assertEquals(product.getPid(), 1),
             () -> assertEquals(product.getSku(), "PS4"),
@@ -33,10 +33,9 @@ public class ProductTest {
         );
     }
 
-
     @Test
     @DisplayName("Ensure object is being updated correctly")
-    void testProductUpdate() {
+    void testProductUpdateGrouped() {
         product.setPid(2);
         product.setSku("PS5");
         product.setName("Playstation 5");
