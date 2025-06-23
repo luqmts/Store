@@ -1,14 +1,16 @@
 package models;
 
 import valueobjects.Mail;
+import valueobjects.CNPJ;
+import valueobjects.Phone;
 
 public class Supplier {
     private String name;
-    private String cnpj;
+    private CNPJ cnpj;
     private Mail mail;
     private String phone;
 
-    public Supplier(String name, String cnpj, Mail mail, String phone) {
+    public Supplier(String name, CNPJ cnpj, Mail mail, String phone) {
         this.name = name;
         this.cnpj = cnpj;
         this.mail = mail;
@@ -21,10 +23,10 @@ public class Supplier {
     public void setName(String name) {
         this.name = name;
     }
-    public String getCnpj() {
+    public CNPJ getCnpj() {
         return cnpj;
     }
-    public void setCnpj(String cnpj) {
+    public void setCnpj(CNPJ cnpj) {
         this.cnpj = cnpj;
     }
     public Mail getMail() {
