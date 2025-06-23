@@ -11,14 +11,18 @@ public class Mail {
     }
 
     public void setMail(String stringMail){
-        Pattern pattern = Pattern.compile("^.+@.+\\..+$");
-        Matcher matcher = pattern.matcher(stringMail);
-
-        if (matcher.matches()) this.mail = stringMail;
+        if (validateMail(stringMail)) this.mail = stringMail;
         else throw new Error("Invalid mail format.");   
     }
 
     public String getMail(){
         return this.mail;
+    }
+
+    public boolean validateMail(String stringMail){
+        Pattern pattern = Pattern.compile("^.+@.+\\..+$");
+        Matcher matcher = pattern.matcher(stringMail);
+
+        return matcher.matches(); 
     }
 }
