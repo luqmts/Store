@@ -12,7 +12,7 @@ public class Mail {
 
     public void setMail(String stringMail){
         if (validateMail(stringMail)) this.mail = stringMail;
-        else throw new Error("Invalid mail format.");   
+        else throw new IllegalArgumentException("Invalid mail format.");   
     }
 
     public String getMail(){
@@ -20,9 +20,16 @@ public class Mail {
     }
 
     public boolean validateMail(String stringMail){
+        if (stringMail == null) throw new NullPointerException("Mail must not be null!");
+
         Pattern pattern = Pattern.compile("^.+@.+\\..+$");
         Matcher matcher = pattern.matcher(stringMail);
 
         return matcher.matches(); 
+    }
+
+    @Override
+    public String toString() {
+        return getMail();
     }
 }
