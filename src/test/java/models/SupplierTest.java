@@ -2,17 +2,27 @@ package models;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import valueobjects.CNPJ;
+import valueobjects.Mail;
+import valueobjects.Phone;
 
 public class SupplierTest {
     Supplier supplier;
 
     @BeforeEach
     void setUp(){
-        supplier = new Supplier("Ooo Comércios e Vendas S/A", "94.907.898/0001-20", "Ooo@gmail.com", "11940028922");
+        supplier = new Supplier(
+            "Ooo Comércios e Vendas S/A", 
+            new CNPJ("94.907.898/0001-20"), 
+            new Mail("Ooo@gmail.com"), 
+            new Phone("11940028922")
+        );
     }
 
     @Test
@@ -20,9 +30,9 @@ public class SupplierTest {
     public void testSupplierCreationGrouped(){
         assertAll(
             () -> assertEquals("Ooo Comércios e Vendas S/A", supplier.getName()),
-            () -> assertEquals("94.907.898/0001-20", supplier.getCnpj()),
-            () -> assertEquals("Ooo@gmail.com", supplier.getMail()),
-            () -> assertEquals("11940028922", supplier.getPhone())
+            () -> assertEquals("94.907.898/0001-20", supplier.getCNPJ().toString()),
+            () -> assertEquals("Ooo@gmail.com", supplier.getMail().toString()),
+            () -> assertEquals("11940028922", supplier.getPhone().toString())
         );
     }
 
@@ -30,15 +40,32 @@ public class SupplierTest {
     @DisplayName("Ensure object is being updated correctly")
     public void testSupplierUpdatedGrouped(){
         supplier.setName("Marceline Instrumentos Musicais S/A");
-        supplier.setCnpj("08.968.789/0001-80");
-        supplier.setMail("marceline_213@mail.com");
-        supplier.setPhone("11990909090");
+        supplier.setCNPJ(new CNPJ("08.968.789/0001-80"));
+        supplier.setMail(new Mail("marceline_213@mail.com"));
+        supplier.setPhone(new Phone("11990909090"));
 
         assertAll(
             () -> assertEquals("Marceline Instrumentos Musicais S/A", supplier.getName()),
-            () -> assertEquals("08.968.789/0001-80", supplier.getCnpj()),
-            () -> assertEquals("marceline_213@mail.com", supplier.getMail()),
-            () -> assertEquals("11990909090", supplier.getPhone())
+            () -> assertEquals("08.968.789/0001-80", supplier.getCNPJ().toString()),
+            () -> assertEquals("marceline_213@mail.com", supplier.getMail().toString()),
+            () -> assertEquals("11990909090", supplier.getPhone().toString())
+        );
+    }
+
+    @Test
+    @DisplayName("Supplier must not be null")
+    public void testSupplierNotNull(){
+        assertNotNull(supplier);
+    }
+
+    @Test
+    @DisplayName("Supplier attributes must not be null")
+    public void testSupplierAttributesNotNull(){
+        assertAll(
+            () -> assertNotNull(supplier.getName()),
+            () -> assertNotNull(supplier.getCNPJ()),
+            () -> assertNotNull(supplier.getMail()),
+            () -> assertNotNull(supplier.getPhone())
         );
     }
 }
