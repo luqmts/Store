@@ -16,7 +16,7 @@ public class SupplierTest {
     Supplier supplier;
 
     @BeforeEach
-    void setUp(){
+    public void setUp(){
         supplier = new Supplier(
             "Ooo Comércios e Vendas S/A", 
             new CNPJ("94.907.898/0001-20"), 

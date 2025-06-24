@@ -13,13 +13,12 @@ import valueobjects.CNPJ;
 import valueobjects.Mail;
 import valueobjects.Phone;
 
-
 public class ProductTest {
     Product product;
     Supplier supplier;
 
     @BeforeEach
-    void setUp(){
+    public void setUp(){
         supplier = new Supplier(
             "Sony Brasil LTDA.", 
             new CNPJ("43.447.044/0004-10"), 
@@ -31,13 +30,13 @@ public class ProductTest {
 
     @Test    
     @DisplayName("Ensure toString method is returning correctly")
-    void testProductToStringMethod() {
+    public void testProductToStringMethod() {
         assertEquals(product.toString(), "[PS4] Playstation 4", "Product toString() method must return on right format");
     }
 
     @Test
     @DisplayName("Ensure object is being created correctly")
-    void testProductCreationGrouped() {
+    public void testProductCreationGrouped() {
         assertAll(
             () -> assertEquals(product.getPid(), 1),
             () -> assertEquals(product.getSku(), "PS4"),
@@ -48,7 +47,7 @@ public class ProductTest {
 
     @Test
     @DisplayName("Ensure object is being updated correctly")
-    void testProductUpdateGrouped() {
+    public void testProductUpdateGrouped() {
         product.setPid(2);
         product.setSku("PS5");
         product.setName("Playstation 5");
@@ -64,7 +63,7 @@ public class ProductTest {
     
     @Test
     @DisplayName("Ensure Product's Supplier is being instacied correctly")
-    void testProductSupplierIsIntanciedCorrect(){
+    public void testProductSupplierIsIntanciedCorrect(){
         assertAll(
             () -> assertNotNull(product.getSupplier()),
             () -> assertInstanceOf(Supplier.class, product.getSupplier())
@@ -73,7 +72,7 @@ public class ProductTest {
 
     @Test
     @DisplayName("Ensure Product's Supplier is with right values")
-    void testProductSupplierRightValues(){
+    public void testProductSupplierRightValues(){
         assertAll(
             () -> assertEquals("Sony Brasil LTDA.", product.getSupplier().getName()),
             () -> assertEquals("43.447.044/0004-10", product.getSupplier().getCNPJ().toString()),
@@ -84,7 +83,7 @@ public class ProductTest {
 
     @Test
     @DisplayName("Ensure Product's Supplier is updated and values are updated correctly")
-    void testProductSupplierUpdatedWithRightValues(){
+    public void testProductSupplierUpdatedWithRightValues(){
         Supplier newSupplier = new Supplier(
             "Sanic Not Brasil LTDA.", 
             new CNPJ("57.437.753/0001-86"),

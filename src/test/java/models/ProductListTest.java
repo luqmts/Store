@@ -23,7 +23,7 @@ public class ProductListTest {
     ProductList pList;
 
     @BeforeEach
-    void setUp(){
+    public void setUp(){
         s1 = new Supplier(
             "Sony Brasil LTDA.", new CNPJ("43.447.044/0004-10"), new Mail("sony@mail.com"), new Phone("11000001111")
         );
@@ -47,7 +47,7 @@ public class ProductListTest {
     
     @Test
     @DisplayName("Assert all products created are being returned in getAllProducts method")
-    void testGetAllProducts(){
+    public void testGetAllProducts(){
         assertAll(
             () -> assertNotNull(pList.getAllProducts()),
             () -> assertEquals(3, pList.getAllProducts().size())
@@ -56,7 +56,7 @@ public class ProductListTest {
     
     @Test
     @DisplayName("Assert product returned on method get by id is being returned correctly")
-    void testGetProductById(){
+    public void testGetProductById(){
         Product product = pList.getProductById(2);
         assertAll(
             () -> assertInstanceOf(Product.class, product),
@@ -70,7 +70,7 @@ public class ProductListTest {
 
     @Test
     @DisplayName("Assert product returned on method get by sku is being returned correctly")
-    void testGetProductBySku(){
+    public void testGetProductBySku(){
         Product product = pList.getProductBySku("XOneCont");
         assertAll(
             () -> assertInstanceOf(Product.class, product),
@@ -84,7 +84,7 @@ public class ProductListTest {
 
     @Test
     @DisplayName("Assert products returned on method get by supplier is being returned correctly")
-    void testGetProductBySupplier(){
+    public void testGetProductBySupplier(){
         ArrayList<Product> pListBySupplier = pList.getProductsBySupplier(s2);
 
         assertAll(
@@ -100,7 +100,7 @@ public class ProductListTest {
     
     @Test
     @DisplayName("Assert if no products are found in pList return NoSuchElementException")
-    void testGetAllProductsNoItemFound(){
+    public void testGetAllProductsNoItemFound(){
         pList.removeProductById(1);
         pList.removeProductById(2);
         pList.removeProductById(3);
@@ -110,19 +110,19 @@ public class ProductListTest {
 
     @Test
     @DisplayName("For a id that is not in Product List must return NoSuchElementException")
-    void testGetProductByIdNoItemFound(){
+    public void testGetProductByIdNoItemFound(){
         assertThrows(NoSuchElementException.class, () -> pList.getProductById(10));
     }
 
     @Test
     @DisplayName("For a sku that is not in Product List must return NoSuchElementException")
-    void testGetProductBySkuNoItemFound(){
+    public void testGetProductBySkuNoItemFound(){
         assertThrows(NoSuchElementException.class, () -> pList.getProductBySku("NSwitch2Cont"));
     }
 
     @Test
     @DisplayName("For a supplier that don't have any products registered in Product List must return NoSuchElementException")
-    void testGetProductBySupplierNoItemFound(){
+    public void testGetProductBySupplierNoItemFound(){
         s4 = new Supplier(
             "Nintendo", new CNPJ("08.592.899/0001-90"), new Mail("nintendo@mail.com"), new Phone("85943527697")
         );
@@ -131,7 +131,7 @@ public class ProductListTest {
 
     @Test
     @DisplayName("Assert pList not null and new product was added succesfully")
-    void testProductsAddedCorrectly(){
+    public void testProductsAddedCorrectly(){
         s4 = new Supplier(
             "Nintendo", new CNPJ("08.592.899/0001-90"), new Mail("nintendo@mail.com"), new Phone("85943527697")
         );
@@ -146,7 +146,7 @@ public class ProductListTest {
 
     @Test
     @DisplayName("Assert product is correctly being removed by product's index")
-    void testProductRemovedByIndexCorrectly(){
+    public void testProductRemovedByIndexCorrectly(){
         pList.removeProductByIndex(1);
         
         assertAll(
@@ -157,7 +157,7 @@ public class ProductListTest {
 
     @Test
     @DisplayName("Assert product is correctly being removed by product's id and get by id is working")
-    void testProductRemovedByIdCorrectly(){
+    public void testProductRemovedByIdCorrectly(){
         pList.removeProductById(2);
         
         assertAll(
