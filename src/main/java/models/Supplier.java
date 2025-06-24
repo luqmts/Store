@@ -6,13 +6,13 @@ import valueobjects.Phone;
 
 public class Supplier {
     private String name;
-    private CNPJ cnpj;
+    private CNPJ CNPJ;
     private Mail mail;
     private Phone phone;
 
-    public Supplier(String name, CNPJ cnpj, Mail mail, Phone phone) {
+    public Supplier(String name, CNPJ CNPJ, Mail mail, Phone phone) {
         this.name = name;
-        this.cnpj = cnpj;
+        this.CNPJ = CNPJ;
         this.mail = mail;
         this.phone = phone;
     }
@@ -23,11 +23,11 @@ public class Supplier {
     public void setName(String name) {
         this.name = name;
     }
-    public CNPJ getCnpj() {
-        return cnpj;
+    public CNPJ getCNPJ() {
+        return CNPJ;
     }
-    public void setCnpj(CNPJ cnpj) {
-        this.cnpj = cnpj;
+    public void setCNPJ(CNPJ CNPJ) {
+        this.CNPJ = CNPJ;
     }
     public Mail getMail() {
         return mail;
@@ -40,5 +40,10 @@ public class Supplier {
     }
     public void setPhone(Phone phone) {
         this.phone = phone;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, CNPJ: %s", getName(), getCNPJ());
     }
 }
