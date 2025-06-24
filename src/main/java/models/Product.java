@@ -5,12 +5,14 @@ public class Product {
     private String sku;
     private String name;
     private String description;
+    private Supplier supplier;
 
-    public Product(int pid, String sku, String name, String description) {
+    public Product(int pid, String sku, String name, String description, Supplier supplier) {
         this.pid = pid;
         this.sku = sku;
         this.name = name;
         this.description = description;
+        this.supplier = supplier;
     }
 
     public int getPid() {
@@ -43,6 +45,14 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
+    }
+
+    public void setSupplier(Supplier supplier) {
+        this.supplier = supplier;
     }
 
     @Override
