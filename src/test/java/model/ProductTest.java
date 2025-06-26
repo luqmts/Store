@@ -25,7 +25,7 @@ public class ProductTest {
             new Mail("sony@mail.com"), 
             new Phone("11000001111")
         );
-        product = new Product(1, "PS4", "Playstation 4", "Video Game Console by Sony.", supplier);
+        product = new Product(1, "PS4", "Playstation 4", "Video Game Console by Sony.", supplier.getsId());
     }
 
     @Test    
@@ -65,39 +65,8 @@ public class ProductTest {
     @DisplayName("Ensure Product's Supplier is being instacied correctly")
     public void testProductSupplierIsIntanciedCorrect(){
         assertAll(
-            () -> assertNotNull(product.getSupplier()),
-            () -> assertInstanceOf(Supplier.class, product.getSupplier())
-        );
-    }
-
-    @Test
-    @DisplayName("Ensure Product's Supplier is with right values")
-    public void testProductSupplierRightValues(){
-        assertAll(
-            () -> assertEquals("Sony Brasil LTDA.", product.getSupplier().getName()),
-            () -> assertEquals("43.447.044/0004-10", product.getSupplier().getCNPJ().toString()),
-            () -> assertEquals("sony@mail.com", product.getSupplier().getMail().toString()),
-            () -> assertEquals("11000001111", product.getSupplier().getPhone().toString())
-        );
-    }
-
-    @Test
-    @DisplayName("Ensure Product's Supplier is updated and values are updated correctly")
-    public void testProductSupplierUpdatedWithRightValues(){
-        Supplier newSupplier = new Supplier(
-            "Sanic Not Brasil LTDA.", 
-            new CNPJ("57.437.753/0001-86"),
-            new Mail("sanic@gmail.com"),
-            new Phone("85111110000")
-        );
-
-        product.setSupplier(newSupplier);
-
-        assertAll(
-            () -> assertEquals("Sanic Not Brasil LTDA.", product.getSupplier().getName()),
-            () -> assertEquals("57.437.753/0001-86", product.getSupplier().getCNPJ().toString()),
-            () -> assertEquals("sanic@gmail.com", product.getSupplier().getMail().toString()),
-            () -> assertEquals("85111110000", product.getSupplier().getPhone().toString())
+            () -> assertNotNull(product.getSupplierId()),
+            () -> assertInstanceOf(Supplier.class, product.getSupplierId())
         );
     }
 }

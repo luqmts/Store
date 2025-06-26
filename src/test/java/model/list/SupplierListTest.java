@@ -13,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import model.Supplier;
-import model.list.SupplierList;
 import valueobjects.CNPJ;
 import valueobjects.Mail;
 import valueobjects.Phone;
