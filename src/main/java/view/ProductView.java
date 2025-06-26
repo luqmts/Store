@@ -25,7 +25,8 @@ public class ProductView {
         pDict.put(1, new Operation("Insert new product", () -> promptRegisterProduct()));
         pDict.put(2, new Operation("Get all products", () -> promptGetAllProducts()));
         pDict.put(3, new Operation("Update product", () -> promptUpdateProduct()));
-        pDict.put(4, new Operation("Exit", () -> System.out.println("Finishing program")));
+        pDict.put(4, new Operation("Remove a product", () -> promptRemoveProduct()));
+        pDict.put(5, new Operation("Exit", () -> System.out.println("Finishing program")));
 
         Menu pMenu = new Menu(pDict, sc);
         pMenu.runMenu();
@@ -72,5 +73,14 @@ public class ProductView {
         sId = Integer.parseInt(sc.nextLine());
         
         pController.updateProduct(pId, pSku, pName, pDescription, sId);
+    }
+
+    public void promptRemoveProduct(){
+        int sId;
+
+        System.out.println("Insert product's id that is going to be removed: ");
+        sId = Integer.parseInt(sc.nextLine());
+
+        pController.removeProduct(sId);
     }
 }
