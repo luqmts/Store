@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import models.Product;
+import model.Product;
 
 public class ProductDAO {
     private final Connection conn;
