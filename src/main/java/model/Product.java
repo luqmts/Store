@@ -64,6 +64,6 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format("[%s] %s", getSku(), getName());
+        return String.format("ID: %d - [%s] %s", getPid(), getSku(), getName());
     }
 }

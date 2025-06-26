@@ -58,6 +58,6 @@ public class Supplier {
 
     @Override
     public String toString() {
-        return String.format("%s, CNPJ: %s", getName(), getCNPJ());
+        return String.format("ID: %d - %s, CNPJ: %s", getsId(), getName(), getCNPJ());
     }
 }
