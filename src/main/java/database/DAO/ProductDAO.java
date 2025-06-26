@@ -15,7 +15,10 @@ public class ProductDAO {
     public ProductDAO(Connection conn) { this.conn = conn; }
 
     public void insert(Product product) {
-        String sql = "INSERT INTO products (sku, name, description, supplier_id) VALUES (?, ?, ?, ?);";
+        String sql = """
+            INSERT INTO products 
+            (sku, name, description, supplier_id) 
+            VALUES (?, ?, ?, ?);""";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, product.getSku());
@@ -37,7 +40,10 @@ public class ProductDAO {
     }
 
     public void update(int pId, Product product) {
-        String sql = "UPDATE products SET sku=?, name=?, description=?, supplier_id=? where pid=?;";
+        String sql = """
+            UPDATE products 
+            SET sku=?, name=?, description=?, supplier_id=? 
+            WHERE pid=?;""";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, product.getSku());
@@ -55,7 +61,9 @@ public class ProductDAO {
     }
 
     public void delete(int pId) {
-        String sql = "DELETE FROM products WHERE pid=?;";
+        String sql = """
+            DELETE FROM products 
+            WHERE pid=?;""";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, pId);

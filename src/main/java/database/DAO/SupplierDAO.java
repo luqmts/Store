@@ -19,7 +19,10 @@ public class SupplierDAO {
     public SupplierDAO(Connection conn) { this.conn = conn; }
 
     public void insert(Supplier supplier) {
-        String sql = "INSERT INTO suppliers (name, cnpj, mail, phone) VALUES (?, ?, ?, ?);";
+        String sql = """
+            INSERT INTO suppliers 
+            (name, cnpj, mail, phone) 
+            VALUES (?, ?, ?, ?);""";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, supplier.getName());
@@ -41,7 +44,10 @@ public class SupplierDAO {
     }
 
     public void update(int sId, Supplier supplier) {
-        String sql = "UPDATE suppliers SET name=?, cnpj=?, mail=?, phone=? where sid=?;";
+        String sql = """
+            UPDATE suppliers 
+            SET name=?, cnpj=?, mail=?, phone=? 
+            WHERE sid=?;""";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setString(1, supplier.getName());
@@ -58,7 +64,9 @@ public class SupplierDAO {
     }
 
     public void delete(int sId) {
-        String sql = "DELETE FROM suppliers WHERE sid=?;";
+        String sql = """
+            DELETE FROM suppliers 
+            WHERE sid=?;""";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setInt(1, sId);
@@ -72,7 +80,9 @@ public class SupplierDAO {
     }
 
     public SupplierList get() {
-        String sql = "SELECT * FROM suppliers ORDER BY sid";
+        String sql = """
+            SELECT * FROM suppliers 
+            ORDER BY sid""";
         SupplierList sList = new SupplierList();
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -97,7 +107,9 @@ public class SupplierDAO {
 
 
     public Supplier getById(int sId) {
-        String sql = "SELECT * FROM suppliers WHERE sid = ?";
+        String sql = """
+            SELECT * FROM suppliers 
+            WHERE sid = ?""";
         Supplier supplier = null;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
