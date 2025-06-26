@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.util.TreeMap;
 
 import controller.SupplierController;
+import view.Menu.Menu;
 import view.Menu.Operation;
 import model.Supplier;
 
@@ -22,12 +23,15 @@ public class SupplierView{
         sDict.put(2, new Operation("Get all Suppliers", () -> promptGettAllSuppliers()));
         sDict.put(3, new Operation("Update Product", () -> promptUpdateSupplier()));
         sDict.put(4, new Operation("Remove a Supplier", () -> promptRemoveSupplier()));
-        sDict.put(5, new Operation("Exit", () -> System.out.println("Finishing program")));
+        sDict.put(5, new Operation("Exit", () -> System.out.println("Finishing supplier management")));
+
+        Menu sMenu = new Menu(sDict, sc);
+        sMenu.runMenu();
     }
 
     public void promptRegisterSupplier(){
         String sName, sCNPJ, sMail, sPhone;
-        
+
         System.out.println("Insert Supplier's name: ");
         sName = sc.nextLine();
         System.out.println("Insert Supplier's CNPJ: ");
