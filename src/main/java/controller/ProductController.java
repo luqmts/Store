@@ -41,16 +41,6 @@ public class ProductController {
         }
     }
 
-    public void showAllSuppliers(){
-        try {
-            for (Supplier supplier : sList.getAllSuppliers()) {
-                System.out.println(supplier.toString());
-            }
-        } catch (NoSuchElementException e) {
-            System.out.println("No suppliers registered");
-        }
-    }
-
     public Product updateProduct(int pId, String pSku, String pName, String pDescription, int sId){
         try {
             Product product = pList.getProductById(pId);

@@ -1,10 +1,33 @@
 package com.luq.app;
 
-/**
- * Hello world!
- */
+
+import controller.ProductController;
+import controller.SupplierController;
+import model.Supplier;
+import model.list.ProductList;
+import model.list.SupplierList;
+import valueobjects.CNPJ;
+import valueobjects.Mail;
+import valueobjects.Phone;
+import view.LoginView;
+import view.ProductView;
+import view.SupplierView;
+
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        ProductList pList = new ProductList();
+        SupplierList sList = new SupplierList();
+        Supplier s1 = new Supplier(
+            1, "Sony Brasil LTDA.", new CNPJ("43.447.044/0004-10"), new Mail("sony@mail.com"), new Phone("11000001111")
+        );
+        sList.addSupplier(s1);
+        
+        ProductController pController = new ProductController(pList, sList);
+        SupplierController sController = new SupplierController(sList);
+        ProductView pView = new ProductView(pController, sController);
+        SupplierView sView = new SupplierView(sController);
+        LoginView lView = new LoginView(pView, sView);
+        
+        lView.showMainMenu();
     }
 }
