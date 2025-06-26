@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import model.Product;
-import model.Supplier;
 import model.list.ProductList;
-
 
 public class ProductDAO {
     private final Connection conn;
@@ -78,7 +76,7 @@ public class ProductDAO {
                 LEFT JOIN suppliers as t2 
                 ON t1.supplier_id = t2.sid""";
 
-            ProductList sList = new ProductList();
+            ProductList pList = new ProductList();
 
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 ResultSet result = stmt.executeQuery();
@@ -90,13 +88,13 @@ public class ProductDAO {
                     String pDescrition = result.getString("description");
                     int sId = result.getInt("supplier_id");
 
-                    //Product product = new Product(pid, pSku, pName, pDescrition);
-                    //sList.addSupplier(supplier);
+                    Product product = new Product(pid, pSku, pName, pDescrition, sId);
+                    pList.addProduct(product);
                 }
             } catch (SQLException e){
                 System.out.println("Error geting items from suppliers database");
             }
 
-            return sList;
+            return pList;
         }
 }
