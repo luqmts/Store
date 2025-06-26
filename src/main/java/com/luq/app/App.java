@@ -2,13 +2,16 @@ package com.luq.app;
 
 
 import controller.ProductController;
+import controller.SupplierController;
 import model.Supplier;
 import model.list.ProductList;
 import model.list.SupplierList;
 import valueobjects.CNPJ;
 import valueobjects.Mail;
 import valueobjects.Phone;
+import view.LoginView;
 import view.ProductView;
+import view.SupplierView;
 
 public class App {
     public static void main(String[] args) {
@@ -20,7 +23,11 @@ public class App {
         sList.addSupplier(s1);
         
         ProductController pController = new ProductController(pList, sList);
-        ProductView pView = new ProductView(pController);
-        pView.showProductMenu();
+        SupplierController sController = new SupplierController(sList);
+        ProductView pView = new ProductView(pController, sController);
+        SupplierView sView = new SupplierView(sController);
+        LoginView lView = new LoginView(pView, sView);
+        
+        lView.showMainMenu();
     }
 }
