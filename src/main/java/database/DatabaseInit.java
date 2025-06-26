@@ -16,6 +16,17 @@ public class DatabaseInit {
             );
         """;
 
+        String sqlCreateTableSuppliers = """
+            DROP TABLE IF EXISTS suppliers;
+            CREATE TABLE suppliers (
+                sid SERIAL NOT NULL,
+                name CHAR(40) NOT NULL,
+                mail CHAR(40),
+                cnpj CHAR(18),
+                phone CHAR(20)
+            );
+        """;
+
         String sqlCreateTableCustomers = """
             DROP TABLE IF EXISTS customers;
             CREATE TABLE customers (
@@ -32,6 +43,7 @@ public class DatabaseInit {
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute(sqlCreateTableProducts);
                 stmt.execute(sqlCreateTableCustomers);
+                stmt.execute(sqlCreateTableSuppliers);
 
                 System.out.println("Successfully created table(s)");
             }
