@@ -22,7 +22,7 @@ public class App {
         );
         sList.addSupplier(s1);
         
-        ProductController pController = new ProductController(pList, sList);
+        ProductController pController = new ProductController(pList);
         SupplierController sController = new SupplierController(sList);
         ProductView pView = new ProductView(pController, sController);
         SupplierView sView = new SupplierView(sController);
