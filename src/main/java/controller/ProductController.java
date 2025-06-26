@@ -3,23 +3,18 @@ package controller;
 import java.util.NoSuchElementException;
 
 import model.Product;
-import model.Supplier;
 import model.list.ProductList;
-import model.list.SupplierList;
 
 public class ProductController {
     private final ProductList pList;
-    private final SupplierList sList;
 
-    public ProductController(ProductList pList, SupplierList sList) {
+    public ProductController(ProductList pList) {
         this.pList = pList;
-        this.sList = sList;
     }
 
     public Product registerProduct(String pSku, String pName, String pDescription, int sId){
         try {
-            Supplier supplier = sList.getSupplierById(sId);
-            Product product = new Product(pSku, pName, pDescription, supplier);
+            Product product = new Product(pSku, pName, pDescription, sId);
     
             pList.addProduct(product);
 
@@ -44,12 +39,11 @@ public class ProductController {
     public Product updateProduct(int pId, String pSku, String pName, String pDescription, int sId){
         try {
             Product product = pList.getProductById(pId);
-            Supplier supplier = sList.getSupplierById(sId);
     
             product.setSku(pSku);
             product.setName(pName);
             product.setDescription(pDescription);
-            product.setSupplier(supplier);
+            product.setSupplierId(sId);
             
             return product;
         } catch (Exception e) {

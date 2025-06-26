@@ -59,7 +59,7 @@ public class ProductList {
         ArrayList<Product> pListBySupplier = new ArrayList<Product>();
 
         for (Product product : pList) {
-            if (supplier.getCNPJ() == product.getSupplier().getCNPJ()) 
+            if (supplier.getsId() == product.getSupplierId())
                 pListBySupplier.add(product);
         }
 

@@ -12,7 +12,8 @@ public class DatabaseInit {
                 pid SERIAL NOT NULL,
                 name CHAR(40) NOT NULL,
                 description CHAR(200),
-                sku char(15) NOT NULL
+                sku char(15) NOT NULL,
+                supplier_id INTEGER NOT NULL
             );
         """;
 

@@ -94,4 +94,30 @@ public class SupplierDAO {
 
         return sList;
     }
+
+
+    public Supplier getById(int sId) {
+        String sql = "SELECT * FROM suppliers WHERE sid = ?";
+        Supplier supplier = null;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, sId);
+            ResultSet result = stmt.executeQuery();
+
+            if (result.next()) {
+                int sid = result.getInt("sid");
+                String sName = result.getString("name");
+                CNPJ sCNPJ = new CNPJ(result.getString("cnpj"));
+                Mail sMail = new Mail(result.getString("mail"));
+                Phone sPhone = new Phone(result.getString("phone"));
+
+                supplier = new Supplier(sid, sName, sCNPJ, sMail, sPhone);
+
+            }
+        } catch (SQLException e){
+            System.out.println("Error geting supplier with id inserted from suppliers database");
+        }
+
+        return supplier;
+    }
 }
