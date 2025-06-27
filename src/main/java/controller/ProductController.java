@@ -3,7 +3,9 @@ package controller;
 import java.util.NoSuchElementException;
 
 import model.Product;
+import model.Supplier;
 import model.list.ProductList;
+
 import database.DAO.ProductDAO;
 import database.DAO.SupplierDAO;;;
 
@@ -18,6 +20,10 @@ public class ProductController {
 
     public Product registerProduct(String pSku, String pName, String pDescription, int sId){
         try {
+            Supplier supplier = sDao.getById(sId);
+            if (supplier == null) {
+                throw new NoSuchElementException("No supplier found with the given id.");
+            }
             Product product = new Product(pSku, pName, pDescription, sId);
             
             pDao.insert(product);
