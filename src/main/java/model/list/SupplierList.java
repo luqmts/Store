@@ -5,18 +5,18 @@ import java.util.NoSuchElementException;
 
 import model.Supplier;
 
-public class SupplierList {
+public class SupplierList implements List<Supplier> {
     private ArrayList<Supplier> sList;
     
     public SupplierList(){
         sList = new ArrayList<Supplier>();
     }
 
-    public void addSupplier(Supplier supplier) {
+    public void add(Supplier supplier) {
         sList.add(supplier);
     }
 
-    public void removeSupplierByIndex(int sIndex) {
+    public void removeByIndex(int sIndex) {
         try {
             sList.remove(sIndex);
         } catch (IndexOutOfBoundsException e ) {
@@ -24,21 +24,21 @@ public class SupplierList {
         }
     }
 
-    public void removeSupplierById(int sId) {
+    public void removeById(int sId) {
         try {
-            Supplier supplier = getSupplierById(sId);
+            Supplier supplier = getById(sId);
             sList.remove(supplier);
         } catch (NoSuchElementException e){
             System.out.println(String.format("Supplier with id '%d' not found.", sId));
         }
     }
 
-    public ArrayList<Supplier> getAllSuppliers(){
+    public ArrayList<Supplier> get(){
         if (sList.isEmpty()) throw new NoSuchElementException();
         else return sList;
     }
     
-    public Supplier getSupplierById(int supplierId) {
+    public Supplier getById(int supplierId) {
         for (Supplier supplier : sList) {
             if (supplierId == supplier.getsId()) return supplier;
         }
@@ -46,7 +46,7 @@ public class SupplierList {
         throw new NoSuchElementException();
     }
 
-    public Supplier getSupplierByCNPJ(String CNPJString) {
+    public Supplier getByCNPJ(String CNPJString) {
         for (Supplier supplier : sList) {
             if (CNPJString == supplier.getCNPJ().toString()) return supplier;
         }

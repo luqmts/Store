@@ -6,18 +6,18 @@ import java.util.NoSuchElementException;
 import model.Product;
 import model.Supplier;
 
-public class ProductList {
+public class ProductList implements List<Product> {
     private ArrayList<Product> pList;
     
     public ProductList(){
         pList = new ArrayList<Product>();
     }
 
-    public void addProduct(Product product) {
+    public void add(Product product) {
         pList.add(product);
     }
 
-    public void removeProductByIndex(int pIndex) {
+    public void removeByIndex(int pIndex) {
         try {
             pList.remove(pIndex);
         } catch (IndexOutOfBoundsException e ) {
@@ -25,21 +25,21 @@ public class ProductList {
         }
     }
 
-    public void removeProductById(int pId) {
+    public void removeById(int pId) {
         try {
-            Product product = getProductById(pId);
+            Product product = getById(pId);
             pList.remove(product);
         } catch (NoSuchElementException e){
             System.out.println(String.format("Product with id '%d' not found.", pId));
         }
     }
 
-    public ArrayList<Product> getAllProducts(){
+    public ArrayList<Product> get(){
         if (pList.isEmpty()) throw new NoSuchElementException();
         else return pList;
     }
     
-    public Product getProductById(int productId) {
+    public Product getById(int productId) {
         for (Product product : pList) {
             if (productId == product.getPid()) return product;
         }
@@ -47,7 +47,7 @@ public class ProductList {
         throw new NoSuchElementException();
     }
 
-    public Product getProductBySku(String productSku) {
+    public Product getBySku(String productSku) {
         for (Product product : pList) {
             if (productSku == product.getSku()) return product;
         }
@@ -55,7 +55,7 @@ public class ProductList {
         throw new NoSuchElementException();
     }
 
-    public ArrayList<Product> getProductsBySupplier(Supplier supplier) {
+    public ArrayList<Product> getBySupplier(Supplier supplier) {
         ArrayList<Product> pListBySupplier = new ArrayList<Product>();
 
         for (Product product : pList) {

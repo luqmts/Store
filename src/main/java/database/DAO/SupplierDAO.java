@@ -13,7 +13,7 @@ import valueobjects.CNPJ;
 import valueobjects.Mail;
 import valueobjects.Phone;
 
-public class SupplierDAO {
+public class SupplierDAO implements DAO<Supplier> {
     private final Connection conn;
 
     public SupplierDAO(Connection conn) { this.conn = conn; }
@@ -96,7 +96,7 @@ public class SupplierDAO {
                 Phone sPhone = new Phone(result.getString("phone").trim());
 
                 Supplier supplier = new Supplier(sid, sName, sCNPJ, sMail, sPhone);
-                sList.addSupplier(supplier);
+                sList.add(supplier);
             }
         } catch (SQLException e){
             System.out.println("Error geting items from suppliers database");
@@ -104,7 +104,6 @@ public class SupplierDAO {
 
         return sList;
     }
-
 
     public Supplier getById(int sId) {
         String sql = """

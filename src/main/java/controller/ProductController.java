@@ -7,7 +7,7 @@ import model.Supplier;
 import model.list.ProductList;
 
 import database.DAO.ProductDAO;
-import database.DAO.SupplierDAO;;;
+import database.DAO.SupplierDAO;
 
 public class ProductController {
     private final SupplierDAO sDao;
@@ -39,7 +39,7 @@ public class ProductController {
     public void showAllProducts(){
         ProductList pList = pDao.get(sDao);
         try {
-            for (Product product : pList.getAllProducts()) {
+            for (Product product : pList.get()) {
                 System.out.println(product.toString());
             }
         } catch (NoSuchElementException e) {
