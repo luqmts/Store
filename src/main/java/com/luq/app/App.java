@@ -1,31 +1,36 @@
 package com.luq.app;
 
+import java.sql.Connection;
 
 import controller.ProductController;
 import controller.SupplierController;
-import model.Supplier;
-import model.list.ProductList;
-import model.list.SupplierList;
-import valueobjects.CNPJ;
-import valueobjects.Mail;
-import valueobjects.Phone;
+
+import database.PostgresConnection;
+import database.DAO.ProductDAO;
+import database.DAO.SupplierDAO;
+
 import view.LoginView;
 import view.ProductView;
 import view.SupplierView;
 
 public class App {
     public static void main(String[] args) {
-        ProductList pList = new ProductList();
-        SupplierList sList = new SupplierList();
-        Supplier s1 = new Supplier(
-            1, "Sony Brasil LTDA.", new CNPJ("43.447.044/0004-10"), new Mail("sony@mail.com"), new Phone("11000001111")
-        );
-        sList.addSupplier(s1);
-        
-        ProductController pController = new ProductController(pList);
-        SupplierController sController = new SupplierController(sList);
-        ProductView pView = new ProductView(pController, sController);
+        Connection conn = PostgresConnection.connect();
+
+        if (conn == null) {
+            System.out.println("Error connecting to the database");
+            return;
+        }
+
+        SupplierDAO sDao = new SupplierDAO(conn);
+        ProductDAO pDao = new ProductDAO(conn);
+  
+        SupplierController sController = new SupplierController(sDao);
+        ProductController pController = new ProductController(sDao, pDao);
+
         SupplierView sView = new SupplierView(sController);
+        ProductView pView = new ProductView(pController, sController);
+
         LoginView lView = new LoginView(pView, sView);
         
         lView.showMainMenu();
