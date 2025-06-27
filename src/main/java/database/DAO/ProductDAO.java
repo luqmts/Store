@@ -9,7 +9,7 @@ import java.sql.Statement;
 import model.Product;
 import model.list.ProductList;
 
-public class ProductDAO {
+public class ProductDAO implements DAO<Product> {
     private final Connection conn;
 
     public ProductDAO(Connection conn) { this.conn = conn; }

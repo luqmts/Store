@@ -13,7 +13,7 @@ import valueobjects.CNPJ;
 import valueobjects.Mail;
 import valueobjects.Phone;
 
-public class SupplierDAO {
+public class SupplierDAO implements DAO<Supplier> {
     private final Connection conn;
 
     public SupplierDAO(Connection conn) { this.conn = conn; }
@@ -104,7 +104,6 @@ public class SupplierDAO {
 
         return sList;
     }
-
 
     public Supplier getById(int sId) {
         String sql = """
