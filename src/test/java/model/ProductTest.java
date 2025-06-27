@@ -2,7 +2,6 @@ package model;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +19,7 @@ public class ProductTest {
     @BeforeEach
     public void setUp(){
         supplier = new Supplier(
+            1,
             "Sony Brasil LTDA.", 
             new CNPJ("43.447.044/0004-10"), 
             new Mail("sony@mail.com"), 
@@ -31,7 +31,7 @@ public class ProductTest {
     @Test    
     @DisplayName("Ensure toString method is returning correctly")
     public void testProductToStringMethod() {
-        assertEquals(product.toString(), "[PS4] Playstation 4", "Product toString() method must return on right format");
+        assertEquals(product.toString(), "ID: 1 - [PS4] Playstation 4", "Product toString() method must return on right format");
     }
 
     @Test
@@ -63,10 +63,10 @@ public class ProductTest {
     
     @Test
     @DisplayName("Ensure Product's Supplier is being instacied correctly")
-    public void testProductSupplierIsIntanciedCorrect(){
+    public void testProductSupplierIsValid(){
         assertAll(
             () -> assertNotNull(product.getSupplierId()),
-            () -> assertInstanceOf(Supplier.class, product.getSupplierId())
+            () -> assertEquals(supplier.getsId(), product.getSupplierId())
         );
     }
 }

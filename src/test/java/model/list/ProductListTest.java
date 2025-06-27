@@ -27,19 +27,19 @@ public class ProductListTest {
     @BeforeEach
     public void setUp(){
         s1 = new Supplier(
-            "Sony Brasil LTDA.", new CNPJ("43.447.044/0004-10"), new Mail("sony@mail.com"), new Phone("11000001111")
+            1, "Sony Brasil LTDA.", new CNPJ("43.447.044/0004-10"), new Mail("sony@mail.com"), new Phone("11000001111")
         );
         s2 = new Supplier(
-            "Microsoft Brasil LTDA.", new CNPJ("33.652.161/0001-19"), new Mail("microsoft@mail.com"), new Phone("21985855858")
+            2, "Microsoft Brasil LTDA.", new CNPJ("33.652.161/0001-19"), new Mail("microsoft@mail.com"), new Phone("21985855858")
         );
         s3 = new Supplier(
-            "8BitDO LTDA.", new CNPJ("37.835.617/0001-37"), new Mail("8bitdo@mail.com"), new Phone("85990909090")
+            3, "8BitDO LTDA.", new CNPJ("37.835.617/0001-37"), new Mail("8bitdo@mail.com"), new Phone("85990909090")
         );
 
         p1 = new Product(1, "PS4Cont", "PS4 Controller", "Controller for PS4 Console", s1.getsId());
         p2 = new Product(2, "XOneCont", "Xbox One Controller", "Controller for Xbox One Console", s2.getsId());
         p3 = new Product(3, "8BitDOUltCont", "8BitDO Ultimate Controller", "Controller from 8BitDO for Nintendo Switch", s3.getsId());
-        
+
         pList = new ProductList();
 
         pList.addProduct(p1);
