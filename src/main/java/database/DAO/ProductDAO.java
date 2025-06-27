@@ -78,11 +78,9 @@ public class ProductDAO {
 
         public ProductList get(SupplierDAO sDAO) {
             String sql = """
-                SELECT t1.*, t2.* 
-                FROM products as t1
-                ORDER BY pid 
-                LEFT JOIN suppliers as t2 
-                ON t1.supplier_id = t2.sid""";
+                SELECT * 
+                FROM products
+                ORDER BY pid """;
 
             ProductList pList = new ProductList();
 
@@ -104,5 +102,30 @@ public class ProductDAO {
             }
 
             return pList;
+        }
+
+        public Product getById(int pId) {
+            String sql = """
+                SELECT * 
+                FROM products
+                WHERE pid=?;""";
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, pId);
+                ResultSet result = stmt.executeQuery();
+
+                if (result.next()) {
+                    String pSku = result.getString("sku");
+                    String pName = result.getString("name");
+                    String pDescription = result.getString("description");
+                    int sId = result.getInt("supplier_id");
+
+                    return new Product(pId, pSku, pName, pDescription, sId);
+                }
+            } catch (SQLException e) {
+                System.out.println("Error getting product by id: " + e);
+            }
+
+            return null;
         }
 }
