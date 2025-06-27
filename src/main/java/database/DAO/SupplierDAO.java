@@ -90,10 +90,10 @@ public class SupplierDAO {
 
             while (result.next()) {
                 int sid = result.getInt("sid");
-                String sName = result.getString("name");
-                CNPJ sCNPJ = new CNPJ(result.getString("cnpj"));
-                Mail sMail = new Mail(result.getString("mail"));
-                Phone sPhone = new Phone(result.getString("phone"));
+                String sName = result.getString("name").trim();
+                CNPJ sCNPJ = new CNPJ(result.getString("cnpj").trim());
+                Mail sMail = new Mail(result.getString("mail").trim());
+                Phone sPhone = new Phone(result.getString("phone").trim());
 
                 Supplier supplier = new Supplier(sid, sName, sCNPJ, sMail, sPhone);
                 sList.addSupplier(supplier);
@@ -118,10 +118,10 @@ public class SupplierDAO {
 
             if (result.next()) {
                 int sid = result.getInt("sid");
-                String sName = result.getString("name");
-                CNPJ sCNPJ = new CNPJ(result.getString("cnpj"));
-                Mail sMail = new Mail(result.getString("mail"));
-                Phone sPhone = new Phone(result.getString("phone"));
+                String sName = result.getString("name").trim();
+                CNPJ sCNPJ = new CNPJ(result.getString("cnpj").trim());
+                Mail sMail = new Mail(result.getString("mail").trim());
+                Phone sPhone = new Phone(result.getString("phone").trim());
 
                 supplier = new Supplier(sid, sName, sCNPJ, sMail, sPhone);
 

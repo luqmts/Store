@@ -89,9 +89,9 @@ public class ProductDAO {
 
                 while (result.next()) {
                     int pid = result.getInt("pid");
-                    String pSku = result.getString("sku");
-                    String pName = result.getString("name");
-                    String pDescrition = result.getString("description");
+                    String pSku = result.getString("sku").trim();
+                    String pName = result.getString("name").trim();
+                    String pDescrition = result.getString("description").trim();
                     int sId = result.getInt("supplier_id");
 
                     Product product = new Product(pid, pSku, pName, pDescrition, sId);
@@ -115,9 +115,9 @@ public class ProductDAO {
                 ResultSet result = stmt.executeQuery();
 
                 if (result.next()) {
-                    String pSku = result.getString("sku");
-                    String pName = result.getString("name");
-                    String pDescription = result.getString("description");
+                    String pSku = result.getString("sku").trim();
+                    String pName = result.getString("name").trim();
+                    String pDescription = result.getString("description").trim();
                     int sId = result.getInt("supplier_id");
 
                     return new Product(pId, pSku, pName, pDescription, sId);
