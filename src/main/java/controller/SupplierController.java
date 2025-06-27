@@ -39,7 +39,7 @@ public class SupplierController {
         SupplierList sList = sDao.get();
 
         try {
-            for (Supplier supplier : sList.getAllSuppliers()) {
+            for (Supplier supplier : sList.get()) {
                 System.out.println(supplier.toString());
             }
         } catch (NoSuchElementException e) {
