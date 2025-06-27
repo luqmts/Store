@@ -12,11 +12,9 @@ import valueobjects.Phone;
 import database.DAO.SupplierDAO;
 
 public class SupplierController {
-    private final SupplierList sList;
     private final SupplierDAO sDao;
 
-    public SupplierController(SupplierList sList, SupplierDAO sDao){
-        this.sList = sList;
+    public SupplierController(SupplierDAO sDao){
         this.sDao = sDao;
     }
 
@@ -28,9 +26,7 @@ public class SupplierController {
     
             Supplier supplier = new Supplier(sName, cnpj, mail, phone);
 
-            sDao.insert(supplier);
-            sList.addSupplier(supplier);
-    
+            sDao.insert(supplier);    
             return supplier;
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
@@ -40,6 +36,8 @@ public class SupplierController {
     }
 
     public void showAllSuppliers(){
+        SupplierList sList = sDao.get();
+
         try {
             for (Supplier supplier : sList.getAllSuppliers()) {
                 System.out.println(supplier.toString());
@@ -51,7 +49,7 @@ public class SupplierController {
 
     public Supplier updateSupplier(int sId, String sName, String sCNPJ, String sMail, String sPhone){
         try {
-            Supplier supplier = sList.getSupplierById(sId);
+            Supplier supplier = sDao.getById(sId);
             CNPJ CNPJ = new CNPJ(sCNPJ);
             Mail mail = new Mail(sMail);
             Phone phone = new Phone(sPhone);
@@ -74,7 +72,6 @@ public class SupplierController {
     public void removeSupplier(int sId){
         try {
             sDao.delete(sId);
-            sList.removeSupplierById(sId);   
         } catch (NoSuchElementException e) {
             System.out.println(e.getMessage());
         }

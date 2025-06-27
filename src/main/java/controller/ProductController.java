@@ -4,14 +4,15 @@ import java.util.NoSuchElementException;
 
 import model.Product;
 import model.list.ProductList;
-import database.DAO.ProductDAO;;;
+import database.DAO.ProductDAO;
+import database.DAO.SupplierDAO;;;
 
 public class ProductController {
-    private final ProductList pList;
+    private final SupplierDAO sDao;
     private final ProductDAO pDao; 
 
-    public ProductController(ProductList pList, ProductDAO pDao) {
-        this.pList = pList;
+    public ProductController(SupplierDAO sDao, ProductDAO pDao) {
+        this.sDao = sDao;
         this.pDao = pDao;
     }
 
@@ -20,7 +21,6 @@ public class ProductController {
             Product product = new Product(pSku, pName, pDescription, sId);
             
             pDao.insert(product);
-            pList.addProduct(product);
 
             return product;
         } catch (NoSuchElementException e) {
@@ -31,6 +31,7 @@ public class ProductController {
     }
 
     public void showAllProducts(){
+        ProductList pList = pDao.get(sDao);
         try {
             for (Product product : pList.getAllProducts()) {
                 System.out.println(product.toString());
@@ -42,7 +43,7 @@ public class ProductController {
 
     public Product updateProduct(int pId, String pSku, String pName, String pDescription, int sId){
         try {
-            Product product = pList.getProductById(pId);
+            Product product = pDao.getById(pId);
     
             product.setSku(pSku);
             product.setName(pName);
@@ -62,7 +63,6 @@ public class ProductController {
     public void removeProduct(int pId){
         try {
             pDao.delete(pId);
-            pList.removeProductById(pId);
         } catch (NoSuchElementException e) {
             System.out.println("No product found with inserted id");
         }
