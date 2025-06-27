@@ -96,7 +96,7 @@ public class SupplierDAO {
                 Phone sPhone = new Phone(result.getString("phone").trim());
 
                 Supplier supplier = new Supplier(sid, sName, sCNPJ, sMail, sPhone);
-                sList.addSupplier(supplier);
+                sList.add(supplier);
             }
         } catch (SQLException e){
             System.out.println("Error geting items from suppliers database");

@@ -76,35 +76,35 @@ public class ProductDAO {
         }
     }
 
-        public ProductList get(SupplierDAO sDAO) {
-            String sql = """
-                SELECT * 
-                FROM products
-                ORDER BY pid """;
+    public ProductList get(SupplierDAO sDAO) {
+        String sql = """
+            SELECT * 
+            FROM products
+            ORDER BY pid """;
 
-            ProductList pList = new ProductList();
+        ProductList pList = new ProductList();
 
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                ResultSet result = stmt.executeQuery();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet result = stmt.executeQuery();
 
-                while (result.next()) {
-                    int pid = result.getInt("pid");
-                    String pSku = result.getString("sku").trim();
-                    String pName = result.getString("name").trim();
-                    String pDescrition = result.getString("description").trim();
-                    int sId = result.getInt("supplier_id");
+            while (result.next()) {
+                int pid = result.getInt("pid");
+                String pSku = result.getString("sku").trim();
+                String pName = result.getString("name").trim();
+                String pDescrition = result.getString("description").trim();
+                int sId = result.getInt("supplier_id");
 
-                    Product product = new Product(pid, pSku, pName, pDescrition, sId);
-                    pList.addProduct(product);
-                }
-            } catch (SQLException e){
-                System.out.println("Error geting items from suppliers database");
+                Product product = new Product(pid, pSku, pName, pDescrition, sId);
+                pList.add(product);
             }
-
-            return pList;
+        } catch (SQLException e){
+            System.out.println("Error geting items from suppliers database");
         }
 
-        public Product getById(int pId) {
+        return pList;
+    }
+
+    public Product getById(int pId) {
             String sql = """
                 SELECT * 
                 FROM products
