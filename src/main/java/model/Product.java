@@ -1,14 +1,14 @@
 package model;
 
-public class Product {
-    private int pid;
+public class Product implements Identifiable {
+    private int id;
     private String sku;
     private String name;
     private String description;
     private int sid;
 
-    public Product(int pid, String sku, String name, String description, int supplier_id) {
-        this.pid = pid;
+    public Product(int id, String sku, String name, String description, int supplier_id) {
+        this.id = id;
         this.sku = sku;
         this.name = name;
         this.description = description;
@@ -22,12 +22,13 @@ public class Product {
         this.sid = supplier_id;
     }
 
-    public int getPid() {
-        return pid;
+    @Override
+    public int getId() {
+        return id;
     }
 
-    public void setPid(int pid) {
-        this.pid = pid;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getSku() {
@@ -64,6 +65,6 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format("ID: %d - [%s] %s", getPid(), getSku(), getName());
+        return String.format("ID: %d - [%s] %s", getId(), getSku(), getName());
     }
 }

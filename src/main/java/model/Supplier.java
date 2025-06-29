@@ -4,8 +4,8 @@ import valueobjects.CNPJ;
 import valueobjects.Mail;
 import valueobjects.Phone;
 
-public class Supplier {
-    private int sId;
+public class Supplier implements Identifiable {
+    private int id;
     private String name;
     private CNPJ CNPJ;
     private Mail mail;
@@ -17,19 +17,19 @@ public class Supplier {
         this.mail = mail;
         this.phone = phone;
     }
-    public Supplier(int sId, String name, CNPJ CNPJ, Mail mail, Phone phone) {
-        this.sId = sId;
+    public Supplier(int id, String name, CNPJ CNPJ, Mail mail, Phone phone) {
+        this.id = id;
         this.name = name;
         this.CNPJ = CNPJ;
         this.mail = mail;
         this.phone = phone;
     }
     
-    public int getsId() {
-        return sId;
+    public int getId() {
+        return id;
     }
-    public void setsId(int sId) {
-        this.sId = sId;
+    public void setId(int id) {
+        this.id = id;
     }
     public String getName() {
         return name;
@@ -58,6 +58,6 @@ public class Supplier {
 
     @Override
     public String toString() {
-        return String.format("ID: %d - %s, CNPJ: %s", getsId(), getName(), getCNPJ());
+        return String.format("ID: %d - %s, CNPJ: %s", getId(), getName(), getCNPJ());
     }
 }
