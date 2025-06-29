@@ -35,27 +35,27 @@ public class SupplierListTest {
 
         sList = new SupplierList();
 
-        sList.addSupplier(s1);
-        sList.addSupplier(s2);
-        sList.addSupplier(s3);
+        sList.add(s1);
+        sList.add(s2);
+        sList.add(s3);
     }
     
     @Test
     @DisplayName("Assert all suppliers created are being returned in getAllSuppliers method")
     public void testGetAllSuppliers(){
         assertAll(
-            () -> assertNotNull(sList.getAllSuppliers()),
-            () -> assertEquals(3, sList.getAllSuppliers().size())
+            () -> assertNotNull(sList.get()),
+            () -> assertEquals(3, sList.get().size())
         );
     }
     
     @Test
     @DisplayName("Assert supplier returned on method getSupplierById is being returned correctly")
     public void testGetSupplierById(){
-        Supplier supplier = sList.getSupplierById(2);
+        Supplier supplier = sList.getById(2);
         assertAll(
             () -> assertInstanceOf(Supplier.class, supplier),
-            () -> assertEquals(2, supplier.getsId()),
+            () -> assertEquals(2, supplier.getId()),
             () -> assertEquals("Microsoft Brasil LTDA.", supplier.getName()),
             () -> assertEquals("33.652.161/0001-19", supplier.getCNPJ().toString()),
             () -> assertEquals("microsoft@mail.com", supplier.getMail().toString()),
@@ -66,10 +66,10 @@ public class SupplierListTest {
     @Test
     @DisplayName("Assert supplier returned on method getSupplierByCNPJ is being returned correctly")
     public void testGetSupplierByCNPJ(){
-        Supplier supplier = sList.getSupplierByCNPJ("33.652.161/0001-19");
+        Supplier supplier = sList.getByCNPJ("33.652.161/0001-19");
         assertAll(
             () -> assertInstanceOf(Supplier.class, supplier),
-            () -> assertEquals(2, supplier.getsId()),
+            () -> assertEquals(2, supplier.getId()),
             () -> assertEquals("Microsoft Brasil LTDA.", supplier.getName()),
             () -> assertEquals("33.652.161/0001-19", supplier.getCNPJ().toString()),
             () -> assertEquals("microsoft@mail.com", supplier.getMail().toString()),
@@ -80,23 +80,23 @@ public class SupplierListTest {
     @Test
     @DisplayName("Assert if no supplier are found in sList return NoSuchElementException")
     public void testGetAllSuppliersNoItemFound(){
-        sList.removeSupplierById(1);
-        sList.removeSupplierById(2);
-        sList.removeSupplierById(3);
+        sList.removeById(1);
+        sList.removeById(2);
+        sList.removeById(3);
 
-        assertThrows(NoSuchElementException.class, () -> sList.getAllSuppliers());
+        assertThrows(NoSuchElementException.class, () -> sList.get());
     }
 
     @Test
     @DisplayName("For a id that is not in Supplier List must return NoSuchElementException")
     public void testGetSupplierByIdNoItemFound(){
-        assertThrows(NoSuchElementException.class, () -> sList.getSupplierById(10));
+        assertThrows(NoSuchElementException.class, () -> sList.getById(10));
     }
 
     @Test
     @DisplayName("For a CNPJ that is not in Supplier List must return NoSuchElementException")
     public void testGetSupplierByCNPJNoItemFound(){
-        assertThrows(NoSuchElementException.class, () -> sList.getSupplierByCNPJ("01.062.519/0001-67"));
+        assertThrows(NoSuchElementException.class, () -> sList.getByCNPJ("01.062.519/0001-67"));
     }
 
     @Test
@@ -105,33 +105,33 @@ public class SupplierListTest {
         s4 = new Supplier(
             "Nintendo", new CNPJ("08.592.899/0001-90"), new Mail("nintendo@mail.com"), new Phone("85943527697")
         );
-        sList.addSupplier(s4);
+        sList.add(s4);
 
         assertAll(
-            () -> assertNotNull(sList.getAllSuppliers()),
-            () -> assertEquals(4, sList.getAllSuppliers().size())
+            () -> assertNotNull(sList.get()),
+            () -> assertEquals(4, sList.get().size())
         );
     }
 
     @Test
     @DisplayName("Assert supplier is correctly being removed by supplier's index")
     public void testSupplierRemovedByIndexCorrectly(){
-        sList.removeSupplierByIndex(1);
+        sList.removeById(1);
         
         assertAll(
-            () -> assertEquals(2, sList.getAllSuppliers().size()),
-            () -> assertThrows(IndexOutOfBoundsException.class, () -> sList.getAllSuppliers().get(2))
+            () -> assertEquals(2, sList.get().size()),
+            () -> assertThrows(IndexOutOfBoundsException.class, () -> sList.get().get(2))
         );
     }
 
     @Test
     @DisplayName("Assert supplier is correctly being removed by supplier's id and get by id is working")
     public void testSupplierRemovedByIdCorrectly(){
-        sList.removeSupplierById(2);
+        sList.removeById(2);
         
         assertAll(
-            () -> assertEquals(2, sList.getAllSuppliers().size()),
-            () -> assertThrows(NoSuchElementException.class, () -> sList.getSupplierById(2))
+            () -> assertEquals(2, sList.get().size()),
+            () -> assertThrows(NoSuchElementException.class, () -> sList.getById(2))
         );
     }
 }

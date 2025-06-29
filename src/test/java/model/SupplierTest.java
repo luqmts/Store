@@ -18,6 +18,7 @@ public class SupplierTest {
     @BeforeEach
     public void setUp(){
         supplier = new Supplier(
+            1,
             "Ooo Comércios e Vendas S/A", 
             new CNPJ("94.907.898/0001-20"), 
             new Mail("Ooo@gmail.com"), 
@@ -29,6 +30,7 @@ public class SupplierTest {
     @DisplayName("Ensure object is being created correctly")
     public void testSupplierCreationGrouped(){
         assertAll(
+            () -> assertEquals(1, supplier.getId()),
             () -> assertEquals("Ooo Comércios e Vendas S/A", supplier.getName()),
             () -> assertEquals("94.907.898/0001-20", supplier.getCNPJ().toString()),
             () -> assertEquals("Ooo@gmail.com", supplier.getMail().toString()),
@@ -39,12 +41,14 @@ public class SupplierTest {
     @Test
     @DisplayName("Ensure object is being updated correctly")
     public void testSupplierUpdatedGrouped(){
+        supplier.setId(2);
         supplier.setName("Marceline Instrumentos Musicais S/A");
         supplier.setCNPJ(new CNPJ("08.968.789/0001-80"));
         supplier.setMail(new Mail("marceline_213@mail.com"));
         supplier.setPhone(new Phone("11990909090"));
 
         assertAll(
+            () -> assertEquals(2, supplier.getId()),
             () -> assertEquals("Marceline Instrumentos Musicais S/A", supplier.getName()),
             () -> assertEquals("08.968.789/0001-80", supplier.getCNPJ().toString()),
             () -> assertEquals("marceline_213@mail.com", supplier.getMail().toString()),
@@ -62,6 +66,7 @@ public class SupplierTest {
     @DisplayName("Supplier attributes must not be null")
     public void testSupplierAttributesNotNull(){
         assertAll(
+            () -> assertNotNull(supplier.getId()),
             () -> assertNotNull(supplier.getName()),
             () -> assertNotNull(supplier.getCNPJ()),
             () -> assertNotNull(supplier.getMail()),

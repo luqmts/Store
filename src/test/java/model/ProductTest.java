@@ -25,7 +25,7 @@ public class ProductTest {
             new Mail("sony@mail.com"), 
             new Phone("11000001111")
         );
-        product = new Product(1, "PS4", "Playstation 4", "Video Game Console by Sony.", supplier.getsId());
+        product = new Product(1, "PS4", "Playstation 4", "Video Game Console by Sony.", supplier.getId());
     }
 
     @Test    
@@ -38,7 +38,7 @@ public class ProductTest {
     @DisplayName("Ensure object is being created correctly")
     public void testProductCreationGrouped() {
         assertAll(
-            () -> assertEquals(product.getPid(), 1),
+            () -> assertEquals(product.getId(), 1),
             () -> assertEquals(product.getSku(), "PS4"),
             () -> assertEquals(product.getName(), "Playstation 4"),
             () -> assertEquals(product.getDescription(), "Video Game Console by Sony.")
@@ -48,13 +48,13 @@ public class ProductTest {
     @Test
     @DisplayName("Ensure object is being updated correctly")
     public void testProductUpdateGrouped() {
-        product.setPid(2);
+        product.setId(2);
         product.setSku("PS5");
         product.setName("Playstation 5");
         product.setDescription("A new generation Video Game Console by Sony.");
 
         assertAll(
-            () -> assertEquals(product.getPid(), 2),
+            () -> assertEquals(product.getId(), 2),
             () -> assertEquals(product.getSku(), "PS5"),
             () -> assertEquals(product.getName(), "Playstation 5"),
             () -> assertEquals(product.getDescription(), "A new generation Video Game Console by Sony.")
@@ -66,7 +66,7 @@ public class ProductTest {
     public void testProductSupplierIsValid(){
         assertAll(
             () -> assertNotNull(product.getSupplierId()),
-            () -> assertEquals(supplier.getsId(), product.getSupplierId())
+            () -> assertEquals(supplier.getId(), product.getSupplierId())
         );
     }
 }
