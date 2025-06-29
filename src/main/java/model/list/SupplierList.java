@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 import model.Supplier;
 
-public class SupplierList implements List<Supplier> {
+public class SupplierList extends List<Supplier> {
     private ArrayList<Supplier> sList;
     
     public SupplierList(){
@@ -40,7 +40,7 @@ public class SupplierList implements List<Supplier> {
     
     public Supplier getById(int supplierId) {
         for (Supplier supplier : sList) {
-            if (supplierId == supplier.getsId()) return supplier;
+            if (supplierId == supplier.getId()) return supplier;
         }
 
         throw new NoSuchElementException();
