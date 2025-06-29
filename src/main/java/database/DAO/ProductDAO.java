@@ -9,7 +9,7 @@ import java.sql.Statement;
 import model.Product;
 import model.list.ProductList;
 
-public class ProductDAO implements DAO<Product> {
+public class ProductDAO implements DAO<Product, ProductList> {
     private final Connection conn;
 
     public ProductDAO(Connection conn) { this.conn = conn; }
@@ -30,7 +30,7 @@ public class ProductDAO implements DAO<Product> {
 
             try(ResultSet result = stmt.getGeneratedKeys()) {
                 if(result.next()) {
-                    product.setPid(result.getInt(1));
+                    product.setId(result.getInt(1));
                     System.out.println("Product succesfully added to database.");
                 }
             }
@@ -76,7 +76,7 @@ public class ProductDAO implements DAO<Product> {
         }
     }
 
-    public ProductList get(SupplierDAO sDAO) {
+    public ProductList get() {
         String sql = """
             SELECT * 
             FROM products

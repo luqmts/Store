@@ -13,7 +13,7 @@ import valueobjects.CNPJ;
 import valueobjects.Mail;
 import valueobjects.Phone;
 
-public class SupplierDAO implements DAO<Supplier> {
+public class SupplierDAO implements DAO<Supplier, SupplierList> {
     private final Connection conn;
 
     public SupplierDAO(Connection conn) { this.conn = conn; }
@@ -34,7 +34,7 @@ public class SupplierDAO implements DAO<Supplier> {
 
             try (ResultSet result = stmt.getGeneratedKeys()) {
                 if(result.next()) {
-                    supplier.setsId(result.getInt(1));
+                    supplier.setId(result.getInt(1));
                     System.out.println("Supplier succesfully added to database.");
                 }
             }
