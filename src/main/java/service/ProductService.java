@@ -7,8 +7,8 @@ import model.list.ProductList;
 import model.list.SupplierList;
 
 public class ProductService {
-    private final DAO<Product, ProductList> pDao;
-    private final DAO<Supplier, SupplierList> sDao;
+    private DAO<Product, ProductList> pDao;
+    private DAO<Supplier, SupplierList> sDao;
 
     public ProductService(DAO<Product, ProductList> pDao, DAO<Supplier, SupplierList> sDao) {
         this.pDao = pDao;
@@ -29,19 +29,24 @@ public class ProductService {
     }
 
     public Product updateProduct(int pId, String pSku, String pName, String pDescription, int sId) {
+        Product product = pDao.getById(pId);
         Supplier supplier = sDao.getById(sId);
+
+        if (product == null) {
+            throw new IllegalArgumentException("Product not found");
+        }
 
         if (supplier == null) {
             throw new IllegalArgumentException("Supplier not found");
         }
 
-        Product product = new Product(pSku, pName, pDescription, sId);
+        product = new Product(pSku, pName, pDescription, sId);
         pDao.update(pId, product);
 
         return product;
     }
 
-    public void deleteProduct(int pId) {
+    public int deleteProduct(int pId) {
         Product product = pDao.getById(pId);
 
         if (product == null) {
@@ -49,13 +54,22 @@ public class ProductService {
         }
 
         pDao.delete(pId);
+
+        return pId;
     }
 
-    public void showAllProducts() {
+    public String showAllProducts() {
         ProductList pList = pDao.get();
+        String pListString = ""; 
         
-        for (Product product : pList.get()) {
-            System.out.println(product.toString());
+        if (pList.get().isEmpty()) 
+            pListString = "No items registered";
+        else {
+            for (Product product : pList.get()) {
+                pListString.concat(product.toString());
+            }
         }
+
+        return pListString;
     }
 }

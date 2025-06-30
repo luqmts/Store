@@ -14,15 +14,15 @@ public class ProductController {
         return pService.registerProduct(pSku, pName, pDescription, sId);
     }
 
-    public void showAllProducts(){
-       pService.showAllProducts();
+    public String showAllProducts(){
+       return pService.showAllProducts();
     }
 
     public Product updateProduct(int pId, String pSku, String pName, String pDescription, int sId){
         return pService.updateProduct(pId, pSku, pName, pDescription, sId);
     }
 
-    public void removeProduct(int pId){
-        pService.deleteProduct(pId);
+    public int removeProduct(int pId){
+        return pService.deleteProduct(pId);
     }
 }
