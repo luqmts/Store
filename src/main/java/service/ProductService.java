@@ -1,5 +1,7 @@
 package service;
 
+import java.util.NoSuchElementException;
+
 import database.DAO.DAO;
 import model.Product;
 import model.Supplier;
@@ -60,15 +62,12 @@ public class ProductService {
 
     public String showAllProducts() {
         ProductList pList = pDao.get();
-        String pListString = ""; 
-        
+    
         if (pList.get().isEmpty()) 
-            return "No Products registered";
+            throw new NoSuchElementException("No items registered.");
 
-        for (Product product : pList.get()) {
-            pListString.concat(product.toString());
-        }
-
-        return pListString;
+        return pList.get().stream()
+        .map(Product::toString)
+        .collect(java.util.stream.Collectors.joining("\n"));
     }
 }
