@@ -5,6 +5,9 @@ import valueobjects.CNPJ;
 import valueobjects.Mail;
 import valueobjects.Phone;
 import model.Supplier;
+
+import java.util.NoSuchElementException;
+
 import database.DAO.DAO;
 
 public class SupplierService {
@@ -60,16 +63,13 @@ public class SupplierService {
 
     public String showAllSuppliers() {
         SupplierList sList = sDao.get();
-        String sListString = "";
 
         if (sList.get().isEmpty()) {
-            return "No Suppliers found";
+            throw new NoSuchElementException("No items registered.");
         } 
 
-        for (Supplier supplier : sList.get()) {
-            sListString += supplier.toString();
-        }
-
-        return sListString;
+        return sList.get().stream()
+        .map(Supplier::toString)
+        .collect(java.util.stream.Collectors.joining("\n"));
     }
 }
