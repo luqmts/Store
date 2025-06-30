@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -173,7 +171,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Test if showAllProducts method is returning message that no product is registered if there are no items.")
-    void testShowAllProductsWithNoItem(){
+    void testShowAllProductsNoItem(){
         ProductList pList = new ProductList();
 
         when(pDao.get()).thenReturn(pList);
