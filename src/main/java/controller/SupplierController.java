@@ -15,15 +15,15 @@ public class SupplierController {
         return sService.registerSupplier(sName, sCNPJ, sMail, sPhone);
     }
 
-    public void showAllSuppliers(){
-        sService.showAllSuppliers();
+    public String showAllSuppliers(){
+        return sService.showAllSuppliers();
     }
 
     public Supplier updateSupplier(int sId, String sName, String sCNPJ, String sMail, String sPhone){
         return sService.updateSupplier(sId, sName, sCNPJ, sMail, sPhone);
     }
 
-    public void removeSupplier(int sId){
-        sService.deleteSupplier(sId);
+    public int removeSupplier(int sId){
+        return sService.deleteSupplier(sId);
     }
 }

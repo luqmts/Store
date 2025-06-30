@@ -46,7 +46,7 @@ public class SupplierService {
         return supplier;
     }
 
-    public void deleteSupplier(int sId) {
+    public int deleteSupplier(int sId) {
         Supplier supplier = sDao.getById(sId);
         
         if (supplier == null) {
@@ -54,18 +54,22 @@ public class SupplierService {
         }
 
         sDao.delete(sId);
+
+        return sId;
     }
 
-    public void showAllSuppliers() {
+    public String showAllSuppliers() {
         SupplierList sList = sDao.get();
+        String sListString = "";
 
         if (sList.get().isEmpty()) {
-            System.out.println("No Suppliers found");
-            return;
+            return "No Suppliers found";
         } 
 
         for (Supplier supplier : sList.get()) {
-            System.out.println(supplier.toString());
+            sListString += supplier.toString();
         }
+
+        return sListString;
     }
 }
