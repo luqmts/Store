@@ -63,11 +63,10 @@ public class ProductService {
         String pListString = ""; 
         
         if (pList.get().isEmpty()) 
-            pListString = "No items registered";
-        else {
-            for (Product product : pList.get()) {
-                pListString.concat(product.toString());
-            }
+            return "No Products registered";
+
+        for (Product product : pList.get()) {
+            pListString.concat(product.toString());
         }
 
         return pListString;
