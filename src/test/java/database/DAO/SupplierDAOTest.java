@@ -1,4 +1,4 @@
-package database;
+package database.DAO;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,10 +18,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import database.DAO.SupplierDAO;
 import model.Supplier;
 import model.list.SupplierList;
 import valueobjects.CNPJ;
@@ -53,6 +52,7 @@ public class SupplierDAOTest {
     }
         
     @Test
+    @DisplayName("Test if supplier is being inserted in database")
     void testInsert() throws SQLException {
         when(conn.prepareStatement(any(String.class), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(stmt);
         when(stmt.getGeneratedKeys()).thenReturn(result);
@@ -75,6 +75,7 @@ public class SupplierDAOTest {
     }
 
     @Test
+    @DisplayName("Test if trying to insert a supplier and some SQLException occurs is throwed for user")
     void testInsertNoIdGenerated() throws SQLException {
         when(conn.prepareStatement(any(String.class), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(stmt);
         when(stmt.getGeneratedKeys()).thenReturn(result);
@@ -88,6 +89,7 @@ public class SupplierDAOTest {
     }
 
     @Test
+    @DisplayName("Test if a supplier is being updated correctly")
     void testUpdate() throws SQLException {
         when(conn.prepareStatement(any(String.class))).thenReturn(stmt);
         when(stmt.executeUpdate()).thenReturn(1);
@@ -113,6 +115,7 @@ public class SupplierDAOTest {
     }
 
     @Test
+    @DisplayName("Test if a supplier is being deleted correctly")
     void testDelete() throws SQLException {
         when(conn.prepareStatement(any(String.class))).thenReturn(stmt);
 
@@ -127,6 +130,7 @@ public class SupplierDAOTest {
     }
 
     @Test
+    @DisplayName("Test if suppliers are being returned on get() method")
     void testGet() throws SQLException {
         when(conn.prepareStatement(any(String.class))).thenReturn(stmt);
         when(stmt.executeQuery()).thenReturn(result);
@@ -148,6 +152,7 @@ public class SupplierDAOTest {
     }
     
     @Test
+    @DisplayName("Test if a supplier is being returned on trying to get by id")
     void testGetById() throws SQLException {
         when(conn.prepareStatement(any(String.class))).thenReturn(stmt);
         when(stmt.executeQuery()).thenReturn(result);
@@ -173,6 +178,7 @@ public class SupplierDAOTest {
     }
 
     @Test
+    @DisplayName("Test if no supplier is being returned on invalid supplier's id and a exception is being throwed")
     void testGetByIdNoProductFound() throws SQLException {
         when(conn.prepareStatement(any(String.class))).thenReturn(stmt);
         when(stmt.executeQuery()).thenReturn(result);
