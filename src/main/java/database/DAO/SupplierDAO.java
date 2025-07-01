@@ -111,7 +111,6 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
         String sql = """
             SELECT * FROM suppliers 
             WHERE sid = ?""";
-        Supplier supplier = null;
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, sId);
