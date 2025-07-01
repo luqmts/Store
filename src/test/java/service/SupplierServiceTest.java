@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +58,7 @@ public class SupplierServiceTest {
 
     @Test
     @DisplayName("Test if Supplier is being updated correctly")
-    public void testUpdateSupplier(){
+    public void testUpdateSupplier() throws SQLException{
         when(sDao.getById(1)).thenReturn(fakeSupplier);
 
         Supplier result = sService.updateSupplier(1, "Sony Brasil LTDA.", "04.542.534/0001-09", "sony@mail.com", "11222225555");
@@ -84,7 +85,7 @@ public class SupplierServiceTest {
 
     @Test
     @DisplayName("Test if Supplier is being deleted correctly")
-    public void testDeleteSupplier(){
+    public void testDeleteSupplier() throws SQLException{
         when(sDao.getById(1)).thenReturn(fakeSupplier);
         int id = sService.deleteSupplier(1);
 
@@ -106,7 +107,7 @@ public class SupplierServiceTest {
 
     @Test
     @DisplayName("Test if all Suppliers added to SupplierList are being returned on method showAllSuppliers()")
-    public void testShowAllSuppliers(){
+    public void testShowAllSuppliers() throws SQLException{
         SupplierList sList = new SupplierList();
         Supplier fakeSupplier2 = new Supplier(2, "Sony Brasil LTDA.", new CNPJ("04.542.534/0001-09"), new Mail("sony@mail.com"), new Phone("11222225555"));
         sList.add(fakeSupplier);
@@ -123,7 +124,7 @@ public class SupplierServiceTest {
 
     @Test
     @DisplayName("Test if a exception is being throwed when try to get a empty list on method showAllSuppliers()")
-    public void testShowAllSuppliersNoItem(){
+    public void testShowAllSuppliersNoItem() throws SQLException{
         SupplierList sList = new SupplierList();
 
         when(sDao.get()).thenReturn(sList);

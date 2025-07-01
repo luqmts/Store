@@ -18,7 +18,7 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
 
     public SupplierDAO(Connection conn) { this.conn = conn; }
 
-    public void insert(Supplier supplier) {
+    public int insert(Supplier supplier) throws SQLException {
         String sql = """
             INSERT INTO suppliers 
             (name, cnpj, mail, phone) 
@@ -34,16 +34,19 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
 
             try (ResultSet result = stmt.getGeneratedKeys()) {
                 if(result.next()) {
-                    supplier.setId(result.getInt(1));
-                    System.out.println("Supplier succesfully added to database.");
+                    int idSupplier = result.getInt(1);
+                    supplier.setId(idSupplier);
+                    return idSupplier;
+                } else {
+                    throw new SQLException("No id generated for inserted supplier");
                 }
             }
         } catch (SQLException e) {
-            System.out.println("Error inserting items on suppliers database" + e.getMessage());
+            throw new SQLException("Error inserting items on suppliers database" + e.getMessage());
         }
     }
 
-    public void update(int sId, Supplier supplier) {
+    public boolean update(int sId, Supplier supplier) throws SQLException {
         String sql = """
             UPDATE suppliers 
             SET name=?, cnpj=?, mail=?, phone=? 
@@ -55,15 +58,14 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
             stmt.setString(3, supplier.getMail().toString());
             stmt.setString(4, supplier.getPhone().toString());
 
-            stmt.executeUpdate();
-
-            System.out.println("Supplier successfully uptaded on suppliers database.");
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
-            System.out.println("Error updating items on suppliers database: " + e);
+            throw new SQLException("Error updating items on suppliers database: " + e);
         }
     }
 
-    public void delete(int sId) {
+    public int delete(int sId) throws SQLException {
         String sql = """
             DELETE FROM suppliers 
             WHERE sid=?;""";
@@ -73,13 +75,13 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
 
             stmt.executeUpdate();
 
-            System.out.println("Supplier successfully deleted on product database");
+            return sId;
         } catch (Exception e) {
-            System.out.println("Error deleting items on suppliers database");
+            throw new SQLException("Error deleting items on suppliers database");
         }
     }
 
-    public SupplierList get() {
+    public SupplierList get() throws SQLException {
         String sql = """
             SELECT * FROM suppliers 
             ORDER BY sid""";
@@ -99,13 +101,13 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
                 sList.add(supplier);
             }
         } catch (SQLException e){
-            System.out.println("Error geting items from suppliers database");
+            throw new SQLException("Error geting items from suppliers database");
         }
 
         return sList;
     }
 
-    public Supplier getById(int sId) {
+    public Supplier getById(int sId) throws SQLException {
         String sql = """
             SELECT * FROM suppliers 
             WHERE sid = ?""";
@@ -122,13 +124,12 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
                 Mail sMail = new Mail(result.getString("mail").trim());
                 Phone sPhone = new Phone(result.getString("phone").trim());
 
-                supplier = new Supplier(sid, sName, sCNPJ, sMail, sPhone);
-
+                return new Supplier(sid, sName, sCNPJ, sMail, sPhone);
+            } else {
+                throw new SQLException("No supplier found with inserted id");
             }
         } catch (SQLException e){
-            System.out.println("Error geting supplier with id inserted from suppliers database");
+            throw new SQLException("Error geting supplier with id inserted from suppliers database");
         }
-
-        return supplier;
     }
 }
