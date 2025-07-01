@@ -1,16 +1,19 @@
 package database.DAO;
 
 import model.list.List;
+
+import java.sql.SQLException;
+
 import model.Identifiable;
 
 public interface DAO<T extends Identifiable, L extends List<T>> {
-    void insert(T object);
+    int insert(T object) throws SQLException;
 
-    void update(int id, T object);
+    boolean update(int id, T object) throws SQLException;
 
-    void delete(int id);
+    int delete(int id) throws SQLException;
 
-    T getById(int id);
+    T getById(int id) throws SQLException;
 
-    L get();
+    L get() throws SQLException;
 }

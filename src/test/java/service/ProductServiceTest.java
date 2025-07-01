@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ public class ProductServiceTest {
     
     @Test
     @DisplayName("Test if product with correct parameters is being registered successfully")
-    public void testRegisterProduct(){
+    public void testRegisterProduct() throws SQLException{
         when(sDao.getById(1)).thenReturn(fakeSupplier1);
         result = pService.registerProduct("XOneCont","Xbox One Controller", "Controller for Xbox One Console", 1);
         assertAll(
@@ -80,7 +81,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Test if product with correct parameters is being updated successfully")
-    public void testUpdateProduct(){
+    public void testUpdateProduct() throws SQLException{
         when(sDao.getById(1)).thenReturn(fakeSupplier1);
         when(sDao.getById(2)).thenReturn(fakeSupplier2);
         fakeProduct = pService.registerProduct("XOneCont","Xbox One Controller", "Controller for Xbox One Console", 1);
@@ -99,7 +100,7 @@ public class ProductServiceTest {
 
     @Test 
     @DisplayName("Test if a invalid product is not being updated successfully because product id is invalid")
-    void testUpdateProductInvalidProduct(){
+    void testUpdateProductInvalidProduct() throws SQLException{
         when(sDao.getById(1)).thenReturn(fakeSupplier1);
         when(sDao.getById(2)).thenReturn(fakeSupplier2);
         Product product = pService.registerProduct("XOneCont","Xbox One Controller", "Controller for Xbox One Console", 1);
@@ -114,7 +115,7 @@ public class ProductServiceTest {
 
     @Test 
     @DisplayName("Test if a invalid product is not being updated successfully because supplier id is invalid")
-    void testUpdateProductInvalidSupplier(){
+    void testUpdateProductInvalidSupplier() throws SQLException{
         when(sDao.getById(1)).thenReturn(fakeSupplier1);
         Product product = pService.registerProduct("XOneCont","Xbox One Controller", "Controller for Xbox One Console", 1);
         when(pDao.getById(1)).thenReturn(product);
@@ -128,7 +129,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Test if a product is being deleted correctly")
-    void testDeleteProduct(){
+    void testDeleteProduct() throws SQLException{
         when(sDao.getById(1)).thenReturn(fakeSupplier1);
         Product product = pService.registerProduct("XOneCont","Xbox One Controller", "Controller for Xbox One Console", 1);
         when(pDao.getById(1)).thenReturn(product);
@@ -152,7 +153,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Test if showAllProducts method is returning correctly")
-    void testShowAllProducts(){
+    void testShowAllProducts() throws SQLException{
         ProductList pList = new ProductList();
         Product fakeProduct1 = new Product(1, "XOneCont","Xbox One Controller", "Controller for Xbox One Console", 1);
         Product fakeProduct2 = new Product(2, "PS5Cont", "PS5 Controller", "Controller for PS5 Console", 2);
@@ -171,7 +172,7 @@ public class ProductServiceTest {
 
     @Test
     @DisplayName("Test if showAllProducts method is returning message that no product is registered if there are no items.")
-    void testShowAllProductsNoItem(){
+    void testShowAllProductsNoItem() throws SQLException{
         ProductList pList = new ProductList();
 
         when(pDao.get()).thenReturn(pList);

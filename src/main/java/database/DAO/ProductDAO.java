@@ -14,7 +14,7 @@ public class ProductDAO implements DAO<Product, ProductList> {
 
     public ProductDAO(Connection conn) { this.conn = conn; }
 
-    public void insert(Product product) {
+    public int insert(Product product) throws SQLException {
         String sql = """
             INSERT INTO products 
             (sku, name, description, supplier_id) 
@@ -30,16 +30,19 @@ public class ProductDAO implements DAO<Product, ProductList> {
 
             try(ResultSet result = stmt.getGeneratedKeys()) {
                 if(result.next()) {
-                    product.setId(result.getInt(1));
-                    System.out.println("Product succesfully added to database.");
+                    int idProduct = result.getInt(1);
+                    product.setId(idProduct);
+                    return idProduct;
+                } else {
+                    throw new SQLException("No id generated for inserted product");
                 }
             }
         } catch (SQLException e){
-            System.out.println("Error inserting items on products database: " + e);
+            throw new SQLException("Error inserting items on products database: " + e);
         }
     }
 
-    public void update(int pId, Product product) {
+    public boolean update(int pId, Product product) throws SQLException{
         String sql = """
             UPDATE products 
             SET sku=?, name=?, description=?, supplier_id=? 
@@ -52,15 +55,15 @@ public class ProductDAO implements DAO<Product, ProductList> {
             stmt.setInt(4, product.getSupplierId());
             stmt.setInt(5, pId);
 
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
             
-            System.out.println("Product succesfully updated on products database.");
+            return rowsAffected > 0;
         } catch (SQLException e) {
-            System.out.println("Error updating items on products database: " + e);
+            throw new SQLException("Error updating items on products database: " + e);
         }
     }
 
-    public void delete(int pId) {
+    public int delete(int pId) throws SQLException{
         String sql = """
             DELETE FROM products 
             WHERE pid=?;""";
@@ -70,13 +73,13 @@ public class ProductDAO implements DAO<Product, ProductList> {
             
             stmt.executeUpdate();
 
-            System.out.println("Product successfully deleted on products database.");
+            return pId;
         } catch(SQLException e) {
-            System.out.println("Error deleting items on products database: " + e);
+            throw new SQLException("Error deleting items on products database: " + e);
         }
     }
 
-    public ProductList get() {
+    public ProductList get() throws SQLException{
         String sql = """
             SELECT * 
             FROM products
@@ -97,14 +100,14 @@ public class ProductDAO implements DAO<Product, ProductList> {
                 Product product = new Product(pid, pSku, pName, pDescrition, sId);
                 pList.add(product);
             }
-        } catch (SQLException e){
-            System.out.println("Error geting items from suppliers database");
-        }
 
-        return pList;
+            return pList;
+        } catch (SQLException e){
+            throw new SQLException("Error geting items from suppliers database: " + e);
+        }
     }
 
-    public Product getById(int pId) {
+    public Product getById(int pId) throws SQLException{
             String sql = """
                 SELECT * 
                 FROM products
@@ -121,11 +124,11 @@ public class ProductDAO implements DAO<Product, ProductList> {
                     int sId = result.getInt("supplier_id");
 
                     return new Product(pId, pSku, pName, pDescription, sId);
+                } else {
+                    throw new SQLException("No product found with inserted id");
                 }
             } catch (SQLException e) {
-                System.out.println("Error getting product by id: " + e);
+                throw new SQLException("Error getting product by id: " + e);
             }
-
-            return null;
         }
 }
