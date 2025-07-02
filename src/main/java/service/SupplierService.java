@@ -9,8 +9,11 @@ import model.Supplier;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
+import org.springframework.stereotype.Service;
+
 import database.DAO.DAO;
 
+@Service
 public class SupplierService {
     private final DAO<Supplier, SupplierList> sDao;
 

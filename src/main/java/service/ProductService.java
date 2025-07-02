@@ -3,12 +3,15 @@ package service;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
+import org.springframework.stereotype.Service;
+
 import database.DAO.DAO;
 import model.Product;
 import model.Supplier;
 import model.list.ProductList;
 import model.list.SupplierList;
 
+@Service
 public class ProductService {
     private DAO<Product, ProductList> pDao;
     private DAO<Supplier, SupplierList> sDao;
