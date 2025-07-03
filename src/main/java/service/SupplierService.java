@@ -1,95 +1,31 @@
 package service;
 
-import model.list.SupplierList;
-import valueobjects.CNPJ;
-import valueobjects.Mail;
-import valueobjects.Phone;
+import repositories.SupplierRepository;
 import model.Supplier;
 
-import java.sql.SQLException;
-import java.util.NoSuchElementException;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import database.DAO.DAO;
 
 @Service
 public class SupplierService {
-    private final DAO<Supplier, SupplierList> sDao;
+    @Autowired
+    private SupplierRepository pRepository;
 
-    public SupplierService(DAO<Supplier, SupplierList> sDao) {
-        this.sDao = sDao;
+    public List<Supplier> getAll() {
+        return pRepository.findAll();
     }
 
-    public Supplier registerSupplier(String sName, String sCNPJ, String sMail, String sPhone){
-        try {
-            CNPJ cnpj = new CNPJ(sCNPJ);
-            Mail mail = new Mail(sMail);
-            Phone phone = new Phone(sPhone);
-    
-            Supplier supplier = new Supplier(sName, cnpj, mail, phone);
-            sDao.insert(supplier);
-    
-            return supplier;
-        } catch (SQLException e) {
-            return null;
-        }
+    public Supplier getById(int id) {
+        return pRepository.findById(id).orElse(null);
     }
 
-    public Supplier updateSupplier(int sId, String sName, String sCNPJ, String sMail, String sPhone){
-        try {
-            Supplier supplier = sDao.getById(sId);
-    
-            if(supplier == null) {
-                throw new IllegalArgumentException("Supplier not found");
-            }
-    
-            CNPJ cnpj = new CNPJ(sCNPJ);
-            Mail mail = new Mail(sMail);
-            Phone phone = new Phone(sPhone);
-            
-            supplier.setName(sName);
-            supplier.setCNPJ(cnpj);
-            supplier.setMail(mail);
-            supplier.setPhone(phone);
-    
-            sDao.update(sId, supplier);
-    
-            return supplier;
-        } catch (SQLException e) {
-            return null;
-        }
+    public Supplier register(Supplier supplier) {
+        return pRepository.save(supplier);
     }
 
-    public int deleteSupplier(int sId) {
-        try {
-            Supplier supplier = sDao.getById(sId);
-            
-            if (supplier == null) {
-                throw new IllegalArgumentException("Supplier not found");
-            }
-    
-            sDao.delete(sId);
-    
-            return sId;
-        } catch (SQLException e) {
-            return -1;
-        }
-    }
-
-    public String showAllSuppliers() {
-        try {
-            SupplierList sList = sDao.get();
-    
-            if (sList.get().isEmpty()) {
-                throw new NoSuchElementException("No items registered.");
-            } 
-    
-            return sList.get().stream()
-            .map(Supplier::toString)
-            .collect(java.util.stream.Collectors.joining("\n"));
-        } catch (SQLException e) {
-            return "Due to an database problem couldn't be possible to show all suppliers, please try again";
-        }
+    public void delete(int id) {
+        pRepository.deleteById(id);
     }
 }
