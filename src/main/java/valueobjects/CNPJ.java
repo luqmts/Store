@@ -2,12 +2,21 @@ package valueobjects;
 
 import java.util.InputMismatchException;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class CNPJ {
     private String CNPJ;
     private String CNPJraw;
     
+    @JsonCreator
     public CNPJ(String stringCNPJ) {
         setCNPJ(stringCNPJ);
+    }
+
+    @JsonValue
+    public String getValue() {
+        return CNPJ;
     }
 
     public void setCNPJ(String stringCNPJ){
@@ -19,13 +28,6 @@ public class CNPJ {
         } else throw new IllegalArgumentException("Invalid CNPJ format.");   
     }
 
-    public String getCNPJ(){
-        return this.CNPJ;
-    }
-
-    public String getCNPJraw(){
-        return this.CNPJraw;
-    }
 
     private boolean validateCNPJ(String stringCNPJ) {
         if (stringCNPJ == null) throw new NullPointerException("CNPJ must not be null!");
@@ -85,6 +87,6 @@ public class CNPJ {
 
     @Override
     public String toString() {
-        return getCNPJ();
+        return getValue();
     }
 }

@@ -3,20 +3,25 @@ package valueobjects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class Phone {
     private String phone;
     
+    @JsonCreator
     public Phone(String stringPhone){
         setPhone(stringPhone);
+    }
+
+    @JsonValue
+    public String getValue() {
+        return phone;
     }
 
     public void setPhone(String stringPhone){
         if (validatePhone(stringPhone)) this.phone = stringPhone;
         else throw new IllegalArgumentException("Invalid phone format.");   
-    }
-
-    public String getPhone(){
-        return this.phone;
     }
 
     public boolean validatePhone(String stringPhone){
@@ -30,6 +35,6 @@ public class Phone {
 
     @Override
     public String toString() {
-        return getPhone();
+        return getValue();
     }
 }
