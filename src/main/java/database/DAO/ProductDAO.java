@@ -24,7 +24,7 @@ public class ProductDAO implements DAO<Product, ProductList> {
             stmt.setString(1, product.getSku());
             stmt.setString(2, product.getName());
             stmt.setString(3, product.getDescription());
-            stmt.setInt(4, product.getSupplierId());
+            stmt.setInt(4, product.getSupplier_id());
 
             stmt.executeUpdate();
 
@@ -52,7 +52,7 @@ public class ProductDAO implements DAO<Product, ProductList> {
             stmt.setString(1, product.getSku());
             stmt.setString(2, product.getName());
             stmt.setString(3, product.getDescription());
-            stmt.setInt(4, product.getSupplierId());
+            stmt.setInt(4, product.getSupplier_id());
             stmt.setInt(5, pId);
 
             int rowsAffected = stmt.executeUpdate();
