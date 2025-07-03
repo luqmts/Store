@@ -25,6 +25,19 @@ public class SupplierService {
         return pRepository.save(supplier);
     }
 
+    public Supplier update(int id, Supplier supplier) {
+        Supplier supplier_to_update = pRepository.findById(id).orElse(null);
+
+        if (supplier_to_update == null) return null;
+
+        supplier_to_update.setName(supplier.getName());
+        supplier_to_update.setCNPJ(supplier.getCNPJ());
+        supplier_to_update.setMail(supplier.getMail());
+        supplier_to_update.setPhone(supplier.getPhone());
+
+        return pRepository.save(supplier_to_update);
+    }
+
     public void delete(int id) {
         pRepository.deleteById(id);
     }
