@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,7 +21,7 @@ public class ProductWebController {
         this.pService = pService;
     }
 
-    @GetMapping("/product-list")
+    @GetMapping(path="/product/list")
     public ModelAndView productList(){
         List<Product> pList = pService.getAll();
 
@@ -29,14 +30,34 @@ public class ProductWebController {
         return mv;
     }
 
-    @GetMapping("/product-form")
-    public String productForm(){
-        return "product-form";
+    @GetMapping(path="/product/form")
+    public ModelAndView productFormCreate(){
+        ModelAndView mv = new ModelAndView("product-form");
+        mv.addObject("product", new Product());
+        return mv;
     }
 
-    @PostMapping("/create-product")
-    public String create(Product product){
-        pService.register(product);
-        return "redirect:/product-list";
+    @GetMapping(path="/product/form/{id}")
+    public ModelAndView productFormEdit(@PathVariable("id") int id){
+        Product product = pService.getById(id);
+        ModelAndView mv = new ModelAndView("product-form");
+        mv.addObject("product", product);
+        return mv;
+    }
+
+    @PostMapping(path="/product/create")
+    public String postProduct(Product product){
+        if (product.getId() == null) {
+            pService.register(product);
+        } else {
+            pService.update(product.getId(), product);
+        }
+        return "redirect:/product/list";
+    }
+
+    @GetMapping(path="/product/delete/{id}")
+    public String delete(@PathVariable("id") int id){
+        pService.delete(id);
+        return "redirect:/product/list";
     }
 }
