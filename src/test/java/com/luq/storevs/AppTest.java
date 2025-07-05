@@ -1,4 +1,4 @@
-package com.luq.app;
+package com.luq.storevs;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

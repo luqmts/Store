@@ -1,4 +1,4 @@
-package model;
+package com.luq.storevs.model;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -8,9 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import valueobjects.CNPJ;
-import valueobjects.Mail;
-import valueobjects.Phone;
+import com.luq.storevs.valueobjects.Cnpj;
+import com.luq.storevs.valueobjects.Mail;
+import com.luq.storevs.valueobjects.Phone;
 
 public class ProductTest {
     Product product;
@@ -21,7 +21,7 @@ public class ProductTest {
         supplier = new Supplier(
             1,
             "Sony Brasil LTDA.", 
-            new CNPJ("43.447.044/0004-10"), 
+            new Cnpj("43.447.044/0004-10"), 
             new Mail("sony@mail.com"), 
             new Phone("11000001111")
         );
@@ -65,8 +65,8 @@ public class ProductTest {
     @DisplayName("Ensure Product's Supplier is being instacied correctly")
     public void testProductSupplierIsValid(){
         assertAll(
-            () -> assertNotNull(product.getSupplierId()),
-            () -> assertEquals(supplier.getId(), product.getSupplierId())
+            () -> assertNotNull(product.getSupplier_id()),
+            () -> assertEquals(supplier.getId(), product.getSupplier_id())
         );
     }
 }

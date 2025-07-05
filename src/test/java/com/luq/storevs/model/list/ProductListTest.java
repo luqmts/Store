@@ -1,4 +1,4 @@
-package model.list;
+package com.luq.storevs.model.list;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,11 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import model.Product;
-import model.Supplier;
-import valueobjects.CNPJ;
-import valueobjects.Mail;
-import valueobjects.Phone;
+import com.luq.storevs.model.Product;
+import com.luq.storevs.model.Supplier;
+import com.luq.storevs.valueobjects.Cnpj;
+import com.luq.storevs.valueobjects.Mail;
+import com.luq.storevs.valueobjects.Phone;
 
 public class ProductListTest {
     Product p1, p2, p3, p4;
@@ -27,13 +27,13 @@ public class ProductListTest {
     @BeforeEach
     public void setUp(){
         s1 = new Supplier(
-            1, "Sony Brasil LTDA.", new CNPJ("43.447.044/0004-10"), new Mail("sony@mail.com"), new Phone("11000001111")
+            1, "Sony Brasil LTDA.", new Cnpj("43.447.044/0004-10"), new Mail("sony@mail.com"), new Phone("11000001111")
         );
         s2 = new Supplier(
-            2, "Microsoft Brasil LTDA.", new CNPJ("33.652.161/0001-19"), new Mail("microsoft@mail.com"), new Phone("21985855858")
+            2, "Microsoft Brasil LTDA.", new Cnpj("33.652.161/0001-19"), new Mail("microsoft@mail.com"), new Phone("21985855858")
         );
         s3 = new Supplier(
-            3, "8BitDO LTDA.", new CNPJ("37.835.617/0001-37"), new Mail("8bitdo@mail.com"), new Phone("85990909090")
+            3, "8BitDO LTDA.", new Cnpj("37.835.617/0001-37"), new Mail("8bitdo@mail.com"), new Phone("85990909090")
         );
 
         p1 = new Product(1, "PS4Cont", "PS4 Controller", "Controller for PS4 Console", s1.getId());
@@ -66,7 +66,7 @@ public class ProductListTest {
             () -> assertEquals("XOneCont", product.getSku()),
             () -> assertEquals("Xbox One Controller", product.getName()),
             () -> assertEquals("Controller for Xbox One Console", product.getDescription()),
-            () -> assertEquals(s2.getId(), product.getSupplierId())
+            () -> assertEquals(s2.getId(), product.getSupplier_id())
         );
     }
 
@@ -80,7 +80,7 @@ public class ProductListTest {
             () -> assertEquals("XOneCont", product.getSku()),
             () -> assertEquals("Xbox One Controller", product.getName()),
             () -> assertEquals("Controller for Xbox One Console", product.getDescription()),
-            () -> assertEquals(s2.getId(), product.getSupplierId())
+            () -> assertEquals(s2.getId(), product.getSupplier_id())
         );
     }
 
@@ -96,7 +96,7 @@ public class ProductListTest {
             () -> assertEquals("XOneCont", pListBySupplier.get(0).getSku()),
             () -> assertEquals("Xbox One Controller", pListBySupplier.get(0).getName()),
             () -> assertEquals("Controller for Xbox One Console", pListBySupplier.get(0).getDescription()),
-            () -> assertEquals(s2.getId(), pListBySupplier.get(0).getSupplierId())
+            () -> assertEquals(s2.getId(), pListBySupplier.get(0).getSupplier_id())
         );
     }
     
@@ -126,7 +126,7 @@ public class ProductListTest {
     @DisplayName("For a supplier that don't have any products registered in Product List must return NoSuchElementException")
     public void testGetProductBySupplierNoItemFound(){
         s4 = new Supplier(
-            "Nintendo", new CNPJ("08.592.899/0001-90"), new Mail("nintendo@mail.com"), new Phone("85943527697")
+            "Nintendo", new Cnpj("08.592.899/0001-90"), new Mail("nintendo@mail.com"), new Phone("85943527697")
         );
         assertThrows(NoSuchElementException.class, () -> pList.getBySupplier(s4));
     }
@@ -135,7 +135,7 @@ public class ProductListTest {
     @DisplayName("Assert pList not null and new product was added succesfully")
     public void testProductsAddedCorrectly(){
         s4 = new Supplier(
-            "Nintendo", new CNPJ("08.592.899/0001-90"), new Mail("nintendo@mail.com"), new Phone("85943527697")
+            "Nintendo", new Cnpj("08.592.899/0001-90"), new Mail("nintendo@mail.com"), new Phone("85943527697")
         );
         p4 = new Product(4, "NSwitch2Cont", "Nintendo Switch 2 Controller", "Controller from Nintendo for Nintendo Switch 2", s4.getId());
         pList.add(p4);

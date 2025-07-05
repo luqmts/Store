@@ -1,4 +1,4 @@
-package valueobjects;
+package com.luq.storevs.valueobjects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,7 +10,7 @@ public class PhoneTest {
     @Test
     public void testValidPhone(){
         Phone phone = new Phone("11940028922");
-        assertEquals("11940028922", phone.getPhone());
+        assertEquals("11940028922", phone.getValue());
     }
 
     @Test

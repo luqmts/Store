@@ -1,4 +1,4 @@
-package database.DAO;
+package com.luq.storevs.database.DAO;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,12 +21,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import model.Product;
-import model.Supplier;
-import model.list.ProductList;
-import valueobjects.CNPJ;
-import valueobjects.Mail;
-import valueobjects.Phone;
+import com.luq.storevs.model.Product;
+import com.luq.storevs.model.Supplier;
+import com.luq.storevs.model.list.ProductList;
+import com.luq.storevs.valueobjects.Cnpj;
+import com.luq.storevs.valueobjects.Mail;
+import com.luq.storevs.valueobjects.Phone;
 
 public class ProductDAOTest {
     Connection conn;
@@ -45,7 +45,7 @@ public class ProductDAOTest {
         fakeSupplier = new Supplier(
             1,
             "Sony Brasil LTDA.", 
-            new CNPJ("43.447.044/0004-10"), 
+            new Cnpj("43.447.044/0004-10"), 
             new Mail("sony@mail.com"), 
             new Phone("11000001111")
         );
@@ -69,7 +69,7 @@ public class ProductDAOTest {
             () -> verify(stmt).setString(1, fakeProduct1.getSku()),
             () -> verify(stmt).setString(2, fakeProduct1.getName()),
             () -> verify(stmt).setString(3, fakeProduct1.getDescription()),
-            () -> verify(stmt).setInt(4, fakeProduct1.getSupplierId()),
+            () -> verify(stmt).setInt(4, fakeProduct1.getSupplier_id()),
             () -> verify(stmt).executeUpdate(),
             () -> verify(stmt).getGeneratedKeys(),
             () -> verify(result).next(),
@@ -105,7 +105,7 @@ public class ProductDAOTest {
             () -> verify(stmt).setString(1, fakeProduct2.getSku()),
             () -> verify(stmt).setString(2, fakeProduct2.getName()),
             () -> verify(stmt).setString(3, fakeProduct2.getDescription()),
-            () -> verify(stmt).setInt(4, fakeProduct2.getSupplierId()),
+            () -> verify(stmt).setInt(4, fakeProduct2.getSupplier_id()),
             () -> verify(stmt).setInt(5, 1),
             () -> verify(stmt).executeUpdate(),
             () -> assertTrue(productUpdated)
@@ -171,7 +171,7 @@ public class ProductDAOTest {
             () -> assertEquals(fakeProduct1.getSku(), fakeProduct2.getSku()),
             () -> assertEquals(fakeProduct1.getName(), fakeProduct2.getName()),
             () -> assertEquals(fakeProduct1.getDescription(), fakeProduct2.getDescription()),
-            () -> assertEquals(fakeProduct1.getSupplierId(), fakeProduct2.getSupplierId())
+            () -> assertEquals(fakeProduct1.getSupplier_id(), fakeProduct2.getSupplier_id())
         );
     }
 

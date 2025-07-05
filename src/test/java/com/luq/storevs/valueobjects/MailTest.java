@@ -1,4 +1,4 @@
-package valueobjects;
+package com.luq.storevs.valueobjects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,7 +10,7 @@ public class MailTest {
     @Test
     public void testValidMail(){
         Mail mail = new Mail("lucas@mail.com");
-        assertEquals("lucas@mail.com", mail.getMail());
+        assertEquals("lucas@mail.com", mail.getValue());
     }
 
     @Test
