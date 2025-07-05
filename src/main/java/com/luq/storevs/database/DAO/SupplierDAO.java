@@ -9,7 +9,7 @@ import java.sql.Statement;
 import com.luq.storevs.model.Supplier;
 import com.luq.storevs.model.list.SupplierList;
 
-import com.luq.storevs.valueobjects.CNPJ;
+import com.luq.storevs.valueobjects.Cnpj;
 import com.luq.storevs.valueobjects.Mail;
 import com.luq.storevs.valueobjects.Phone;
 
@@ -26,7 +26,7 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, supplier.getName());
-            stmt.setString(2, supplier.getCNPJ().toString());
+            stmt.setString(2, supplier.getCnpj().toString());
             stmt.setString(3, supplier.getMail().toString());
             stmt.setString(4, supplier.getPhone().toString());
 
@@ -54,7 +54,7 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)){
             stmt.setString(1, supplier.getName());
-            stmt.setString(2, supplier.getCNPJ().toString());
+            stmt.setString(2, supplier.getCnpj().toString());
             stmt.setString(3, supplier.getMail().toString());
             stmt.setString(4, supplier.getPhone().toString());
 
@@ -93,11 +93,11 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
             while (result.next()) {
                 int sid = result.getInt("sid");
                 String sName = result.getString("name").trim();
-                CNPJ sCNPJ = new CNPJ(result.getString("cnpj").trim());
+                Cnpj sCnpj = new Cnpj(result.getString("cnpj").trim());
                 Mail sMail = new Mail(result.getString("mail").trim());
                 Phone sPhone = new Phone(result.getString("phone").trim());
 
-                Supplier supplier = new Supplier(sid, sName, sCNPJ, sMail, sPhone);
+                Supplier supplier = new Supplier(sid, sName, sCnpj, sMail, sPhone);
                 sList.add(supplier);
             }
         } catch (SQLException e){
@@ -119,11 +119,11 @@ public class SupplierDAO implements DAO<Supplier, SupplierList> {
             if (result.next()) {
                 int sid = result.getInt("sid");
                 String sName = result.getString("name").trim();
-                CNPJ sCNPJ = new CNPJ(result.getString("cnpj").trim());
+                Cnpj sCnpj = new Cnpj(result.getString("cnpj").trim());
                 Mail sMail = new Mail(result.getString("mail").trim());
                 Phone sPhone = new Phone(result.getString("phone").trim());
 
-                return new Supplier(sid, sName, sCNPJ, sMail, sPhone);
+                return new Supplier(sid, sName, sCnpj, sMail, sPhone);
             } else {
                 throw new SQLException("No supplier found with inserted id");
             }

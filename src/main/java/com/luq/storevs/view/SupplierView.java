@@ -7,6 +7,10 @@ import com.luq.storevs.controller.SupplierController;
 import com.luq.storevs.view.Menu.Menu;
 import com.luq.storevs.view.Menu.Operation;
 import com.luq.storevs.model.Supplier;
+import com.luq.storevs.valueobjects.Cnpj;
+import com.luq.storevs.valueobjects.Mail;
+import com.luq.storevs.valueobjects.Phone;
+
 
 public class SupplierView{
     private final Scanner sc = new Scanner(System.in);
@@ -30,43 +34,44 @@ public class SupplierView{
     }
 
     public void promptRegisterSupplier(){
-        String sName, sCNPJ, sMail, sPhone;
+        String sName, sCnpj, sMail, sPhone;
 
         System.out.println("Insert Supplier's name: ");
         sName = sc.nextLine();
-        System.out.println("Insert Supplier's CNPJ: ");
-        sCNPJ = sc.nextLine();
+        System.out.println("Insert Supplier's cnpj: ");
+        sCnpj = sc.nextLine();
         System.out.println("Insert Supplier's mail: ");
         sMail = sc.nextLine();
         System.out.println("Insert Supplier's phone: ");
         sPhone = sc.nextLine();
 
-        Supplier supplier = sController.registerSupplier(sName, sCNPJ, sMail, sPhone);
+        Supplier supplier = sController.registerSupplier(new Supplier(sName, new Cnpj(sCnpj), new Mail(sMail), new Phone(sPhone)));
 
         if (supplier == null) System.out.println("Something went wrong and your supplier couldn't be registered");
         else System.out.println("Supplier registered successfully!");
     }
 
     public void promptGettAllSuppliers(){
-        sController.getSuppliers();
-    }
+        for (Supplier supplier : sController.getSuppliers()) {
+            System.out.println(supplier.toString());
+        }    }
 
     public void promptUpdateSupplier(){
-        String sName, sCNPJ, sMail, sPhone;
+        String sName, sCnpj, sMail, sPhone;
         int sId;
 
         System.out.println("Insert Supplier's id: ");
         sId = Integer.parseInt(sc.nextLine());
         System.out.println("Insert Supplier's name: ");
         sName = sc.nextLine();
-        System.out.println("Insert Supplier's CNPJ: ");
-        sCNPJ = sc.nextLine();
+        System.out.println("Insert Supplier's cnpj: ");
+        sCnpj = sc.nextLine();
         System.out.println("Insert Supplier's mail: ");
         sMail = sc.nextLine();
         System.out.println("Insert Supplier's phone: ");
         sPhone = sc.nextLine();
 
-        //sController.updateSupplier(sId, sName, sCNPJ, sMail, sPhone);
+        sController.updateSupplier(sId, new Supplier(sName, new Cnpj(sCnpj), new Mail(sMail), new Phone(sPhone)));
     }
 
     public void promptRemoveSupplier(){

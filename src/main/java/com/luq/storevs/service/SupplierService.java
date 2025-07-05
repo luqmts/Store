@@ -11,34 +11,34 @@ import org.springframework.stereotype.Service;
 @Service
 public class SupplierService {
     @Autowired
-    private SupplierRepository pRepository;
+    private SupplierRepository sRepository;
 
     public List<Supplier> getAll() {
-        return pRepository.findAll();
+        return sRepository.findAll();
     }
 
     public Supplier getById(int id) {
-        return pRepository.findById(id).orElse(null);
+        return sRepository.findById(id).orElse(null);
     }
 
     public Supplier register(Supplier supplier) {
-        return pRepository.save(supplier);
+        return sRepository.save(supplier);
     }
 
     public Supplier update(int id, Supplier supplier) {
-        Supplier supplier_to_update = pRepository.findById(id).orElse(null);
+        Supplier supplier_to_update = sRepository.findById(id).orElse(null);
 
         if (supplier_to_update == null) return null;
 
         supplier_to_update.setName(supplier.getName());
-        supplier_to_update.setCNPJ(supplier.getCNPJ());
+        supplier_to_update.setCnpj(supplier.getCnpj());
         supplier_to_update.setMail(supplier.getMail());
         supplier_to_update.setPhone(supplier.getPhone());
 
-        return pRepository.save(supplier_to_update);
+        return sRepository.save(supplier_to_update);
     }
 
     public void delete(int id) {
-        pRepository.deleteById(id);
+        sRepository.deleteById(id);
     }
 }
