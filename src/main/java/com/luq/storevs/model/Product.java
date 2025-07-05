@@ -17,12 +17,12 @@ import lombok.NoArgsConstructor;
 public class Product implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     
     private String sku;
     private String name;
     private String description;
-    private int supplier_id;
+    private Integer supplier_id;
 
     public Product(String sku, String name, String description, int supplier_id) {
         this.sku = sku;
