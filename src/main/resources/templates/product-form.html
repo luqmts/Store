@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{css/style.css}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Store Management</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/product-list">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/supplier-list">Supplier</a>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </nav>
+
+    <form method="POST" action="/create-product">
+        <div class="mb-3">
+            <label for="inputName" class="form-label">Name</label>
+            <input name="name" class="form-control" id="inputName" aria-describedby="nameHelp">
+            <div id="nameHelp" class="form-text">Insert product's name.</div>
+        </div>
+        <div class="mb-3">
+            <label for="inputSku" class="form-label">SKU</label>
+            <input name="sku" class="form-control" id="inputSku" aria-describedby="skuHelp">
+            <div id="skuHelp" class="form-text">Insert product's sku.</div>
+        </div>
+        <div class="mb-3">
+            <label for="inputDescription" class="form-label">Description</label>
+            <textarea name="description" class="form-control" id="inputDescription" rows="3"></textarea>
+            <div id="descriptionHelp" class="form-text">Insert product's description.</div>
+        </div>
+         <div class="mb-3">
+            <label for="inputSupplierId" class="form-label">Supplier's id</label>
+            <input name="supplier_id" class="form-control" id="inputSupplierId" aria-describedby="supplierIdHelp">
+            <div id="supplierIdHelp" class="form-text">Insert supplier's id.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</body>
+</html>
