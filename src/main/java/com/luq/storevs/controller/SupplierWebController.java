@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,7 +21,7 @@ public class SupplierWebController {
         this.sService = sService;
     }
 
-    @GetMapping("/supplier-list")
+    @GetMapping("/supplier/list")
     public ModelAndView supplierList(){
         List<Supplier> sList = sService.getAll();
 
@@ -29,14 +30,34 @@ public class SupplierWebController {
         return mv;
     }
 
-    @GetMapping("/supplier-form")
-    public String supplierForm(){
-        return "supplier-form";
+    @GetMapping("/supplier/form")
+    public ModelAndView supplierFormCreate(){
+        ModelAndView mv = new ModelAndView("supplier-form");
+        mv.addObject("supplier", new Supplier());
+        return mv;
     }
 
-    @PostMapping("create-supplier")
+    @GetMapping("/supplier/form/{id}")
+    public ModelAndView supplierFormEdit(@PathVariable("id") int id){
+        Supplier supplier = sService.getById(id);
+        ModelAndView mv = new ModelAndView("supplier-form");
+        mv.addObject("supplier", supplier);
+        return mv;
+    }
+
+    @PostMapping("/supplier/create")
     public String create(Supplier supplier){
-        sService.register(supplier);
-        return "redirect:/supplier-list";
+        if (supplier.getId() == null)
+            sService.register(supplier);
+        else 
+            sService.update(supplier.getId(), supplier);
+
+        return "redirect:/supplier/list";
+    }
+
+    @GetMapping("/supplier/delete/{id}")
+    public String delete(@PathVariable("id") int id) {
+        sService.delete(id);
+        return "redirect:/supplier/list";
     }
 }
