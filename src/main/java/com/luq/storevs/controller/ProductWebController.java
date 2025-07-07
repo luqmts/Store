@@ -11,14 +11,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.model.Product;
 import com.luq.storevs.service.ProductService;
+import com.luq.storevs.service.SupplierService;
 
 @Controller
 public class ProductWebController {
-        protected final ProductService pService;
+    protected final ProductService pService;
+    protected final SupplierService sService;
     
     @Autowired
-    public ProductWebController(ProductService pService){
+    public ProductWebController(ProductService pService, SupplierService sService){
         this.pService = pService;
+        this.sService = sService;
     }
 
     @GetMapping(path="/product/list")
@@ -34,6 +37,7 @@ public class ProductWebController {
     public ModelAndView productFormCreate(){
         ModelAndView mv = new ModelAndView("product-form");
         mv.addObject("product", new Product());
+        mv.addObject("suppliers", sService.getAll());
         return mv;
     }
 
@@ -42,6 +46,7 @@ public class ProductWebController {
         Product product = pService.getById(id);
         ModelAndView mv = new ModelAndView("product-form");
         mv.addObject("product", product);
+        mv.addObject("suppliers", sService.getAll());
         return mv;
     }
 

@@ -33,7 +33,7 @@
             <th scope="col">Name</th>
             <th scope="col">Sku</th>
             <th scope="col">Description</th>
-            <th scope="col">Supplier id</th>
+            <th scope="col">Supplier</th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
@@ -43,7 +43,7 @@
             <td data-th-text="${product.name}"></td>
             <td data-th-text="${product.sku}"></td>
             <td data-th-text="${product.description}"></td>
-            <td data-th-text="${product.supplier_id}"></td>
+            <td data-th-text="${product.supplier}"></td>
             <td>
                 <a th:href="@{/product/form/{id}(id=${product.id})}"><i class="bi bi-pencil"></i></a>
                 <a th:href="@{/product/delete/{id}(id=${product.id})}"><i class="bi bi-trash3"></i></a>

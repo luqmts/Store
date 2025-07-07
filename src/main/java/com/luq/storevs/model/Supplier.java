@@ -40,4 +40,9 @@ public class Supplier implements Identifiable {
         this.mail = mail;
         this.phone = phone;
     }
+
+    @Override
+    public String toString(){
+        return this.name;
+    }
 }
