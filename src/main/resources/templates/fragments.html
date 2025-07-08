@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+    <th:block th:fragment="navbar">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Store Management</a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" 
+                                th:href="@{/product/list}"
+                                th:classappend="${page} == 'product' ? 'active' : ''">Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" 
+                                th:href="@{/supplier/list}"
+                                th:classappend="${page} == 'supplier' ? 'active' : ''">Suppliers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" 
+                                th:href="@{/order/list}"
+                                th:classappend="${page} == 'order' ? 'active' : ''">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" 
+                                th:href="@{/seller/list}"
+                                th:classappend="${page} == 'supplier' ? 'active' : ''">Sellers</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </th:block>
+</body>
+</html>
