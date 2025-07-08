@@ -6,6 +6,7 @@ import com.luq.storevs.valueobjects.Cnpj;
 
 @Converter(autoApply = true)
 public class CnpjConverter implements AttributeConverter<Cnpj, String> {
+    
     @Override
     public String convertToDatabaseColumn(Cnpj attribute) {
         return attribute != null ? attribute.getValue() : null;    
