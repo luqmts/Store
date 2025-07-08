@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import com.luq.storevs.valueobjects.Cnpj;
 import com.luq.storevs.valueobjects.Mail;
 import com.luq.storevs.valueobjects.Phone;
@@ -21,11 +23,13 @@ import com.luq.storevs.valueobjects.converters.PhoneConverter;
 @Table(name="suppliers")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class Supplier implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ToString.Include
     private Integer id;
-    
+    @ToString.Include
     private String name;
     @Convert(converter = CnpjConverter.class)
     private Cnpj cnpj;
@@ -39,10 +43,5 @@ public class Supplier implements Identifiable {
         this.cnpj = cnpj;
         this.mail = mail;
         this.phone = phone;
-    }
-
-    @Override
-    public String toString(){
-        return this.name;
     }
 }

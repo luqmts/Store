@@ -9,26 +9,29 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
 @Table(name="products")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class Product implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ToString.Include
     private Integer id;
-    
-    private String sku;
+    @ToString.Include
     private String name;
+    private String sku;
     private String description;
+    private Float price;
     
-    @ManyToOne()
+    @ManyToOne
     private Supplier supplier;
-    private Double price;
 
-    public Product(String sku, String name, String description, Supplier supplier, double price) {
+    public Product(String sku, String name, String description, Supplier supplier, Float price) {
         this.sku = sku;
         this.name = name;
         this.description = description;
