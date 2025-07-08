@@ -33,12 +33,8 @@ public class OrderService {
         Order order_to_update = oRepository.findById(id).orElse(null);
         
         if (order_to_update == null) return null;
-
-        order_to_update.setProduct(order.getProduct());
-        order_to_update.setQuantity(order.getQuantity());
-        order_to_update.setSeller(order.getSeller());
-        order_to_update.setTotalPrice(order.getTotalPrice());
-
-        return oRepository.save(order_to_update);
+        
+        order.setId(id);
+        return oRepository.save(order);
     }
 }

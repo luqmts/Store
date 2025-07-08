@@ -24,21 +24,18 @@ public class SupplierService {
     public Supplier register(Supplier supplier) {
         return sRepository.save(supplier);
     }
+    
+    public void delete(int id) {
+        sRepository.deleteById(id);
+    }
 
     public Supplier update(int id, Supplier supplier) {
         Supplier supplier_to_update = sRepository.findById(id).orElse(null);
 
         if (supplier_to_update == null) return null;
 
-        supplier_to_update.setName(supplier.getName());
-        supplier_to_update.setCnpj(supplier.getCnpj());
-        supplier_to_update.setMail(supplier.getMail());
-        supplier_to_update.setPhone(supplier.getPhone());
-
-        return sRepository.save(supplier_to_update);
+        supplier.setId(id);
+        return sRepository.save(supplier);
     }
 
-    public void delete(int id) {
-        sRepository.deleteById(id);
-    }
 }

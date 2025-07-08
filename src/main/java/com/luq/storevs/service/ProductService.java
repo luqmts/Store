@@ -12,7 +12,7 @@ import com.luq.storevs.repositories.ProductRepository;
 public class ProductService {
     @Autowired
     private ProductRepository pRepository;
-
+    
     public List<Product> getAll() {
         return pRepository.findAll();
     }
@@ -33,12 +33,8 @@ public class ProductService {
         Product product_to_update = pRepository.findById(id).orElse(null);
         
         if (product_to_update == null) return null;
-
-        product_to_update.setName(product.getName());
-        product_to_update.setDescription(product.getDescription());
-        product_to_update.setSku(product.getSku());
-        product_to_update.setSupplier_id(product.getSupplier_id());
-
-        return pRepository.save(product_to_update);
+        
+        product.setId(id);
+        return pRepository.save(product);
     }
 }

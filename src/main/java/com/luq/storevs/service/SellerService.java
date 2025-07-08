@@ -34,11 +34,7 @@ public class SellerService {
         
         if (order_to_update == null) return null;
 
-        order_to_update.setName(order.getName());
-        order_to_update.setMail(order.getMail());
-        order_to_update.setPhone(order.getPhone());
-        order_to_update.setDepartment(order.getDepartment());
-
-        return sRepository.save(order_to_update);
+        order.setId(id);
+        return sRepository.save(order);
     }
 }
