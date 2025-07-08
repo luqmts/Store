@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <div th:replace="fragments :: navbar"></div>
+    <div th:replace="~{fragments :: navbar}"></div>
 
     <a class="btn btn-primary" th:href="@{/product/form}" role="button">Register new Product</a>
 

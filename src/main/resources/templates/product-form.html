@@ -6,7 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <div th:replace="fragments :: navbar"></div>
+    <div th:replace="~{fragments :: navbar}"></div>
 
     <form method="POST" action="/product/create" th:object="${product}">
         <input type="hidden" name="id" th:value="${product.id}">
