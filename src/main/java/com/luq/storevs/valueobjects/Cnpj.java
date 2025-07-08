@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public class Cnpj {
     private String cnpj;
-    private String cnpjraw;
     
     @JsonCreator
     public Cnpj(String stringcnpj) {
@@ -21,15 +20,12 @@ public class Cnpj {
 
     public void setcnpj(String stringcnpj){
         if (validatecnpj(stringcnpj)) {
-            this.cnpjraw = stringcnpj.replace(".", "")
-                .replace("-", "")
-                .replace("/", "");
             this.cnpj = stringcnpj;
         } else throw new IllegalArgumentException("Invalid cnpj format.");   
     }
 
 
-    private boolean validatecnpj(String stringcnpj) {
+    public boolean validatecnpj(String stringcnpj) {
         if (stringcnpj == null) throw new NullPointerException("cnpj must not be null!");
 
         if (stringcnpj.length() == 18) {
