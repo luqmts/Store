@@ -10,23 +10,28 @@
                     <ul class="navbar-nav">
                         <li class="nav-item">
                             <a class="nav-link" 
-                                th:href="@{/product/list}"
-                                th:classappend="${page} == 'product' ? 'active' : ''">Products</a>
+                            th:href="@{/product/list}"
+                            th:classappend="${page} == 'product' ? 'active' : ''">Products</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" 
-                                th:href="@{/supplier/list}"
-                                th:classappend="${page} == 'supplier' ? 'active' : ''">Suppliers</a>
+                            th:href="@{/supplier/list}"
+                            th:classappend="${page} == 'supplier' ? 'active' : ''">Suppliers</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" 
-                                th:href="@{/order/list}"
-                                th:classappend="${page} == 'order' ? 'active' : ''">Orders</a>
+                            th:href="@{/order/list}"
+                            th:classappend="${page} == 'order' ? 'active' : ''">Orders</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" 
-                                th:href="@{/seller/list}"
-                                th:classappend="${page} == 'seller' ? 'active' : ''">Sellers</a>
+                            th:href="@{/seller/list}"
+                            th:classappend="${page} == 'seller' ? 'active' : ''">Sellers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" 
+                                th:href="@{/customer/list}"
+                                th:classappend="${page} == 'customer' ? 'active' : ''">Customer</a>
                         </li>
                     </ul>
                 </div>
