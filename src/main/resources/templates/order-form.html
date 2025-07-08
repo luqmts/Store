@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Order Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="fragments :: navbar"></div>
+
+    <form method="POST" action="/order/create" th:object="${order}">
+        <input type="hidden" name="id" th:value="${order.id}">
+        <div class="mb-3">
+            <label for="inputProduct" class="form-label">Product</label>
+            <select name="product.id" class="form-control" id="product" required>
+                <option value="" disabled selected>Select a Product</option>
+                <option 
+                    th:each="product: ${products}"
+                    th:value="${product.id}"
+                    th:text="${product.name}"
+                    th:attr="data-price=${product.price}"
+                    th:selected="${order.product != null} ? ${product.id} == ${order.product.id} : false">
+                </option>
+            </select>
+            <div id="productHelp" class="form-text">Select a Product.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="inputProduct" class="form-label">Seller</label>
+            <select name="seller.id" class="form-control" id="seller" required>
+                <option value="" disabled selected>Select a Seller</option>
+                <option 
+                    th:each="seller: ${sellers}"
+                    th:value="${seller.id}"
+                    th:text="${seller.name}"
+                    th:selected="${order.seller != null} ? ${seller.id} == ${order.seller.id} : false">
+                </option>
+            </select>
+            <div id="productHelp" class="form-text">Select a Seller.</div>
+        </div>
+       
+        <div class="mb-3">
+            <label for="inputQuantity" class="form-label">Quantity</label>
+            <input type="number" name="quantity" class="form-control" id="inputQuantity" aria-describedby="quantityHelp" th:value="${order.quantity}" required>
+            <div id="quantityHelp" class="form-text">Insert order's quantity.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="inputQuantity" class="form-label">Total sold</label>
+            <input class="form-control" name="totalPrice" id="totalSold" type="number" placeholder="Readonly input here…" aria-describedby="totalSoldHelp" readonly>
+            <div id="totalSoldHelp" class="form-text">Fillable with total sold for this product.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productSelect = document.getElementById('product');
+            const quantityInput = document.getElementById('inputQuantity');
+            const totalSoldInput = document.getElementById('totalSold');
+
+            function updateTotal() {
+                const selectedOption = productSelect.options[productSelect.selectedIndex];
+                const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+                const quantity = parseInt(quantityInput.value) || 0;
+                totalSoldInput.value = (price * quantity).toFixed(2);
+            }
+
+            productSelect.addEventListener('change', updateTotal);
+            quantityInput.addEventListener('input', updateTotal);
+
+            // Atualiza ao carregar a página (útil para edição)
+            updateTotal();
+        });
+    </script>
+</body>
+</html>
