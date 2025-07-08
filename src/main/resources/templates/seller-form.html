@@ -18,11 +18,13 @@
         <div class="mb-3">
             <label for="inputMail" class="form-label">Mail</label>
             <input name="mail" class="form-control" id="inputMail" aria-describedby="mailHelp" th:value="${seller.mail}" required>
+            <div th:if="${mailError}" th:text="${mailError}" class="text-danger"></div>            
             <div id="mailHelp" class="form-text">Insert seller's mail.</div>
         </div>
         <div class="mb-3">
             <label for="inputPhone" class="form-label">Phone</label>
-            <input name="phone" class="form-control" id="inputPhone" aria-describedby="phoneHelp" th:value="${seller.phone}" required>
+            <input name="phone" type="number" class="form-control" id="inputPhone" aria-describedby="phoneHelp" th:value="${seller.phone}" required>
+            <div th:if="${phoneError}" th:text="${phoneError}" class="text-danger"></div>            
             <div id="phoneHelp" class="form-text">Insert seller's phone.</div>
         </div>
         <div class="mb-3">

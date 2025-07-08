@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,19 +49,37 @@ public class SellerWebController {
         mv.addObject("seller", seller);
         mv.addObject("page", "seller");
         mv.addObject("departments", Seller.Department.values());
-        mv.addObject("products", sService.getAll());
         return mv;
     }
 
     @PostMapping(path="/seller/create")
-    public String postProduct(Seller seller){
+    public Object postProduct(Seller seller, Model model){
+        boolean hasError = false;
+        
+        if (seller.getMail() == null){
+            model.addAttribute("mailError", "Invalid mail");
+            hasError = true;
+        }
+        
+        if (seller.getPhone() == null){
+            model.addAttribute("phoneError", "Invalid phone");
+            hasError = true;
+        }
+        
+        if (hasError){
+            model.addAttribute("seller", seller);
+            ModelAndView mv = new ModelAndView("seller-form");
+            mv.addObject("departments", Seller.Department.values());
+            return mv;
+        }
+
         if (seller.getId() == null) {
             sService.register(seller);
         } else {
             sService.update(seller.getId(), seller);
         }
-        return "redirect:/seller/list";
-    }
+
+        return "redirect:/seller/list";    }
 
     @GetMapping(path="/seller/delete/{id}")
     public String delete(@PathVariable("id") int id){
