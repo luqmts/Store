@@ -51,6 +51,27 @@ public class SupplierWebController {
 
     @PostMapping("/supplier/create")
     public String create(Supplier supplier, Model model){
+        boolean hasError = false;
+        if (supplier.getMail() == null){
+            model.addAttribute("mailError", "Invalid mail");
+            hasError = true;
+        }
+        
+        if (supplier.getCnpj() == null){
+            model.addAttribute("cnpjError", "Invalid cnpj");
+            hasError = true;
+        }
+        
+        if (supplier.getPhone() == null){
+            model.addAttribute("phoneError", "Invalid phone");
+            hasError = true;
+        }
+        
+        if (hasError){
+            model.addAttribute("supplier", supplier);
+            return "supplier-form";   
+        }
+        
         if (supplier.getId() == null)
             sService.register(supplier);
         else 

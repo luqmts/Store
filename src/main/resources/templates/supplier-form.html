@@ -18,17 +18,19 @@
         <div class="mb-3">
             <label for="inputcnpj" class="form-label">CNPJ</label>
             <input name="cnpj" class="form-control" id="inputcnpj" aria-describedby="cnpjHelp" th:value="${supplier.cnpj}" required>
-            <div th:if="${cnpjError}" th:text="${cnpjError}"></div>
+            <div th:if="${cnpjError}" th:text="${cnpjError}" class="text-danger"></div>            
             <div id="cnpjHelp" class="form-text">Insert supplier's CNPJ.</div>
         </div>
         <div class="mb-3">
             <label for="inputMail" class="form-label">Mail</label>
             <input name="mail" th:field="*{mail}" class="form-control" id="inputMail" aria-describedby="mailHelp" th:value="${supplier.mail}" required>
-            <div th:if="${mailError}" th:text="${mailError}" class="text-danger"></div>            <div id="mailHelp" class="form-text">Insert supplier's mail.</div>
+            <div th:if="${mailError}" th:text="${mailError}" class="text-danger"></div>            
+            <div id="mailHelp" class="form-text">Insert supplier's mail.</div>
         </div>
          <div class="mb-3">
             <label for="inputPhone" class="form-label">Phone</label>
-            <input name="phone" class="form-control" id="inputPhone" aria-describedby="phoneHelp" th:value="${supplier.phone}" required>
+            <input name="phone" type="number" class="form-control" id="inputPhone" aria-describedby="phoneHelp" th:value="${supplier.phone}" required>
+            <div th:if="${phoneError}" th:text="${phoneError}" class="text-danger"></div>            
             <div id="phoneHelp" class="form-text">Insert supplier's phone.</div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
