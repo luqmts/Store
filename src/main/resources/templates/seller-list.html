@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sellers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="fragments :: navbar"></div>
+
+    <a class="btn btn-primary" th:href="@{/seller/form}" role="button">Register new Seller</a>
+
+    <h1>Seller list</h1>
+    <table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Mail</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Department</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr data-th-each="seller : ${sellers}">
+            <th scope="row" data-th-text="${seller.id}"></th>
+            <td data-th-text="${seller.name}"></td>
+            <td data-th-text="${seller.mail}"></td>
+            <td data-th-text="${seller.phone}"></td>
+            <td data-th-text="${seller.department}"></td>
+            <td>
+                <a th:href="@{/seller/form/{id}(id=${seller.id})}"><i class="bi bi-pencil"></i></a>
+                <a th:href="@{/seller/delete/{id}(id=${seller.id})}"><i class="bi bi-trash3"></i></a>
+            </td>
+        </tr>
+    </tbody>
+    </table>
+</body>
+</html>

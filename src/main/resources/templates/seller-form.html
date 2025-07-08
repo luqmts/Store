@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Seller List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div th:replace="fragments :: navbar"></div>
+
+    <form method="POST" action="/seller/create" th:object="${seller}">
+        <input type="hidden" name="id" th:value="${seller.id}">
+        <div class="mb-3">
+            <label for="inputName" class="form-label">Name</label>
+            <input name="name" class="form-control" id="inputName" aria-describedby="nameHelp" th:value="${seller.name}" required>
+            <div id="nameHelp" class="form-text">Insert seller's name.</div>
+        </div>
+        <div class="mb-3">
+            <label for="inputMail" class="form-label">Mail</label>
+            <input name="mail" class="form-control" id="inputMail" aria-describedby="mailHelp" th:value="${seller.mail}" required>
+            <div id="mailHelp" class="form-text">Insert seller's mail.</div>
+        </div>
+        <div class="mb-3">
+            <label for="inputPhone" class="form-label">Phone</label>
+            <input name="phone" class="form-control" id="inputPhone" aria-describedby="phoneHelp" th:value="${seller.phone}" required>
+            <div id="phoneHelp" class="form-text">Insert seller's phone.</div>
+        </div>
+        <div class="mb-3">
+            <label for="inputDepartment" class="form-label">Department</label>
+            <select name="department" class="form-control" id="department" required>
+                <option value="" disabled selected>Select a Department</option>
+                <option th:each="department: ${departments}"
+                        th:value="${department}"
+                        th:text="${department}"
+                        th:selected="${seller.department} == ${department}">
+                </option>
+            </select>
+        <div id="departmentHelp" class="form-text">Select a Department.</div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</body>
+</html>
