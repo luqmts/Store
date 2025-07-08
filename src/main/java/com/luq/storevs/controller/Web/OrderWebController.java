@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.model.Order;
+import com.luq.storevs.service.CustomerService;
 import com.luq.storevs.service.OrderService;
 import com.luq.storevs.service.ProductService;
 import com.luq.storevs.service.SellerService;
@@ -19,12 +20,14 @@ public class OrderWebController {
     protected final OrderService oService;
     protected final ProductService pService;
     protected final SellerService sService;
+    protected final CustomerService cService;
     
     @Autowired
-    public OrderWebController(OrderService oService, ProductService pService, SellerService sServcice){
+    public OrderWebController(OrderService oService, ProductService pService, SellerService sServcice, CustomerService cService){
         this.oService = oService;
         this.pService = pService;
         this.sService = sServcice;
+        this.cService = cService;
     }
 
     @GetMapping(path="/order/list")
@@ -45,6 +48,8 @@ public class OrderWebController {
         mv.addObject("page", "order");
         mv.addObject("products", pService.getAll());
         mv.addObject("sellers", sService.getAll());
+        mv.addObject("customers", cService.getAll());
+
         return mv;
     }
 
@@ -56,6 +61,8 @@ public class OrderWebController {
         mv.addObject("page", "order");
         mv.addObject("products", pService.getAll());
         mv.addObject("sellers", sService.getAll());
+        mv.addObject("customers", cService.getAll());
+        
         return mv;
     }
 

@@ -38,6 +38,20 @@
             </select>
             <div id="productHelp" class="form-text">Select a Seller.</div>
         </div>
+
+        <div class="mb-3">
+            <label for="inputProduct" class="form-label">Customer</label>
+            <select name="customer.id" class="form-control" id="customer" required>
+                <option value="" disabled selected>Select a Customer</option>
+                <option 
+                    th:each="customer: ${customers}"
+                    th:value="${customer.id}"
+                    th:text="${customer.name}"
+                    th:selected="${order.customer != null} ? ${customer.id} == ${order.customer.id} : false">
+                </option>
+            </select>
+            <div id="productHelp" class="form-text">Select a Customer.</div>
+        </div>
        
         <div class="mb-3">
             <label for="inputQuantity" class="form-label">Quantity</label>
@@ -69,7 +83,6 @@
             productSelect.addEventListener('change', updateTotal);
             quantityInput.addEventListener('input', updateTotal);
 
-            // Atualiza ao carregar a página (útil para edição)
             updateTotal();
         });
     </script>

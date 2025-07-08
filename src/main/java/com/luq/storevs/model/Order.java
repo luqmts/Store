@@ -27,10 +27,13 @@ public class Order implements Identifiable{
     private Product product;
     @ManyToOne
     private Seller seller;
+    @ManyToOne
+    private Customer customer;
 
-    public Order(Float totalPrice, Integer quantity, Product product){
+    public Order(Float totalPrice, Integer quantity, Product product, Customer customer){
         this.totalPrice = totalPrice;
         this.quantity = quantity; 
         this.product = product;
+        this.customer = customer;
     }
 }
