@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name="orders")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Order {
+public class Order implements Identifiable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -19,7 +19,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
-public class Seller {
+public class Seller implements Identifiable{
     public enum Department{
         TECHNOLOGY,
         FOOD,
