@@ -15,12 +15,32 @@
     <table class="table">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Sku</th>
-            <th scope="col">Price</th>
-            <th scope="col">Description</th>
+            <th scope="col">
+                <a th:href="@{/product/list(sortBy='id', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    #
+                    <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
+            <th scope="col">
+                <a th:href="@{/product/list(sortBy='name', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    Name
+                    <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
+            <th scope="col">
+                <a th:href="@{/product/list(sortBy='sku', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    SKU
+                    <span th:text="${sortBy == 'sku' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
+            <th scope="col">
+                <a th:href="@{/product/list(sortBy='price', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    Price
+                    <span th:text="${sortBy == 'price' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
             <th scope="col">Supplier</th>
+            <th scope="col">Description</th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
@@ -30,8 +50,8 @@
             <td data-th-text="${product.name}"></td>
             <td data-th-text="${product.sku}"></td>
             <td data-th-text="${product.price}"></td>
-            <td data-th-text="${product.description}"></td>
             <td data-th-text="${product.supplier}"></td>
+            <td data-th-text="${product.description}"></td>
             <td>
                 <a th:href="@{/product/form/{id}(id=${product.id})}"><i class="bi bi-pencil"></i></a>
                 <a th:href="@{/product/delete/{id}(id=${product.id})}"><i class="bi bi-trash3"></i></a>

@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.model.Product;
@@ -26,12 +27,17 @@ public class ProductWebController {
     }
 
     @GetMapping(path="/product/list")
-    public ModelAndView productList(){
-        List<Product> pList = pService.getAll();
+    public ModelAndView productList(
+        @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
+        @RequestParam(name="direction", required=false, defaultValue="asc") String direction
+    ){
+        List<Product> pList = pService.getAllSorted(sortBy, direction);
 
         ModelAndView mv = new ModelAndView("product-list");
         mv.addObject("products", pList);
         mv.addObject("page", "product");
+        mv.addObject("direction", direction);
+        mv.addObject("sortBy", sortBy);
 
         return mv;
     }
