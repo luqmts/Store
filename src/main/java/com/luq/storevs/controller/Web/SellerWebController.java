@@ -53,7 +53,7 @@ public class SellerWebController {
     }
 
     @PostMapping(path="/seller/create")
-    public Object postProduct(Seller seller, Model model){
+    public String postProduct(Seller seller, Model model){
         boolean hasError = false;
         
         if (seller.getMail() == null){
@@ -68,9 +68,8 @@ public class SellerWebController {
         
         if (hasError){
             model.addAttribute("seller", seller);
-            ModelAndView mv = new ModelAndView("seller-form");
-            mv.addObject("departments", Seller.Department.values());
-            return mv;
+            model.addAttribute("departments", Seller.Department.values());
+            return "seller-form";
         }
 
         if (seller.getId() == null) {
@@ -79,7 +78,8 @@ public class SellerWebController {
             sService.update(seller.getId(), seller);
         }
 
-        return "redirect:/seller/list";    }
+        return "redirect:/seller/list";    
+    }
 
     @GetMapping(path="/seller/delete/{id}")
     public String delete(@PathVariable("id") int id){
