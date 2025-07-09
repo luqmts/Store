@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.model.Seller;
@@ -23,18 +24,23 @@ public class SellerWebController {
     }
 
     @GetMapping(path="/seller/list")
-    public ModelAndView productList(){
-        List<Seller> sList = sService.getAll();
+    public ModelAndView sellerList(
+        @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
+        @RequestParam(name="direction", required=false, defaultValue="asc") String direction
+    ){
+        List<Seller> sList = sService.getAllSorted(sortBy, direction);
         
         ModelAndView mv = new ModelAndView("seller-list");
         mv.addObject("page", "seller");
         mv.addObject("sellers", sList);
+        mv.addObject("direction", direction);
+        mv.addObject("sortBy", sortBy);
         
         return mv;
     }
 
     @GetMapping(path="/seller/form")
-    public ModelAndView productFormCreate(){
+    public ModelAndView sellerFormCreate(){
         ModelAndView mv = new ModelAndView("seller-form");
         mv.addObject("seller", new Seller());
         mv.addObject("page", "seller");
@@ -43,7 +49,7 @@ public class SellerWebController {
     }
 
     @GetMapping(path="/seller/form/{id}")
-    public ModelAndView productFormEdit(@PathVariable("id") int id){
+    public ModelAndView sellerFormEdit(@PathVariable("id") int id){
         Seller seller = sService.getById(id);
         ModelAndView mv = new ModelAndView("seller-form");
         mv.addObject("seller", seller);
@@ -53,7 +59,7 @@ public class SellerWebController {
     }
 
     @PostMapping(path="/seller/create")
-    public String postProduct(Seller seller, Model model){
+    public String postSeller(Seller seller, Model model){
         boolean hasError = false;
         
         if (seller.getMail() == null){
