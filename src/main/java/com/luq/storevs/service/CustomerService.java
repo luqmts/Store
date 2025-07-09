@@ -3,6 +3,7 @@ package com.luq.storevs.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.luq.storevs.model.Customer;
@@ -15,6 +16,11 @@ public class CustomerService {
     
     public List<Customer> getAll() {
         return cRepository.findAll();
+    }
+
+    public List<Customer> getAllSorted(String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        return cRepository.findAll(sort);
     }
 
     public Customer getById(int id) {

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.model.Customer;
@@ -22,12 +23,17 @@ public class CustomerWebController {
     }
 
     @GetMapping(path="/customer/list")
-    public ModelAndView productList(){
-        List<Customer> cList = cService.getAll();
+    public ModelAndView productList(
+        @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
+        @RequestParam(name="direction", required=false, defaultValue="desc") String direction
+    ){
+        List<Customer> cList = cService.getAllSorted(sortBy, direction);
 
         ModelAndView mv = new ModelAndView("customer-list");
         mv.addObject("customers", cList);
         mv.addObject("page", "customer");
+        mv.addObject("direction", direction);
+        mv.addObject("sortBy", sortBy);
 
         return mv;
     }

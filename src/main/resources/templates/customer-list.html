@@ -15,8 +15,18 @@
     <table class="table">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
+             <th scope="col">
+                <a th:href="@{/customer/list(sortBy='id', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    #
+                    <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
+             <th scope="col">
+                <a th:href="@{/customer/list(sortBy='name', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    Name
+                    <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
