@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 @Table(name="orders")
@@ -22,6 +24,7 @@ public class Order implements Identifiable{
 
     private Float totalPrice;
     private Integer quantity;
+    private LocalDate orderDate;
     
     @ManyToOne
     private Product product;
@@ -30,10 +33,11 @@ public class Order implements Identifiable{
     @ManyToOne
     private Customer customer;
 
-    public Order(Float totalPrice, Integer quantity, Product product, Customer customer){
+    public Order(Float totalPrice, Integer quantity, Product product, Customer customer, LocalDate orderDate){
         this.totalPrice = totalPrice;
         this.quantity = quantity; 
         this.product = product;
         this.customer = customer;
+        this.orderDate = orderDate;
     }
 }

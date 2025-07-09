@@ -40,6 +40,12 @@
         </div>
 
         <div class="mb-3">
+            <label for="inputProduct" class="form-label">Order Date</label>
+            <input type="date" name="orderDate" min="" max="" class="form-control" id="orderDate" th:value="${#temporals.format(order.orderDate, 'yyyy-MM-dd')}" required/>
+            <div id="orderDateHelp" class="form-text">Insert when Order happened.</div>
+        </div>
+
+        <div class="mb-3">
             <label for="inputProduct" class="form-label">Customer</label>
             <select name="customer.id" class="form-control" id="customer" required>
                 <option value="" disabled selected>Select a Customer</option>

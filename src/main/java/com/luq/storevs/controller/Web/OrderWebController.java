@@ -1,5 +1,6 @@
 package com.luq.storevs.controller.Web;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,10 @@ public class OrderWebController {
     @GetMapping(path="/order/form")
     public ModelAndView productFormCreate(){
         ModelAndView mv = new ModelAndView("order-form");
-        mv.addObject("order", new Order());
+        Order order = new Order();
+        order.setOrderDate(LocalDate.now());
+
+        mv.addObject("order", order);
         mv.addObject("page", "order");
         mv.addObject("products", pService.getAll());
         mv.addObject("sellers", sService.getAll());
