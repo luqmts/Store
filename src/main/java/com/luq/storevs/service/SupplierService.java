@@ -6,6 +6,7 @@ import com.luq.storevs.model.Supplier;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,11 @@ public class SupplierService {
 
     public List<Supplier> getAll() {
         return sRepository.findAll();
+    }
+
+    public List<Supplier> getAllSorted(String sortBy, String direction) {
+        Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        return sRepository.findAll(sort);
     }
 
     public Supplier getById(int id) {
