@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +56,19 @@ public class ProductWebController {
     }
 
     @PostMapping(path="/product/create")
-    public String postProduct(Product product){
+    public String postProduct(Product product, Model model){
+        boolean hasError = false;
+        if (product.getPrice() < 1){
+            model.addAttribute("priceError", "Product's price must be greater or equal than 1");
+            hasError = true;
+        }
+
+        if (hasError){
+            model.addAttribute("product", product);
+            model.addAttribute("suppliers", sService.getAll());
+            return "product-form";   
+        }
+
         if (product.getId() == null) {
             pService.register(product);
         } else {

@@ -23,6 +23,7 @@
         <div class="mb-3">
             <label for="inputPrice" class="form-label">Price</label>
             <input name="price" class="form-control" id="inputPrice" aria-describedby="priceHelp" th:value="${product.price}" required>
+            <div th:if="${priceError}" th:text="${priceError}" class="text-danger"></div>            
             <div id="priceHelp" class="form-text">Insert product's price.</div>
         </div>
         <div class="mb-3">

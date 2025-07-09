@@ -6,10 +6,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import jakarta.validation.constraints.Min;
 
 @Data
 @Entity
@@ -26,6 +29,8 @@ public class Product implements Identifiable {
     private String name;
     private String sku;
     private String description;
+    
+    @Min(1)
     private Float price;
     
     @ManyToOne
