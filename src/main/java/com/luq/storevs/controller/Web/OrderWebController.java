@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.model.Order;
@@ -32,18 +33,22 @@ public class OrderWebController {
     }
 
     @GetMapping(path="/order/list")
-    public ModelAndView productList(){
-        List<Order> oList = oService.getAll();
-
+    public ModelAndView orderList(
+        @RequestParam(name="sortBy", required=false, defaultValue="orderDate") String sortBy,
+        @RequestParam(name="direction", required=false, defaultValue="desc") String direction
+    ){
+        List<Order> oList = oService.getAllSorted(sortBy, direction);
         ModelAndView mv = new ModelAndView("order-list");
         mv.addObject("orders", oList);
         mv.addObject("page", "order");
+        mv.addObject("direction", direction);
+        mv.addObject("sortBy", sortBy);
 
         return mv;
     }
 
     @GetMapping(path="/order/form")
-    public ModelAndView productFormCreate(){
+    public ModelAndView orderFormCreate(){
         ModelAndView mv = new ModelAndView("order-form");
         Order order = new Order();
         order.setOrderDate(LocalDate.now());
@@ -58,7 +63,7 @@ public class OrderWebController {
     }
 
     @GetMapping(path="/order/form/{id}")
-    public ModelAndView productFormEdit(@PathVariable("id") int id){
+    public ModelAndView orderFormEdit(@PathVariable("id") int id){
         Order order = oService.getById(id);
         ModelAndView mv = new ModelAndView("order-form");
         mv.addObject("order", order);
@@ -71,7 +76,7 @@ public class OrderWebController {
     }
 
     @PostMapping(path="/order/create")
-    public String postProduct(Order order){
+    public String postOrder(Order order){
         if (order.getId() == null) {
             oService.register(order);
         } else {

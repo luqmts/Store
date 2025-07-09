@@ -15,21 +15,41 @@
     <table class="table">
     <thead>
         <tr>
-            <th scope="col">#</th>
+            <th scope="col">
+                <a th:href="@{/order/list(sortBy='id', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    #
+                    <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
+            <th scope="col">
+                <a th:href="@{/order/list(sortBy='orderDate', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    Order Date
+                    <span th:text="${sortBy == 'orderDate' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
             <th scope="col">Product</th>
-            <th scope="col">Order Date</th>
             <th scope="col">Seller</th>
             <th scope="col">Customer</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Total sold</th>
+            <th scope="col">
+                <a th:href="@{/order/list(sortBy='quantity', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    Quantity
+                    <span th:text="${sortBy == 'quantity' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
+            <th scope="col">
+                <a th:href="@{/order/list(sortBy='totalPrice', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    Total Sold
+                    <span th:text="${sortBy == 'totalPrice' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                </a>
+            </th>
             <th scope="col">Actions</th>
         </tr>
     </thead>
     <tbody>
         <tr data-th-each="order : ${orders}">
             <th scope="row" data-th-text="${order.id}"></th>
-            <td data-th-text="${order.product}"></td>
             <td data-th-text="${#temporals.format(order.orderDate, 'dd-MM-yyyy')}"></td>
+            <td data-th-text="${order.product}"></td>
             <td data-th-text="${order.seller}"></td>
             <td data-th-text="${order.customer}"></td>
             <td data-th-text="${order.quantity}"></td>
