@@ -35,12 +35,22 @@ public class OrderWebController {
     @GetMapping(path="/order/list")
     public ModelAndView orderList(
         @RequestParam(name="sortBy", required=false, defaultValue="orderDate") String sortBy,
-        @RequestParam(name="direction", required=false, defaultValue="desc") String direction
+        @RequestParam(name="direction", required=false, defaultValue="desc") String direction,
+        @RequestParam(name="product.id", required=false) Integer productId,
+        @RequestParam(name="seller.id", required=false) Integer sellerId,
+        @RequestParam(name="customer.id", required=false) Integer customerId
     ){
-        List<Order> oList = oService.getAllSorted(sortBy, direction);
+        List<Order> oList = oService.getAllSorted(sortBy, direction, productId, sellerId, customerId);
+
         ModelAndView mv = new ModelAndView("order-list");
         mv.addObject("orders", oList);
         mv.addObject("page", "order");
+        mv.addObject("products", pService.getAll());
+        mv.addObject("sellers", sService.getAll());
+        mv.addObject("customers", cService.getAll());
+        mv.addObject("productId", productId);
+        mv.addObject("sellerId", sellerId);
+        mv.addObject("customerId", customerId);
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
 

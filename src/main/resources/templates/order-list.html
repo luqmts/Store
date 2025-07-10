@@ -8,58 +8,132 @@
 </head>
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
-
-    <a class="btn btn-primary" th:href="@{/order/form}" role="button">Register new Order</a>
-
+    
     <h1>Order list</h1>
+    
+    <div class="container-fluid border border-text-black-50 rounded-2 pt-1">
+        <div class="h4 pb-2 mb-4 text-black-50 border-bottom border-text-black-50">Filter by</div>
+        
+        <form method="get" th:action="@{/order/list}">
+            <input type="hidden" name="sortBy" th:value="${sortBy}" />
+            <input type="hidden" name="direction" th:value="${direction}" />
+            <div class="row align-items-end">
+                <div class="mb-3 col-2">
+                    <label for="Product" class="form-label">Product</label>
+                    <select name="product.id" class="form-control" id="product">
+                        <option value="" disabled selected>Select a Product</option>
+                        <option th:each="product: ${products}"
+                                th:value="${product.id}"
+                                th:text="${product.name}"
+                                th:selected="${productId} == ${product.id}">
+                    </option>
+                    </select>
+                </div>
+                <div class="mb-3 col-2">
+                    <label for="inputSeller" class="form-label">Seller</label>
+                    <select name="seller.id" class="form-control" id="seller">
+                        <option value="" disabled selected>Select a Seller</option>
+                        <option th:each="seller: ${sellers}"
+                                th:value="${seller.id}"
+                                th:text="${seller.name}"
+                                th:selected="${sellerId} == ${seller.id}">
+                    </option>
+                    </select>
+                </div>
+                <div class="mb-3 col-2">
+                    <label for="inputCustomer" class="form-label">Customer</label>
+                    <select name="customer.id" class="form-control" id="customer">
+                        <option value="" disabled selected>Select a Customer</option>
+                        <option th:each="customer: ${customers}"
+                                th:value="${customer.id}"
+                                th:text="${customer.name}"
+                                th:selected="${customerId} == ${customer.id}">
+                    </option>
+                    </select>
+                </div>
+                <div class="mb-3 col-4"></div>
+                <div class="mb-3 col-1 d-flex justify-content-end">
+                    <a th:href="@{/order/list(sortBy=${sortBy}, direction=${direction})}" class="btn btn-secondary w-100">Clear Filter</a>
+                </div>
+                <div class="mb-3 col-1 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
     <table class="table">
-    <thead>
-        <tr>
-            <th scope="col">
-                <a th:href="@{/order/list(sortBy='id', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    #
-                    <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/order/list(sortBy='orderDate', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    Order Date
-                    <span th:text="${sortBy == 'orderDate' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">Product</th>
-            <th scope="col">Seller</th>
-            <th scope="col">Customer</th>
-            <th scope="col">
-                <a th:href="@{/order/list(sortBy='quantity', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    Quantity
-                    <span th:text="${sortBy == 'quantity' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/order/list(sortBy='totalPrice', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    Total Sold
-                    <span th:text="${sortBy == 'totalPrice' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr data-th-each="order : ${orders}">
-            <th scope="row" data-th-text="${order.id}"></th>
-            <td data-th-text="${#temporals.format(order.orderDate, 'dd-MM-yyyy')}"></td>
-            <td data-th-text="${order.product}"></td>
-            <td data-th-text="${order.seller}"></td>
-            <td data-th-text="${order.customer}"></td>
-            <td data-th-text="${order.quantity}"></td>
-            <td data-th-text="${order.totalPrice}"></td>
-            <td>
-                <a th:href="@{/order/form/{id}(id=${order.id})}"><i class="bi bi-pencil"></i></a>
-                <a th:href="@{/order/delete/{id}(id=${order.id})}"><i class="bi bi-trash3"></i></a>
-            </td>
-        </tr>
-    </tbody>
+        <thead>
+            <tr>
+                <th scope="col">
+                    <a th:href="@{/order/list(
+                        sortBy='id', 
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        productId=${productId},
+                        sellerId=${sellerId},
+                        customerId=${customerId}
+                    )}">
+                        #
+                        <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/order/list(
+                        sortBy='orderDate', 
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        productId=${productId},
+                        sellerId=${sellerId},
+                        customerId=${customerId}
+                    )}">
+                        Order Date
+                        <span th:text="${sortBy == 'orderDate' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">Product</th>
+                <th scope="col">Seller</th>
+                <th scope="col">Customer</th>
+                <th scope="col">
+                    <a th:href="@{/order/list(
+                        sortBy='quantity', 
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        productId=${productId},
+                        sellerId=${sellerId},
+                        customerId=${customerId}
+                    )}">
+                        Quantity
+                        <span th:text="${sortBy == 'quantity' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/order/list(
+                        sortBy='totalPrice', 
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        productId=${productId},
+                        sellerId=${sellerId},
+                        customerId=${customerId}
+                    )}">
+                        Total Sold
+                        <span th:text="${sortBy == 'totalPrice' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-th-each="order : ${orders}">
+                <th scope="row" data-th-text="${order.id}"></th>
+                <td data-th-text="${#temporals.format(order.orderDate, 'dd-MM-yyyy')}"></td>
+                <td data-th-text="${order.product}"></td>
+                <td data-th-text="${order.seller}"></td>
+                <td data-th-text="${order.customer}"></td>
+                <td data-th-text="${order.quantity}"></td>
+                <td data-th-text="${order.totalPrice}"></td>
+                <td>
+                    <a th:href="@{/order/form/{id}(id=${order.id})}"><i class="bi bi-pencil"></i></a>
+                    <a th:href="@{/order/delete/{id}(id=${order.id})}"><i class="bi bi-trash3"></i></a>
+                </td>
+            </tr>
+        </tbody>
     </table>
+    <a class="btn btn-primary position-fixed bottom-0 end-0 m-4" th:href="@{/order/form}" role="button">Register new Order</a>
 </body>
 </html>
