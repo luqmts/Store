@@ -9,58 +9,58 @@
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <a class="btn btn-primary" th:href="@{/supplier/form}" role="button">Register new Supplier</a>
-
+    
     <h1>Supplier list</h1>
     <table class="table">
-    <thead>
-        <tr>
-            <th scope="col">
-                <a th:href="@{/supplier/list(sortBy='id', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    #
-                    <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/supplier/list(sortBy='name', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    Name
-                    <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/supplier/list(sortBy='cnpj', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    CNPJ
-                    <span th:text="${sortBy == 'cnpj' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/supplier/list(sortBy='mail', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    Mail
-                    <span th:text="${sortBy == 'mail' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/supplier/list(sortBy='phone', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+        <thead>
+            <tr>
+                <th scope="col">
+                    <a th:href="@{/supplier/list(sortBy='id', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                        #
+                        <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/supplier/list(sortBy='name', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                        Name
+                        <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/supplier/list(sortBy='cnpj', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                        CNPJ
+                        <span th:text="${sortBy == 'cnpj' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/supplier/list(sortBy='mail', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                        Mail
+                        <span th:text="${sortBy == 'mail' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/supplier/list(sortBy='phone', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
                     Phone
                     <span th:text="${sortBy == 'phone' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                 </a>
-            </th>
+                </th>
             <th scope="col">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr data-th-each="supplier : ${suppliers}">
-            <th scope="row" data-th-text="${supplier.id}"></th>
-            <td data-th-text="${supplier.name}"></td>
-            <td data-th-text="${supplier.cnpj}"></td>
-            <td data-th-text="${supplier.mail}"></td>
-            <td data-th-text="${supplier.phone}"></td>
-            <td>
-                <a th:href="@{/supplier/form/{id}(id=${supplier.id})}"><i class="bi bi-pencil"></i></a>
-                <a th:href="@{/supplier/delete/{id}(id=${supplier.id})}"><i class="bi bi-trash3"></i></a>
-            </td>
-        </tr>
-    </tbody>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-th-each="supplier : ${suppliers}">
+                <th scope="row" data-th-text="${supplier.id}"></th>
+                <td data-th-text="${supplier.name}"></td>
+                <td data-th-text="${supplier.cnpj}"></td>
+                <td data-th-text="${supplier.mail}"></td>
+                <td data-th-text="${supplier.phone}"></td>
+                <td>
+                    <a th:href="@{/supplier/form/{id}(id=${supplier.id})}"><i class="bi bi-pencil"></i></a>
+                    <a th:href="@{/supplier/delete/{id}(id=${supplier.id})}"><i class="bi bi-trash3"></i></a>
+                </td>
+            </tr>
+        </tbody>
     </table>
+    <a class="btn btn-primary position-fixed bottom-0 end-0 m-4" th:href="@{/supplier/form}" role="button">Register new Supplier</a>
 </body>
 </html>
