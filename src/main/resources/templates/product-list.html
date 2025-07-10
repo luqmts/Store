@@ -9,55 +9,101 @@
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <a class="btn btn-primary" th:href="@{/product/form}" role="button">Register new Product</a>
-
+    
     <h1>Product list</h1>
+    
+    <div class="container-fluid border border-text-black-50 rounded-2 pt-1">
+        <div class="h4 pb-2 mb-4 text-black-50 border-bottom border-text-black-50">Filter by</div>
+        
+        <form method="get" th:action="@{/product/list}">
+            <input type="hidden" name="sortBy" th:value="${sortBy}" />
+            <input type="hidden" name="direction" th:value="${direction}" />
+            <div class="row align-items-end">
+                <div class="mb-3 col-2">
+                    <label for="inputSupplier" class="form-label">Supplier</label>
+                    <select name="supplier.id" class="form-control" id="supplier">
+                        <option value="" disabled selected>Select a Supplier</option>
+                        <option th:each="supplier: ${suppliers}"
+                                th:value="${supplier.id}"
+                                th:text="${supplier.name}"
+                                th:selected="${supplierId} == ${supplier.id}">
+                        </option>
+                    </select>
+                </div>
+                <div class="mb-3 col-8"></div>
+                <div class="mb-3 col-1 d-flex justify-content-end">
+                    <a th:href="@{/product/list(sortBy=${sortBy}, direction=${direction})}" class="btn btn-secondary w-100">Clear Filter</a>
+                </div>
+                <div class="mb-3 col-1 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <table class="table">
-    <thead>
-        <tr>
-            <th scope="col">
-                <a th:href="@{/product/list(sortBy='id', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    #
-                    <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/product/list(sortBy='name', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    Name
-                    <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/product/list(sortBy='sku', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    SKU
-                    <span th:text="${sortBy == 'sku' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">
-                <a th:href="@{/product/list(sortBy='price', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
-                    Price
-                    <span th:text="${sortBy == 'price' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
-            </th>
-            <th scope="col">Supplier</th>
-            <th scope="col">Description</th>
-            <th scope="col">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr data-th-each="product : ${products}">
-            <th scope="row" data-th-text="${product.id}"></th>
-            <td data-th-text="${product.name}"></td>
-            <td data-th-text="${product.sku}"></td>
-            <td data-th-text="${product.price}"></td>
-            <td data-th-text="${product.supplier}"></td>
-            <td data-th-text="${product.description}"></td>
-            <td>
-                <a th:href="@{/product/form/{id}(id=${product.id})}"><i class="bi bi-pencil"></i></a>
-                <a th:href="@{/product/delete/{id}(id=${product.id})}"><i class="bi bi-trash3"></i></a>
-            </td>
-        </tr>
-    </tbody>
+        <thead>
+            <tr>
+                <th scope="col">
+                    <a th:href="@{/product/list(
+                        sortBy='id', 
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        supplier.id=${supplierId}
+                        )}">
+                        #
+                        <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/product/list(
+                        sortBy='name',
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        supplier.id=${supplierId}
+                        )}">
+                        Name
+                        <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/product/list(
+                        sortBy='sku', 
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        supplier.id=${supplierId}
+                        )}">
+                        SKU
+                        <span th:text="${sortBy == 'sku' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/product/list(
+                        sortBy='price', 
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        supplier.id=${supplierId}
+                        )}">
+                        Price
+                        <span th:text="${sortBy == 'price' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">Supplier</th>
+                <th scope="col">Description</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-th-each="product : ${products}">
+                <th scope="row" data-th-text="${product.id}"></th>
+                <td data-th-text="${product.name}"></td>
+                <td data-th-text="${product.sku}"></td>
+                <td data-th-text="${product.price}"></td>
+                <td data-th-text="${product.supplier}"></td>
+                <td data-th-text="${product.description}"></td>
+                <td>
+                    <a th:href="@{/product/form/{id}(id=${product.id})}"><i class="bi bi-pencil"></i></a>
+                    <a th:href="@{/product/delete/{id}(id=${product.id})}"><i class="bi bi-trash3"></i></a>
+                </td>
+            </tr>
+        </tbody>
     </table>
+    <a class="btn btn-primary position-fixed bottom-0 end-0 m-4" th:href="@{/product/form}" role="button">Register new Product</a>
 </body>
 </html>

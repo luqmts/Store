@@ -18,8 +18,12 @@ public class ProductService {
         return pRepository.findAll();
     }
     
-    public List<Product> getAllSorted(String sortBy, String direction) {
+    public List<Product> getAllSorted(String sortBy, String direction, Integer supplierId) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        
+        if (supplierId != null) {
+            return pRepository.findBySupplierId(supplierId, sort);
+        }
         return pRepository.findAll(sort);
     }
     

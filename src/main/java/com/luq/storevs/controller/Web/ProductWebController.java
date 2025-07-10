@@ -29,15 +29,18 @@ public class ProductWebController {
     @GetMapping(path="/product/list")
     public ModelAndView productList(
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
-        @RequestParam(name="direction", required=false, defaultValue="asc") String direction
+        @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
+        @RequestParam(name="supplier.id", required=false) Integer supplierId
     ){
-        List<Product> pList = pService.getAllSorted(sortBy, direction);
+        List<Product> pList = pService.getAllSorted(sortBy, direction, supplierId);
 
         ModelAndView mv = new ModelAndView("product-list");
         mv.addObject("products", pList);
+        mv.addObject("suppliers", sService.getAll());
         mv.addObject("page", "product");
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
+        mv.addObject("supplierId", supplierId);
 
         return mv;
     }
