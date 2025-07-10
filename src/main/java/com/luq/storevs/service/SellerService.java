@@ -18,8 +18,12 @@ public class SellerService {
         return sRepository.findAll();
     }
 
-    public List<Seller> getAllSorted(String sortBy, String direction) {
+    public List<Seller> getAllSorted(String department, String sortBy, String direction) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        if (department != null){
+            Seller.Department depEnum = Seller.Department.valueOf(department);
+            return sRepository.findByDepartment(depEnum, sort);
+        }
         return sRepository.findAll(sort);
     }
 

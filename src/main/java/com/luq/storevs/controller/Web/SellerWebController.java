@@ -26,15 +26,18 @@ public class SellerWebController {
     @GetMapping(path="/seller/list")
     public ModelAndView sellerList(
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
-        @RequestParam(name="direction", required=false, defaultValue="asc") String direction
+        @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
+        @RequestParam(name="department", required=false) String department
     ){
-        List<Seller> sList = sService.getAllSorted(sortBy, direction);
+        List<Seller> sList = sService.getAllSorted(department, sortBy, direction);
         
         ModelAndView mv = new ModelAndView("seller-list");
         mv.addObject("page", "seller");
         mv.addObject("sellers", sList);
+        mv.addObject("departments", Seller.Department.values());
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
+        mv.addObject("selectedDepartment", department);
         
         return mv;
     }
