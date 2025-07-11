@@ -19,7 +19,7 @@
             <div class="row align-items-end">
                 <div class="mb-3 col-2">
                     <label for="inputDepartment" class="form-label">Department</label>
-                    <select name="department" class="form-control" id="department" required>
+                    <select name="department" class="form-control" id="department">
                         <option value="" disabled selected>Select a Department</option>
                         <option th:each="department: ${departments}"
                                 th:value="${department.name()}"
@@ -28,7 +28,19 @@
                         </option>
                     </select>
                 </div>
-                <div class="mb-3 col-8"></div>
+                 <div class="mb-3 col-2">
+                    <label for="inputName" class="form-label">Name</label>
+                    <input name="name" class="form-control" id="inputName" th:value="${name}">
+                </div>
+                 <div class="mb-3 col-2">
+                    <label for="inputMail" class="form-label">Mail</label>
+                    <input name="mail" class="form-control" id="inputMail" th:value="${mail}">
+                </div>
+                 <div class="mb-3 col-2">
+                    <label for="inputPhone" class="form-label">Phone</label>
+                    <input name="phone" class="form-control" id="inputPhone" th:value="${phone}">
+                </div>
+                <div class="mb-3 col-2"></div>
                 <div class="mb-3 col-1 d-flex justify-content-end">
                     <a th:href="@{/seller/list(sortBy=${sortBy}, direction=${direction})}" class="btn btn-secondary w-100">Clear Filter</a>
                 </div>

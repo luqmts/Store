@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.luq.storevs.model.Department;
 import com.luq.storevs.model.Seller;
 import com.luq.storevs.service.SellerService;
 
@@ -27,17 +28,27 @@ public class SellerWebController {
     public ModelAndView sellerList(
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
-        @RequestParam(name="department", required=false) String department
+        @RequestParam(name="department", required=false) String department,
+        @RequestParam(name="name", required=false) String name,
+        @RequestParam(name="mail", required=false) String mail,
+        @RequestParam(name="phone", required=false) String phone
     ){
-        List<Seller> sList = sService.getAllSorted(department, sortBy, direction);
+        name = (name == "") ? null : name;
+        mail = (mail == "") ? null : mail;
+        phone = (phone == "") ? null : phone; 
+
+        List<Seller> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
         
         ModelAndView mv = new ModelAndView("seller-list");
         mv.addObject("page", "seller");
         mv.addObject("sellers", sList);
-        mv.addObject("departments", Seller.Department.values());
+        mv.addObject("departments", Department.values());
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
         mv.addObject("selectedDepartment", department);
+        mv.addObject("name", name);
+        mv.addObject("mail", mail);
+        mv.addObject("phone", phone);
         
         return mv;
     }
@@ -47,7 +58,7 @@ public class SellerWebController {
         ModelAndView mv = new ModelAndView("seller-form");
         mv.addObject("seller", new Seller());
         mv.addObject("page", "seller");
-        mv.addObject("departments", Seller.Department.values());
+        mv.addObject("departments", Department.values());
         return mv;
     }
 
@@ -57,7 +68,7 @@ public class SellerWebController {
         ModelAndView mv = new ModelAndView("seller-form");
         mv.addObject("seller", seller);
         mv.addObject("page", "seller");
-        mv.addObject("departments", Seller.Department.values());
+        mv.addObject("departments", Department.values());
         return mv;
     }
 
@@ -77,7 +88,7 @@ public class SellerWebController {
         
         if (hasError){
             model.addAttribute("seller", seller);
-            model.addAttribute("departments", Seller.Department.values());
+            model.addAttribute("departments", Department.values());
             return "seller-form";
         }
 

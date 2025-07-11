@@ -2,7 +2,11 @@ package com.luq.storevs.model;
 
 import com.luq.storevs.valueobjects.Mail;
 import com.luq.storevs.valueobjects.Phone;
+import com.luq.storevs.valueobjects.converters.MailConverter;
+import com.luq.storevs.valueobjects.converters.PhoneConverter;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,21 +24,21 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 public class Seller implements Identifiable{
-    public enum Department{
-        TECHNOLOGY,
-        FOOD,
-        CLOTHES
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ToString.Include
     private Integer id;
 
     @ToString.Include
+    @Column(name="Name", length = 50)
     private String name;
+    @Convert(converter = MailConverter.class)    
+    @Column(name="Mail", length = 50)
     private Mail mail;
+    @Convert(converter = PhoneConverter.class)
+    @Column(name="Phone", length = 11)
     private Phone phone;
+    @Column(name="Department", length = 25)
     private Department department;
 
     public Seller(String name, Mail mail, Phone phone, Department department){

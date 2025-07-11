@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.luq.storevs.model.Department;
 import com.luq.storevs.model.Seller;
 import com.luq.storevs.repositories.SellerRepository;
 
@@ -18,11 +19,15 @@ public class SellerService {
         return sRepository.findAll();
     }
 
-    public List<Seller> getAllSorted(String department, String sortBy, String direction) {
+    public List<Seller> getAllSorted(String sortBy, String direction, String department, String name, String mail, String phone) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        if (department != null){
-            Seller.Department depEnum = Seller.Department.valueOf(department);
-            return sRepository.findByDepartment(depEnum, sort);
+        
+        if (department != null || name != null || mail != null || phone != null){
+            //Department depEnum = Department.valueOf(department);
+            //return sRepository.findByDepartment(depEnum, sort);
+            System.out.println(department);
+            System.out.println(Department.getDepartment(department));
+            return sRepository.findByDepartmentAndNameAndMailAndPhone(sort, Department.getDepartment(department), name, mail, phone);
         }
         return sRepository.findAll(sort);
     }
