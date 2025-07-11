@@ -18,8 +18,12 @@ public class SupplierService {
         return sRepository.findAll();
     }
 
-    public List<Supplier> getAllSorted(String sortBy, String direction) {
+    public List<Supplier> getAllSorted(String sortBy, String direction, String name, String cnpj, String mail, String phone) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        if (name != null || cnpj != null || mail != null || phone != null)
+            return sRepository.findByNameAndCnpjAndMailAndPhone(sort, name, cnpj, mail, phone);
+
         return sRepository.findAll(sort);
     }
 

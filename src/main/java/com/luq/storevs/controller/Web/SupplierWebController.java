@@ -26,16 +26,28 @@ public class SupplierWebController {
     @GetMapping("/supplier/list")
     public ModelAndView supplierList(
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
-        @RequestParam(name="direction", required=false, defaultValue="asc") String direction
+        @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
+        @RequestParam(name="name", required=false) String name,
+        @RequestParam(name="cnpj", required=false) String cnpj, 
+        @RequestParam(name="mail", required=false) String mail,
+        @RequestParam(name="phone", required=false) String phone
     ){
-        List<Supplier> sList = sService.getAllSorted(sortBy, direction);
+        name = (name == "") ? null : name;
+        cnpj = (cnpj == "") ? null : cnpj;
+        mail = (mail == "") ? null : mail;
+        phone = (phone == "") ? null : phone;
+        List<Supplier> sList = sService.getAllSorted(sortBy, direction, name, cnpj, mail, phone);
 
         ModelAndView mv = new ModelAndView("supplier-list");
         mv.addObject("suppliers", sList);
         mv.addObject("page", "supplier");
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
-        
+        mv.addObject("name", name);
+        mv.addObject("cnpj", cnpj);
+        mv.addObject("mail", mail);
+        mv.addObject("phone", phone);
+
         return mv;
     }
 

@@ -1,5 +1,6 @@
 package com.luq.storevs.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,13 +30,19 @@ public class Supplier implements Identifiable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ToString.Include
     private Integer id;
+    
     @ToString.Include
+    @Column(name="Name", length = 50)
     private String name;
+
     @Convert(converter = CnpjConverter.class)
+    @Column(name="Cnpj", length = 18)
     private Cnpj cnpj;
     @Convert(converter = MailConverter.class)
+    @Column(name="Mail", length = 50)
     private Mail mail;
     @Convert(converter = PhoneConverter.class)
+    @Column(name="Phone", length = 11)
     private Phone phone;
 
     public Supplier(String name, Cnpj cnpj, Mail mail, Phone phone) {
