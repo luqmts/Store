@@ -21,7 +21,7 @@ public class OrderService {
     public List<Order> getAllSorted(String sortBy, String direction, Integer productId, Integer sellerId, Integer customerId) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         if (productId != null || sellerId != null || customerId != null) 
-            return oRepository.findByProductSellerCustomer(productId, sellerId, customerId, sort);
+            return oRepository.findByProductSellerCustomer(sort, productId, sellerId, customerId);
         return oRepository.findAll(sort);
     }
 

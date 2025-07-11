@@ -17,9 +17,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer>{
         AND (:customerId IS NULL OR o.customer.id = :customerId)
     """)
     List<Order> findByProductSellerCustomer(
+        Sort sort,
         @Param("productId")Integer productId, 
         @Param("sellerId")Integer sellerId, 
-        @Param("customerId")Integer customerId, 
-        Sort sort
+        @Param("customerId")Integer customerId
     );
 }
