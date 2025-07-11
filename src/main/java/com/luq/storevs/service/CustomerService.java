@@ -18,8 +18,10 @@ public class CustomerService {
         return cRepository.findAll();
     }
 
-    public List<Customer> getAllSorted(String sortBy, String direction) {
+    public List<Customer> getAllSorted(String sortBy, String direction, String name) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        if (name != null)
+            return cRepository.findByNameIgnoreCase(sort, name);
         return cRepository.findAll(sort);
     }
 

@@ -25,15 +25,18 @@ public class CustomerWebController {
     @GetMapping(path="/customer/list")
     public ModelAndView productList(
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
-        @RequestParam(name="direction", required=false, defaultValue="desc") String direction
+        @RequestParam(name="direction", required=false, defaultValue="desc") String direction,
+        @RequestParam(name="name", required=false) String name
     ){
-        List<Customer> cList = cService.getAllSorted(sortBy, direction);
+        name = (name == "") ? null : name;
+        List<Customer> cList = cService.getAllSorted(sortBy, direction, name);
 
         ModelAndView mv = new ModelAndView("customer-list");
         mv.addObject("customers", cList);
         mv.addObject("page", "customer");
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
+        mv.addObject("name", name);
 
         return mv;
     }
