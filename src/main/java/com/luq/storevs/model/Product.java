@@ -1,9 +1,11 @@
 package com.luq.storevs.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -26,14 +28,18 @@ public class Product implements Identifiable {
     @ToString.Include
     private Integer id;
     @ToString.Include
+    @Column(name = "Name", length = 50)
     private String name;
+    @Column(name = "Sku", length = 25)
     private String sku;
+    @Column(name = "Description", length = 1000)
     private String description;
     
     @Min(1)
     private Float price;
     
     @ManyToOne
+    @JoinColumn(name="Supplier")
     private Supplier supplier;
 
     public Product(String sku, String name, String description, Supplier supplier, Float price) {

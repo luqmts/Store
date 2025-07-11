@@ -30,9 +30,14 @@ public class ProductWebController {
     public ModelAndView productList(
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
-        @RequestParam(name="supplier.id", required=false) Integer supplierId
-    ){
-        List<Product> pList = pService.getAllSorted(sortBy, direction, supplierId);
+        @RequestParam(name="supplier.id", required=false) Integer supplierId,
+        @RequestParam(name="name", required=false) String name,
+        @RequestParam(name="sku", required=false) String sku
+    ){  
+        name = (name == "") ? null : name;
+        sku = (sku == "") ? null : sku;
+        
+        List<Product> pList = pService.getAllSorted(sortBy, direction, supplierId, name, sku);
 
         ModelAndView mv = new ModelAndView("product-list");
         mv.addObject("products", pList);
@@ -41,6 +46,8 @@ public class ProductWebController {
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
         mv.addObject("supplierId", supplierId);
+        mv.addObject("name", name);
+        mv.addObject("sku", sku);
 
         return mv;
     }

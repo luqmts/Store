@@ -30,7 +30,15 @@
                         </option>
                     </select>
                 </div>
-                <div class="mb-3 col-8"></div>
+                <div class="mb-3 col-2">
+                    <label for="inputName" class="form-label">Name</label>
+                    <input name="name" class="form-control" id="inputName" th:value="${(name == '') ? null : name}">
+                </div>
+                <div class="mb-3 col-2">
+                    <label for="inputSku" class="form-label">SKU</label>
+                    <input name="sku" class="form-control" id="inputSku" th:value="${(sku == '') ? null : sku}">
+                </div>
+                <div class="mb-3 col-4"></div>
                 <div class="mb-3 col-1 d-flex justify-content-end">
                     <a th:href="@{/product/list(sortBy=${sortBy}, direction=${direction})}" class="btn btn-secondary w-100">Clear Filter</a>
                 </div>
@@ -48,7 +56,9 @@
                     <a th:href="@{/product/list(
                         sortBy='id', 
                         direction=${direction == 'asc' ? 'desc' : 'asc'},
-                        supplier.id=${supplierId}
+                        supplier.id=${supplierId},
+                        name=${name},
+                        sku=${sku}
                         )}">
                         #
                         <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
@@ -58,7 +68,9 @@
                     <a th:href="@{/product/list(
                         sortBy='name',
                         direction=${direction == 'asc' ? 'desc' : 'asc'},
-                        supplier.id=${supplierId}
+                        supplier.id=${supplierId},
+                        name=${name},
+                        sku=${sku}
                         )}">
                         Name
                         <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
@@ -68,7 +80,9 @@
                     <a th:href="@{/product/list(
                         sortBy='sku', 
                         direction=${direction == 'asc' ? 'desc' : 'asc'},
-                        supplier.id=${supplierId}
+                        supplier.id=${supplierId},
+                        name=${name},
+                        sku=${sku}
                         )}">
                         SKU
                         <span th:text="${sortBy == 'sku' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
@@ -78,7 +92,9 @@
                     <a th:href="@{/product/list(
                         sortBy='price', 
                         direction=${direction == 'asc' ? 'desc' : 'asc'},
-                        supplier.id=${supplierId}
+                        supplier.id=${supplierId},
+                        name=${name},
+                        sku=${sku}
                         )}">
                         Price
                         <span th:text="${sortBy == 'price' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
