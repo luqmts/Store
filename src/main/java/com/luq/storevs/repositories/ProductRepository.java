@@ -28,4 +28,13 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
         WHERE (p NOT IN (SELECT s.product FROM Supply s))
     """)
     List<Product> findAllNotRegisteredOnSupply();
+
+    @Query("""
+        SELECT p FROM Product p
+        WHERE (p IN (
+            SELECT s.product FROM Supply s
+            WHERE s.quantity > 0
+        ))
+    """)
+    List<Product> findAllRegisteredOnSupply();
 }

@@ -65,7 +65,7 @@ public class OrderWebController {
 
         mv.addObject("order", order);
         mv.addObject("page", "order");
-        mv.addObject("products", pService.getAll());
+        mv.addObject("products", pService.getAllRegisteredOnSupply());
         mv.addObject("sellers", sService.getAll());
         mv.addObject("customers", cService.getAll());
 
