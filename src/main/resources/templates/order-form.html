@@ -62,12 +62,13 @@
         <div class="mb-3">
             <label for="inputQuantity" class="form-label">Quantity</label>
             <input type="number" name="quantity" class="form-control" id="inputQuantity" aria-describedby="quantityHelp" th:value="${order.quantity}" required>
+            <div th:if="${quantityError}" th:text="${quantityError}" class="text-danger"></div>
             <div id="quantityHelp" class="form-text">Insert order's quantity.</div>
         </div>
 
         <div class="mb-3">
             <label for="inputTotalSold" class="form-label">Total sold</label>
-            <input class="form-control" name="totalPrice" id="inputTotalSold" type="number" placeholder="Readonly input here…" aria-describedby="totalSoldHelp" readonly>
+            <input class="form-control" name="totalPrice" id="inputTotalSold" type="number" placeholder="Readonly input here…" aria-describedby="totalSoldHelp" readonly required>
             <div id="totalSoldHelp" class="form-text">Fillable with total sold for this product.</div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -75,9 +76,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const productSelect = document.getElementById('product');
+            const productSelect = document.getElementById('inputProduct');
             const quantityInput = document.getElementById('inputQuantity');
-            const totalSoldInput = document.getElementById('totalSold');
+            const totalSoldInput = document.getElementById('inputTotalSold');
 
             function updateTotal() {
                 const selectedOption = productSelect.options[productSelect.selectedIndex];

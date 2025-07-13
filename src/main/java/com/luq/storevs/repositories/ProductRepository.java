@@ -37,4 +37,15 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
         ))
     """)
     List<Product> findAllRegisteredOnSupply();
+
+    @Query("""
+        SELECT p FROM Product p
+        WHERE (p IN (
+            SELECT s.product FROM Supply s
+            WHERE (s.quantity > 0 OR s.id = :supplyId)
+        ))
+    """)
+    List<Product> findAllRegisteredOnSupply(
+            @Param("supplyId") int supplyId
+    );
 }
