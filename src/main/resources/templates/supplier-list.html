@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
 <head>
     <title>Supplier list</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
@@ -9,7 +9,6 @@
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
 
-    
     <h1>Supplier list</h1>
     <div class="container-fluid border border-text-black-50 rounded-2 pt-1">
         <div class="h4 pb-2 mb-4 text-black-50 border-bottom border-text-black-50">Filter by</div>
@@ -23,8 +22,8 @@
                     <input name="name" class="form-control" id="inputName" th:value="${name}">
                 </div>
                 <div class="mb-3 col-2">
-                    <label for="inputName" class="form-label">CNPJ</label>
-                    <input name="cnpj" class="form-control" id="inputName" th:value="${cnpj}">
+                    <label for="inputCnpj" class="form-label">CNPJ</label>
+                    <input name="cnpj" class="form-control" id="inputCnpj" th:value="${cnpj}">
                 </div>
                     <div class="mb-3 col-2">
                     <label for="inputMail" class="form-label">Mail</label>

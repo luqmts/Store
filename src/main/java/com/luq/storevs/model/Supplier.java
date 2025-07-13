@@ -1,25 +1,20 @@
 package com.luq.storevs.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
 import com.luq.storevs.valueobjects.Cnpj;
 import com.luq.storevs.valueobjects.Mail;
 import com.luq.storevs.valueobjects.Phone;
 import com.luq.storevs.valueobjects.converters.CnpjConverter;
 import com.luq.storevs.valueobjects.converters.MailConverter;
 import com.luq.storevs.valueobjects.converters.PhoneConverter;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
-@Data
+import java.util.Objects;
+
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Entity
 @Table(name="suppliers")
 @AllArgsConstructor
@@ -50,5 +45,21 @@ public class Supplier implements Identifiable {
         this.cnpj = cnpj;
         this.mail = mail;
         this.phone = phone;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Supplier supplier = (Supplier) o;
+        return getId() != null && Objects.equals(getId(), supplier.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

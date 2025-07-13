@@ -1,6 +1,7 @@
 package com.luq.storevs.controller.Web;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,10 +33,10 @@ public class SupplierWebController {
         @RequestParam(name="mail", required=false) String mail,
         @RequestParam(name="phone", required=false) String phone
     ){
-        name = (name == "") ? null : name;
-        cnpj = (cnpj == "") ? null : cnpj;
-        mail = (mail == "") ? null : mail;
-        phone = (phone == "") ? null : phone;
+        name = (Objects.equals(name, "")) ? null : name;
+        cnpj = (Objects.equals(cnpj, "")) ? null : cnpj;
+        mail = (Objects.equals(mail, "")) ? null : mail;
+        phone = (Objects.equals(phone, "")) ? null : phone;
         List<Supplier> sList = sService.getAllSorted(sortBy, direction, name, cnpj, mail, phone);
 
         ModelAndView mv = new ModelAndView("supplier-list");

@@ -23,10 +23,6 @@ public class SellerService {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         
         if (department != null || name != null || mail != null || phone != null){
-            //Department depEnum = Department.valueOf(department);
-            //return sRepository.findByDepartment(depEnum, sort);
-            System.out.println(department);
-            System.out.println(Department.getDepartment(department));
             return sRepository.findByDepartmentAndNameAndMailAndPhone(sort, Department.getDepartment(department), name, mail, phone);
         }
         return sRepository.findAll(sort);
@@ -41,7 +37,7 @@ public class SellerService {
     }
 
     public void delete(int id) {
-        sRepository.deleteById(id);;
+        sRepository.deleteById(id);
     }
 
     public Seller update(int id, Seller order) {

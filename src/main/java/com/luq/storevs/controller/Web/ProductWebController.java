@@ -1,6 +1,7 @@
 package com.luq.storevs.controller.Web;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,8 +35,8 @@ public class ProductWebController {
         @RequestParam(name="name", required=false) String name,
         @RequestParam(name="sku", required=false) String sku
     ){  
-        name = (name == "") ? null : name;
-        sku = (sku == "") ? null : sku;
+        name = (Objects.equals(name, "")) ? null : name;
+        sku = (Objects.equals(sku, "")) ? null : sku;
         
         List<Product> pList = pService.getAllSorted(sortBy, direction, supplierId, name, sku);
 

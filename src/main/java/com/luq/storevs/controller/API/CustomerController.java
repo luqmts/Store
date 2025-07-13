@@ -1,7 +1,6 @@
 package com.luq.storevs.controller.API;
 
 import com.luq.storevs.service.CustomerService;
-import com.luq.storevs.service.OrderService;
 
 import java.util.List;
 

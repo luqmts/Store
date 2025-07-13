@@ -34,7 +34,7 @@ public class OrderService {
     }
 
     public void delete(int id) {
-        oRepository.deleteById(id);;
+        oRepository.deleteById(id);
     }
 
     public Order update(int id, Order order) {

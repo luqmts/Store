@@ -27,7 +27,10 @@ public class ProductService {
 
         return pRepository.findAll(sort);
     }
-    
+
+    public List<Product> getAllNotRegisteredOnSupply(){
+        return pRepository.findAllNotRegisteredOnSupply();
+    }
     public Product getById(int id) {
         return pRepository.findById(id).orElse(null);
     }
@@ -37,7 +40,7 @@ public class ProductService {
     }
 
     public void delete(int id) {
-        pRepository.deleteById(id);;
+        pRepository.deleteById(id);
     }
 
     public Product update(int id, Product product) {

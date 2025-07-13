@@ -1,6 +1,7 @@
 package com.luq.storevs.controller.Web;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,7 @@ public class CustomerWebController {
         @RequestParam(name="direction", required=false, defaultValue="desc") String direction,
         @RequestParam(name="name", required=false) String name
     ){
-        name = (name == "") ? null : name;
+        name = (Objects.equals(name, "")) ? null : name;
         List<Customer> cList = cService.getAllSorted(sortBy, direction, name);
 
         ModelAndView mv = new ModelAndView("customer-list");

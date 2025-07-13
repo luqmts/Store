@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface OrderRepository extends JpaRepository<Order, Integer>{
     @Query("""
-        SELECT o FROM Order o 
+        SELECT o FROM Order o
         WHERE (:productId IS NULL OR o.product.id = :productId)
         AND (:sellerId IS NULL OR o.seller.id = :sellerId)
         AND (:customerId IS NULL OR o.customer.id = :customerId)

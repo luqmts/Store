@@ -11,10 +11,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProductRepository extends JpaRepository<Product, Integer>{
     @Query("""
-        SELECT p FROM Product p 
+        SELECT p FROM Product p
         WHERE (:supplierId IS NULL OR p.supplier.id = :supplierId)
         AND (:name IS NULL OR p.name LIKE :name || '%')
-        AND (:sku IS NULL OR p.sku LIKE :sku || '%') 
+        AND (:sku IS NULL OR p.sku LIKE :sku || '%')
     """)
     List<Product> findBySupplierIdAndNameAndSku(
         Sort sort,
@@ -22,4 +22,10 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
         @Param("name") String name,
         @Param("sku") String sku
     );
+
+    @Query("""
+        SELECT p FROM Product p
+        WHERE (p NOT IN (SELECT s.product FROM Supply s))
+    """)
+    List<Product> findAllNotRegisteredOnSupply();
 }

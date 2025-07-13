@@ -25,10 +25,10 @@ public class OrderWebController {
     protected final CustomerService cService;
     
     @Autowired
-    public OrderWebController(OrderService oService, ProductService pService, SellerService sServcice, CustomerService cService){
+    public OrderWebController(OrderService oService, ProductService pService, SellerService sService, CustomerService cService){
         this.oService = oService;
         this.pService = pService;
-        this.sService = sServcice;
+        this.sService = sService;
         this.cService = cService;
     }
 

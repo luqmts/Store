@@ -34,7 +34,7 @@ public class CustomerService {
     }
 
     public void delete(int id) {
-        cRepository.deleteById(id);;
+        cRepository.deleteById(id);
     }
 
     public Customer update(int id, Customer customer) {

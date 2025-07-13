@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
 <head>
     <title>Customer Form</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
@@ -8,7 +8,7 @@
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <form method="POST" action="/customer/create" th:object="${customer}">
+    <form method="POST" th:action="@{/customer/create}" th:object="${customer}">
         <input type="hidden" name="id" th:value="${customer.id}">
 
         <div class="mb-3">

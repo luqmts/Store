@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head></head>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
 <body>
     <th:block th:fragment="navbar">
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -32,6 +31,11 @@
                             <a class="nav-link" 
                                 th:href="@{/customer/list(sortBy='id', direction='asc')}"
                                 th:classappend="${page} == 'customer' ? 'active' : ''">Customer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               th:href="@{/supply/list(sortBy='id', direction='asc')}"
+                               th:classappend="${page} == 'supply' ? 'active' : ''">Supply</a>
                         </li>
                     </ul>
                 </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
 <head>
     <title>Product Form</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
@@ -8,7 +8,7 @@
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <form method="POST" action="/product/create" th:object="${product}">
+    <form method="POST" th:action="@{/product/create}" th:object="${product}">
         <input type="hidden" name="id" th:value="${product.id}">
         <div class="mb-3">
             <label for="inputName" class="form-label">Name</label>
@@ -33,14 +33,13 @@
         </div>
          <div class="mb-3">
             <label for="inputSupplier" class="form-label">Supplier</label>
-            <select name="supplier.id" class="form-control" id="supplier" required>
+            <select name="supplier.id" class="form-control" id="inputSupplier" required>
                 <option value="" disabled selected>Select a Supplier</option>
                 <option 
                     th:each="supplier: ${suppliers}"
                     th:value="${supplier.id}"
                     th:text="${supplier.name}"
                     th:selected="${product.supplier != null} ? ${supplier.id} == ${product.supplier.id} : false">
-
                 </option>
             </select>
             <div id="supplierHelp" class="form-text">Select a Supplier.</div>

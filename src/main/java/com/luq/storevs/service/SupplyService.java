@@ -38,7 +38,7 @@ public class SupplyService {
     }
 
     public void delete(int id) {
-        sRepository.deleteById(id);;
+        sRepository.deleteById(id);
     }
 
     public Supply update(int id, Supply supply) {

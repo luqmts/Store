@@ -1,6 +1,7 @@
 package com.luq.storevs.controller.Web;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,9 +34,9 @@ public class SellerWebController {
         @RequestParam(name="mail", required=false) String mail,
         @RequestParam(name="phone", required=false) String phone
     ){
-        name = (name == "") ? null : name;
-        mail = (mail == "") ? null : mail;
-        phone = (phone == "") ? null : phone; 
+        name = (Objects.equals(name, "")) ? null : name;
+        mail = (Objects.equals(mail, "")) ? null : mail;
+        phone = (Objects.equals(phone, "")) ? null : phone;
 
         List<Seller> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
         
