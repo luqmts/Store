@@ -1,10 +1,9 @@
-package com.luq.storevs.model;
+package com.luq.storevs.domain;
 
 import lombok.Getter;
 
 @Getter
 public enum Department {
-
     TECHNOLOGY ("Technology"),
     FOOD ("Food"),
     CLOTHES ("Clothes");

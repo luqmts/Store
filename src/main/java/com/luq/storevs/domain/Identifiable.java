@@ -1,4 +1,4 @@
-package com.luq.storevs.model;
+package com.luq.storevs.domain;
 
 public interface Identifiable {
     Integer getId();
