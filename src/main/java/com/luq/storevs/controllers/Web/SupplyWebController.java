@@ -1,8 +1,8 @@
-package com.luq.storevs.controller.Web;
+package com.luq.storevs.controllers.Web;
 
 import com.luq.storevs.domain.Supply;
-import com.luq.storevs.service.SupplyService;
-import com.luq.storevs.service.ProductService;
+import com.luq.storevs.services.SupplyService;
+import com.luq.storevs.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

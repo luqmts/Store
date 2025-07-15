@@ -1,4 +1,4 @@
-package com.luq.storevs.controller.Web;
+package com.luq.storevs.controllers.Web;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.domain.Department;
 import com.luq.storevs.domain.Seller;
-import com.luq.storevs.service.SellerService;
+import com.luq.storevs.services.SellerService;
 
 @Controller
 public class SellerWebController {

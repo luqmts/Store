@@ -1,4 +1,4 @@
-package com.luq.storevs.controller.Web;
+package com.luq.storevs.controllers.Web;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.domain.Supplier;
-import com.luq.storevs.service.SupplierService;
+import com.luq.storevs.services.SupplierService;
 
 @Controller
 public class SupplierWebController {

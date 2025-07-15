@@ -1,4 +1,4 @@
-package com.luq.storevs.controller.Web;
+package com.luq.storevs.controllers.Web;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.storevs.domain.Customer;
-import com.luq.storevs.service.CustomerService;
+import com.luq.storevs.services.CustomerService;
 
 @Controller
 public class CustomerWebController {
