@@ -1,4 +1,4 @@
-package com.luq.storevs.service;
+package com.luq.storevs.services;
 
 import java.util.List;
 

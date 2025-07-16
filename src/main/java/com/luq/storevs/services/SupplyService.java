@@ -1,4 +1,4 @@
-package com.luq.storevs.service;
+package com.luq.storevs.services;
 
 import com.luq.storevs.domain.Supply;
 import com.luq.storevs.domain.Product;
