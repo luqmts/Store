@@ -28,7 +28,7 @@
                             th:classappend="${page} == 'seller' ? 'active' : ''">Sellers</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" 
+                            <a class="nav-link"
                                 th:href="@{/customer/list(sortBy='id', direction='asc')}"
                                 th:classappend="${page} == 'customer' ? 'active' : ''">Customer</a>
                         </li>
@@ -36,6 +36,16 @@
                             <a class="nav-link"
                                th:href="@{/supply/list(sortBy='id', direction='asc')}"
                                th:classappend="${page} == 'supply' ? 'active' : ''">Supply</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+                            <a class="nav-link"
+                               th:href="@{/user/list(sortBy='name', direction='asc')}"
+                               th:classappend="${page} == 'user' ? 'active' : ''">Users</a>
+                        </li>
+                        <li class="nav-item">
+                            <form th:action="@{/logout}" method="post">
+                                <input class="nav-link" type="submit" value="Sign Out"/>
+                            </form>
                         </li>
                     </ul>
                 </div>

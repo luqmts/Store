@@ -96,7 +96,7 @@ public class OrderWebController {
         return mv;
     }
 
-    @PostMapping(path="/order/create")
+    @PostMapping(path="/order/form")
     public String postOrder(Order order, Model model){
         Supply supply = supplyService.getById(order.getProduct().getId());
         Integer orderQuantity = (order.getId() != null) ? oService.getById(order.getId()).getQuantity() : 0;

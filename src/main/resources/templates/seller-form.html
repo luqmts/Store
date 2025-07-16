@@ -8,7 +8,7 @@
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <form method="POST" th:action="@{/seller/create}" th:object="${seller}">
+    <form method="POST" th:action="@{/seller/form}" th:object="${seller}">
         <input type="hidden" name="id" th:value="${seller.id}">
         <input type="hidden" name="created" th:value="${seller.created}">
         <input type="hidden" name="createdBy" th:value="${seller.createdBy}">
@@ -39,8 +39,9 @@
                         th:selected="${seller.department} == ${department}">
                 </option>
             </select>
+            <div id="departmentHelp" class="form-text">Select a Department.</div>
         </div>
-        <div id="departmentHelp" class="form-text">Select a Department.</div>
+
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </body>

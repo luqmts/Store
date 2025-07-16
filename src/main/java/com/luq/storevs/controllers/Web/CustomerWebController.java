@@ -63,7 +63,7 @@ public class CustomerWebController {
         return mv;
     }
 
-    @PostMapping(path="/customer/create")
+    @PostMapping(path="/customer/form")
     public String postCustomer(Customer customer){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

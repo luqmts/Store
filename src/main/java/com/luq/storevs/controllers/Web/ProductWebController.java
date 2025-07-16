@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -75,7 +76,7 @@ public class ProductWebController {
         return mv;
     }
 
-    @PostMapping(path="/product/create")
+    @PostMapping(path="/product/form")
     public String postProduct(Product product, Model model){
         boolean hasError = false;
         if (product.getPrice() < 1){

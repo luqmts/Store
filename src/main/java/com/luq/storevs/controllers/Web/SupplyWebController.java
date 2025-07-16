@@ -70,7 +70,7 @@ public class SupplyWebController {
         return mv;
     }
 
-    @PostMapping(path="/supply/create")
+    @PostMapping(path="/supply/form")
     public String postSupply(Supply supply, Model model){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (supply.getId() == null) {

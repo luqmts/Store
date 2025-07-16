@@ -52,11 +52,19 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/login", "/css/**", "/js/**").permitAll()
-                .anyRequest()
+                .requestMatchers(
+                        "/user/**",
+                        "/customer/form", "/customer/form/**", "/customer/delete/**",
+                        "/product/form", "/product/form/**", "/product/delete/**",
+                        "/seller/form", "/seller/form/**", "/seller/delete/**",
+                        "/supplier/form", "/supplier/form/**", "/supplier/delete/**",
+                        "/supply/form", "/supply/form/**", "/supply/delete/**"
+                ).hasRole("ADMIN")
+                    .anyRequest()
                 .authenticated()
             ).formLogin((form) -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/product/list")
+                .defaultSuccessUrl("/order/list", true)
                 .permitAll()
             )
             .logout((logout) -> logout.permitAll())

@@ -112,7 +112,7 @@
                     <span th:text="${sortBy == 'phone' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                 </a>
                 </th>
-            <th scope="col">Actions</th>
+            <th scope="col" sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -122,13 +122,13 @@
                 <td data-th-text="${supplier.cnpj}"></td>
                 <td data-th-text="${supplier.mail}"></td>
                 <td data-th-text="${supplier.phone}"></td>
-                <td>
+                <td sec:authorize="hasRole('ROLE_ADMIN')">
                     <a th:href="@{/supplier/form/{id}(id=${supplier.id})}"><i class="bi bi-pencil"></i></a>
                     <a th:href="@{/supplier/delete/{id}(id=${supplier.id})}"><i class="bi bi-trash3"></i></a>
                 </td>
             </tr>
         </tbody>
     </table>
-    <a class="btn btn-primary position-fixed bottom-0 end-0 m-4" th:href="@{/supplier/form}" role="button">Register new Supplier</a>
+    <a class="btn btn-primary position-fixed bottom-0 end-0 m-4" th:href="@{/supplier/form}" role="button" sec:authorize="hasRole('ROLE_ADMIN')">Register new Supplier</a>
 </body>
 </html>

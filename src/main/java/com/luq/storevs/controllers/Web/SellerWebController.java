@@ -76,7 +76,7 @@ public class SellerWebController {
         return mv;
     }
 
-    @PostMapping(path="/seller/create")
+    @PostMapping(path="/seller/form")
     public String postSeller(Seller seller, Model model){
         boolean hasError = false;
         

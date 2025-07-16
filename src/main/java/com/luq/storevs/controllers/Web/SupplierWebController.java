@@ -72,7 +72,7 @@ public class SupplierWebController {
         return mv;
     }
 
-    @PostMapping("/supplier/create")
+    @PostMapping("/supplier/form")
     public String postSupplier(Supplier supplier, Model model){
         boolean hasError = false;
         if (supplier.getMail() == null){

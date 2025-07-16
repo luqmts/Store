@@ -8,7 +8,7 @@
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <form method="POST" th:action="@{/product/create}" th:object="${product}">
+    <form method="POST" th:action="@{/product/form}" th:object="${product}">
         <input type="hidden" name="id" th:value="${product.id}">
         <input type="hidden" name="created" th:value="${product.created}">
         <input type="hidden" name="createdBy" th:value="${product.createdBy}">

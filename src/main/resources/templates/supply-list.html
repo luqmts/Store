@@ -63,7 +63,7 @@
                         <span th:text="${sortBy == 'quantity' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
                 </th>
-                <th scope="col">Actions</th>
+                <th scope="col" sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -71,13 +71,13 @@
                 <th scope="row" data-th-text="${item.id}"></th>
                 <td data-th-text="${item.product}"></td>
                 <td data-th-text="${item.quantity}"></td>
-                <td>
+                <td sec:authorize="hasRole('ROLE_ADMIN')">
                     <a th:href="@{/supply/form/{id}(id=${item.id})}"><i class="bi bi-pencil"></i></a>
                     <a th:href="@{/supply/delete/{id}(id=${item.id})}"><i class="bi bi-trash3"></i></a>
                 </td>
             </tr>
         </tbody>
     </table>
-    <a class="btn btn-primary position-fixed bottom-0 end-0 m-4" th:href="@{/supply/form}" role="button">Register new Product on Supply</a>
+    <a class="btn btn-primary position-fixed bottom-0 end-0 m-4" th:href="@{/supply/form}" role="button" sec:authorize="hasRole('ROLE_ADMIN')">Register new Product on Supply</a>
 </body>
 </html>
