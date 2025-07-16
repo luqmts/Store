@@ -1,7 +1,7 @@
 package com.luq.storevs.repositories;
 
-import com.luq.storevs.model.Seller;
-import com.luq.storevs.model.Department;
+import com.luq.storevs.domain.Seller;
+import com.luq.storevs.domain.Department;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface SellerRepository extends JpaRepository<Seller, Integer>{
     
     @Query("""
         SELECT s FROM Seller s
-        WHERE (:department IS NULL OR s.department = :department) 
+        WHERE (:department IS NULL OR s.department = :department)
         AND (:name IS NULL OR s.name LIKE :name || '%')
         AND (:mail IS NULL OR s.mail LIKE :mail || '%')
         AND (:phone IS NULL OR s.phone LIKE :phone || '%')

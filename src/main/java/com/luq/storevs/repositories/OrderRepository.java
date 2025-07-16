@@ -1,6 +1,6 @@
 package com.luq.storevs.repositories;
 
-import com.luq.storevs.model.Order;
+import com.luq.storevs.domain.Order;
 
 import java.util.List;
 

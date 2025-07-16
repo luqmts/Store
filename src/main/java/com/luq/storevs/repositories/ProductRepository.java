@@ -1,6 +1,6 @@
 package com.luq.storevs.repositories;
 
-import com.luq.storevs.model.Product;
+import com.luq.storevs.domain.Product;
 
 import java.util.List;
 
