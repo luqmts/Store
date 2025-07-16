@@ -13,4 +13,12 @@ public enum UserRole {
         this.role = role;
     }
 
+    public static UserRole getUserRole(String role) {
+        for (UserRole userRole : UserRole.values()) {
+            if (userRole.getRole().toUpperCase().equals(role)) {
+                return userRole;
+            }
+        }
+        return null;
+    }
 }

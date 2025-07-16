@@ -6,11 +6,13 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,10 +36,25 @@ public class User implements UserDetails {
     private String password;
     private UserRole role;
 
+    @Transient
+    private String confirmPassword;
+
+    private String createdBy;
+    private LocalDateTime created;
+    private String modifiedBy;
+    private LocalDateTime modified;
+
     public User(String name, Mail login, String password, UserRole role) {
         this.name = name;
         this.login = login;
         this.password = password;
+        this.role = role;
+    }
+
+    public User(String name, Mail login, String password, String confirmPassword, UserRole role) {
+        this.name = name;
+        this.login = login;
+        this.password = password.equals(confirmPassword) ? password : null;
         this.role = role;
     }
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+    <head>
+        <title>Supply Form</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+    </head>
+    <body>
+        <div th:replace="~{fragments :: navbar}"></div>
+
+        <form th:action="@{/user/form}" th:object="${user}" method="POST">
+            <input type="hidden" name="id" th:value="${user.id}">
+            <div class="mb-3">
+                <label for="inputName" class="form-label">Name</label>
+                <input name="name" class="form-control" id="inputName" aria-describedby="nameHelp" th:value="${user.name}" required>
+                <div id="nameHelp" class="form-text">Insert user's name.</div>
+            </div>
+            <div class="mb-3">
+                <label for="inputLogin" class="form-label">Login</label>
+                <input type="email" name="login" class="form-control" id="inputLogin" aria-describedby="loginHelp" th:value="${user.login}" required>
+                <div id="loginHelp" class="form-text">Insert user's login.</div>
+            </div>
+            <div class="mb-3">
+                <label for="inputPassword" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" id="inputPassword" aria-describedby="passwordHelp" required>
+                <div id="passwordHelp" class="form-text">Insert user's password.</div>
+            </div>
+            <div class="mb-3">
+                <label for="inputConfirmPassword" class="form-label">Confirm Password</label>
+                <input
+                    type="password" name="confirmPassword" th:value="${user.confirmPassword}" class="form-control"
+                    id="inputConfirmPassword" aria-describedby="confirmPasswordHelp"  required>
+                <div id="confirmPasswordHelp" class="form-text">Insert user's password.</div>
+                <div th:if="${passwordError}" th:text="${passwordError}" class="text-danger"></div>
+            </div>
+            <div class="mb-3">
+                <label for="inputRole" class="form-label">Role</label>
+                <select name="role" class="form-control" id="inputRole" required>
+                    <option value="" disabled selected>Select a Role</option>
+                    <option th:each="role: ${roles}"
+                            th:value="${role}"
+                            th:text="${role}"
+                            th:selected="${user.role} == ${role}">
+                    </option>
+                </select>
+                <div id="roleHelp" class="form-text">Select a Role.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </body>
+</html>
