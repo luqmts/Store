@@ -10,12 +10,15 @@
 
     <form method="POST" th:action="@{/customer/create}" th:object="${customer}">
         <input type="hidden" name="id" th:value="${customer.id}">
+        <input type="hidden" name="created" th:value="${customer.created}">
+        <input type="hidden" name="createdBy" th:value="${customer.createdBy}">
 
         <div class="mb-3">
             <label for="inputName" class="form-label">Name</label>
             <input name="name" class="form-control" id="inputName" aria-describedby="nameHelp" th:value="${customer.name}" required>
             <div id="nameHelp" class="form-text">Insert customer's name.</div>
         </div>
+
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </body>

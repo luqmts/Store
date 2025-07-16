@@ -10,6 +10,8 @@
 
     <form method="POST" th:action="@{/supply/create}" th:object="${supply}">
         <input type="hidden" name="id" th:value="${supply.id}">
+        <input type="hidden" name="created" th:value="${supply.created}">
+        <input type="hidden" name="createdBy" th:value="${supply.createdBy}">
         <div class="mb-3">
             <label for="inputProduct" class="form-label">Product</label>
             <select name="product.id" class="form-control" id="inputProduct" required>
