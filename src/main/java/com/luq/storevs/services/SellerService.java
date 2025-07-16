@@ -32,20 +32,20 @@ public class SellerService {
         return sRepository.findById(id).orElse(null);
     }
 
-    public Seller register(Seller order) {
-        return sRepository.save(order);
+    public Seller register(Seller seller) {
+        return sRepository.save(seller);
     }
 
     public void delete(int id) {
         sRepository.deleteById(id);
     }
 
-    public Seller update(int id, Seller order) {
-        Seller order_to_update = sRepository.findById(id).orElse(null);
+    public Seller update(int id, Seller seller) {
+        Seller seller_to_update = sRepository.findById(id).orElse(null);
         
-        if (order_to_update == null) return null;
+        if (seller_to_update == null) return null;
 
-        order.setId(id);
-        return sRepository.save(order);
+        seller.setId(id);
+        return sRepository.save(seller);
     }
 }
