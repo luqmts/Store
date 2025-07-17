@@ -81,6 +81,19 @@ public class AuthenticationWebController {
         mv.addObject("user", user);
         mv.addObject("page", "user");
         mv.addObject("roles", UserRole.values());
+        mv.addObject("updatePassword", false);
+
+        return mv;
+    }
+
+    @GetMapping(path="/user/form/{id}/update-password")
+    public ModelAndView updatePasswordPage(@PathVariable("id") String id){
+        User user = uService.getById(id);
+        ModelAndView mv = new ModelAndView("user-form");
+        mv.addObject("user", user);
+        mv.addObject("page", "user");
+        mv.addObject("roles", UserRole.values());
+        mv.addObject("updatePassword", true);
 
         return mv;
     }
@@ -96,10 +109,16 @@ public class AuthenticationWebController {
     }
 
     @PostMapping(path="/user/form")
-    public String postUser(User user, Model model){
+    public String postUser(
+        User user,
+        Model model,
+        @RequestParam(value = "updatePassword", required = false) String updatePasswordString
+    ){
         boolean hasError = false;
+        boolean userCreation = user.getId() == null || user.getId().isBlank();
+        boolean updatePassword = updatePasswordString.equals("true");
 
-        if (user.getPassword() == null){
+        if (user.getPassword() == null && (userCreation || updatePassword)){
             model.addAttribute("passwordError", "Passwords don't match");
             hasError = true;
         }
@@ -111,7 +130,7 @@ public class AuthenticationWebController {
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (user.getId() == null || user.getId().isBlank()) {
+        if (userCreation) {
             user.setId(null);
             user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
             user.setCreatedBy(authentication.getName());
@@ -121,10 +140,19 @@ public class AuthenticationWebController {
 
             uService.register(user);
         } else {
-            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-            user.setModifiedBy(authentication.getName());
-            user.setModified(LocalDateTime.now());
-            uService.update(user.getId(), user);
+            User user_update = uService.getById(user.getId());
+
+            if (updatePassword){
+                user_update.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            } else {
+                user_update.setName(user.getName());
+                user_update.setLogin(user.getLogin());
+                user_update.setRole(user.getRole());
+            }
+
+            user_update.setModifiedBy(authentication.getName());
+            user_update.setModified(LocalDateTime.now());
+            uService.update(user.getId(), user_update);
         }
 
         return "redirect:/user/list";
