@@ -21,7 +21,12 @@
                     <label for="inputName" class="form-label">Name</label>
                     <input name="name" class="form-control" id="inputName" th:value="${(name == '') ? null : name}">
                 </div>
-                <div class="mb-3 col-8"></div>
+                <div class="mb-3 col-7"></div>
+                <div class="mb-3 col-1 d-flex justify-content-end">
+                    <a
+                        th:href="@{/customer/csv(sortBy=${sortBy},direction=${direction},name=${name})}"
+                        type="submit" class="btn btn-outline-dark w-30"><i class="bi bi-filetype-csv"></i></a>
+                </div>
                 <div class="mb-3 col-1 d-flex justify-content-end">
                     <a th:href="@{/customer/list(sortBy=${sortBy}, direction=${direction})}" class="btn btn-secondary w-100">Clear Filter</a>
                 </div>

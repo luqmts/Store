@@ -1,0 +1,55 @@
+package com.luq.storevs.controllers.CSV;
+
+import com.luq.storevs.domain.Supply;
+import com.luq.storevs.services.SupplyService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Locale;
+
+import static org.unbescape.csv.CsvEscape.escapeCsv;
+
+@RestController
+public class SupplyCSVExportController {
+    @Autowired
+    SupplyService sService;
+
+    @GetMapping("/supply/csv")
+    public void exportToCsv(
+        HttpServletResponse response,
+        @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
+        @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
+        @RequestParam(name="product.id", required=false) Integer productId
+    ) throws IOException {
+
+        response.setContentType("text/csv; charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename=\"supply.csv\"");
+
+        try (PrintWriter writer = response.getWriter()) {
+            writer.println("id,product,quantity,created,created_by,modified,modified_by");
+
+            List<Supply> sList = sService.getAllSorted(sortBy, direction, productId);
+
+            for (Supply supply : sList) {
+                String row = String.format(Locale.ROOT,
+                "%d,%s,%d,%s,%s,%s,%s",
+                    supply.getId(),
+                    escapeCsv(supply.getProduct().getName()),
+                    supply.getQuantity(),
+                    escapeCsv(supply.getCreated().toString()),
+                    escapeCsv(supply.getCreatedBy()),
+                    escapeCsv(supply.getModified().toString()),
+                    escapeCsv(supply.getModifiedBy())
+                );
+
+                writer.println(row);
+            }
+        }
+    }
+}
