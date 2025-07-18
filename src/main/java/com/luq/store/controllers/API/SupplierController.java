@@ -1,0 +1,53 @@
+package com.luq.store.controllers.API;
+
+import com.luq.store.services.SupplierService;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.luq.store.domain.Supplier;
+
+@RestController
+@RequestMapping("/api/suppliers")
+public class SupplierController {
+    protected final SupplierService sService;
+    
+    @Autowired
+    public SupplierController(SupplierService sService){
+        this.sService = sService;
+    }
+
+    @PostMapping
+    public Supplier registerSupplier(@RequestBody Supplier supplier){
+        return sService.register(supplier);
+    }
+
+    @GetMapping
+    public List<Supplier> getSuppliers(){
+        return sService.getAll();
+    }
+
+    @GetMapping(path="/{id}")
+    public Supplier getSupplierById(@PathVariable("id") int id){
+        return sService.getById(id);
+    }
+
+    @PutMapping(path="/{id}")
+    public Supplier updateSupplier(@PathVariable("id") int id, @RequestBody Supplier supplier){
+        return sService.update(id, supplier);
+    }
+
+    @DeleteMapping(path="{id}")
+    public void removeSupplier(@PathVariable("id") int id){
+        sService.delete(id);
+    }
+}
