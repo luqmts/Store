@@ -10,14 +10,16 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@ToString
 @Table(name="customers")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(onlyExplicitlyIncluded = true)
 public class Customer implements Identifiable {
     @Id
+    @ToString.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @ToString.Include
     @Column(name="Name", length = 50)
     private String name;
 

@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "supply", uniqueConstraints=@UniqueConstraint(columnNames={"product"}))
 @AllArgsConstructor
@@ -17,13 +17,16 @@ import java.util.Objects;
 public class Supply implements Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ToString.Include
     private Integer id;
 
     @Column(name = "quantity")
+    @ToString.Include
     private Integer quantity;
 
     @ManyToOne
     @JoinColumn(name = "Product")
+    @ToString.Include
     private Product product;
 
     private String createdBy;

@@ -10,31 +10,37 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name="orders")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order implements Identifiable{
     @Id
+    @ToString.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name="TotalPrice")
+    @ToString.Include
     private Float totalPrice;
     @Column(name="Quantity")
+    @ToString.Include
     private Integer quantity;
     @Column(name="OrderDate")
     private LocalDate orderDate;
     
     @ManyToOne
     @JoinColumn(name="Product")
+    @ToString.Include
     private Product product;
     @ManyToOne
     @JoinColumn(name="Seller")
+    @ToString.Include
     private Seller seller;
     @ManyToOne
     @JoinColumn(name="Customer")
+    @ToString.Include
     private Customer customer;
 
     private String createdBy;
