@@ -1,6 +1,7 @@
 package com.luq.store.controllers.API;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luq.store.domain.Product;
@@ -70,25 +71,33 @@ public class ProductControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Testing if correct get all product's parameters are being returned on get call")
+    @DisplayName("Testing if correct product's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
         when(pService.getAll()).thenReturn(List.of(fakeProduct1));
+        String productJson = objectMapper.writeValueAsString(fakeProduct1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/products"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/product"))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(fakeProduct1.getId()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value(fakeProduct1.getName()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].sku").value(fakeProduct1.getSku()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].description").value(fakeProduct1.getDescription()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].price").value(fakeProduct1.getPrice()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].createdBy").value(fakeProduct1.getCreatedBy()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].created").value(fakeProduct1.getCreated().toString()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].modifiedBy").value(fakeProduct1.getModifiedBy()))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].modified").value(fakeProduct1.getModified().toString()));
+            .andExpect(content().json("[" + productJson + "]"));
 
         verify(pService, times(1)).getAll();
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("Testing if correct product's parameters are being returned on get by id")
+    public void testGetByIdMethod() throws Exception {
+        when(pService.getById(1)).thenReturn(fakeProduct1);
+        String productJson = objectMapper.writeValueAsString(fakeProduct1);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/product/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().json(productJson));
+
+        verify(pService, times(1)).getById(1);
     }
 
     @Test
@@ -96,23 +105,16 @@ public class ProductControllerTest {
     @DisplayName("Testing if registering a new Product with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
         when(pService.register(fakeProduct1)).thenReturn(fakeProduct1);
-        String supplierJson = objectMapper.writeValueAsString(fakeProduct1);
+        String productJson = objectMapper.writeValueAsString(fakeProduct1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/products")
+            MockMvcRequestBuilders.post("/api/product")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(supplierJson)
+                .content(productJson)
             ).andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(MockMvcResultMatchers.jsonPath("id").value(fakeProduct1.getId()))
-            .andExpect(MockMvcResultMatchers.jsonPath("name").value(fakeProduct1.getName()))
-            .andExpect(MockMvcResultMatchers.jsonPath("sku").value(fakeProduct1.getSku()))
-            .andExpect(MockMvcResultMatchers.jsonPath("description").value(fakeProduct1.getDescription()))
-            .andExpect(MockMvcResultMatchers.jsonPath("price").value(fakeProduct1.getPrice()))
-            .andExpect(MockMvcResultMatchers.jsonPath("createdBy").value(fakeProduct1.getCreatedBy()))
-            .andExpect(MockMvcResultMatchers.jsonPath("created").value(fakeProduct1.getCreated().toString()))
-            .andExpect(MockMvcResultMatchers.jsonPath("modifiedBy").value(fakeProduct1.getModifiedBy()))
-            .andExpect(MockMvcResultMatchers.jsonPath("modified").value(fakeProduct1.getModified().toString()));
+            .andExpect(content().json(productJson));
+
 
         verify(pService, times(1)).register(fakeProduct1);
     }
@@ -122,12 +124,12 @@ public class ProductControllerTest {
     @DisplayName("Testing if registering a new Product with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
         when(pService.register(fakeProduct1)).thenReturn(fakeProduct1);
-        String supplierJson = objectMapper.writeValueAsString(fakeProduct1);
+        String productJson = objectMapper.writeValueAsString(fakeProduct1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/products")
+            MockMvcRequestBuilders.post("/api/product")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(supplierJson)
+                .content(productJson)
         ).andExpect(MockMvcResultMatchers.status().isForbidden());
 
         verifyNoInteractions(pService);
@@ -138,23 +140,15 @@ public class ProductControllerTest {
     @DisplayName("Testing if updating a Product with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
         when(pService.update(1, fakeProduct2)).thenReturn(fakeProduct2);
-        String supplierJson = objectMapper.writeValueAsString(fakeProduct2);
+        String productJson = objectMapper.writeValueAsString(fakeProduct2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/products/1")
+            MockMvcRequestBuilders.put("/api/product/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(supplierJson)
+                .content(productJson)
             ).andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(MockMvcResultMatchers.jsonPath("id").value(fakeProduct2.getId()))
-            .andExpect(MockMvcResultMatchers.jsonPath("name").value(fakeProduct2.getName()))
-            .andExpect(MockMvcResultMatchers.jsonPath("sku").value(fakeProduct2.getSku()))
-            .andExpect(MockMvcResultMatchers.jsonPath("description").value(fakeProduct2.getDescription()))
-            .andExpect(MockMvcResultMatchers.jsonPath("price").value(fakeProduct2.getPrice()))
-            .andExpect(MockMvcResultMatchers.jsonPath("createdBy").value(fakeProduct2.getCreatedBy()))
-            .andExpect(MockMvcResultMatchers.jsonPath("created").value(fakeProduct2.getCreated().toString()))
-            .andExpect(MockMvcResultMatchers.jsonPath("modifiedBy").value(fakeProduct2.getModifiedBy()))
-            .andExpect(MockMvcResultMatchers.jsonPath("modified").value(fakeProduct2.getModified().toString()));
+            .andExpect(content().json(productJson));
 
         verify(pService, times(1)).update(1, fakeProduct2);
     }
@@ -164,12 +158,12 @@ public class ProductControllerTest {
     @DisplayName("Testing if updating a Product with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
         when(pService.register(fakeProduct2)).thenReturn(fakeProduct2);
-        String supplierJson = objectMapper.writeValueAsString(fakeProduct2);
+        String productJson = objectMapper.writeValueAsString(fakeProduct2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/products/1")
+            MockMvcRequestBuilders.put("/api/product/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(supplierJson)
+                .content(productJson)
         ).andExpect(MockMvcResultMatchers.status().isForbidden());
 
         verifyNoInteractions(pService);
@@ -179,7 +173,7 @@ public class ProductControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if deleting a Product with a admin's role user is going successfully")
     public void testDeleteMethodWithAdmin() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/products/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/product/1"))
             .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(pService, times(1)).delete(1);
@@ -189,7 +183,7 @@ public class ProductControllerTest {
     @WithMockUser()
     @DisplayName("Testing if deleting a Product with a user's role user is going unauthorized")
     public void testDeleteMethodWithUser() throws Exception {
-        mockMvc.perform( MockMvcRequestBuilders.put("/api/products/1"))
+        mockMvc.perform( MockMvcRequestBuilders.put("/api/product/1"))
             .andExpect(MockMvcResultMatchers.status().isForbidden());
 
         verifyNoInteractions(pService);
