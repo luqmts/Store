@@ -45,7 +45,6 @@ public class ProductServiceTest {
             new Mail("microsoft@mail.com"), new Phone("11000001111"),
             user, now, user, now
         );
-
         fakeSupplier2 = new Supplier(
             2,   "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
             new Mail("sony@mail.com"), new Phone("11222225555"),
@@ -56,7 +55,6 @@ public class ProductServiceTest {
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
             200.00F, fakeSupplier1, user, now, user, now
         );
-
         fakeProduct2 = new Product(
             2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
             250.00F, fakeSupplier2, user, now, user, now
@@ -119,5 +117,21 @@ public class ProductServiceTest {
         pService.register(fakeProduct2);
         assertEquals(2, pService.getAll().size());
         verify(pRepository, atMostOnce()).findAll();
+    }
+
+    @Test
+    @DisplayName("Test if Product is being returned by id on method getById()")
+    public void testGetProductById(){
+        when(pRepository.save(fakeProduct1)).thenReturn(fakeProduct1);
+        when(pRepository.findById(1)).thenReturn(Optional.ofNullable(fakeProduct1));
+
+        pService.register(fakeProduct1);
+        result = pService.getById(1);
+        assertAll(
+                () -> verify(pRepository, atMostOnce()).findById(1),
+                () -> assertNotNull(result),
+                () -> assertInstanceOf(Product.class, result),
+                () -> assertEquals(fakeProduct1, result)
+        );
     }
 }

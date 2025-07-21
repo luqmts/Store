@@ -98,7 +98,7 @@ public class SupplierServiceTest {
     }
 
     @Test
-    @DisplayName("Test if all Suppliers registered are being returned on method getALl()")
+    @DisplayName("Test if all Suppliers registered are being returned on method getAll()")
     public void testGetAllSuppliers(){
         when(sRepository.save(fakeSupplier1)).thenReturn(fakeSupplier1);
         when(sRepository.save(fakeSupplier2)).thenReturn(fakeSupplier2);
@@ -108,5 +108,21 @@ public class SupplierServiceTest {
         sService.register(fakeSupplier2);
         assertEquals(2, sService.getAll().size());
         verify(sRepository, atMostOnce()).findAll();
+    }
+
+    @Test
+    @DisplayName("Test if Supplier is being returned by id on method getById()")
+    public void testGetSupplierById(){
+        when(sRepository.save(fakeSupplier1)).thenReturn(fakeSupplier1);
+        when(sRepository.findById(1)).thenReturn(Optional.ofNullable(fakeSupplier1));
+
+        sService.register(fakeSupplier1);
+        result = sService.getById(1);
+        assertAll(
+                () -> verify(sRepository, atMostOnce()).findById(1),
+                () -> assertNotNull(result),
+                () -> assertInstanceOf(Supplier.class, result),
+                () -> assertEquals(fakeSupplier1, result)
+        );
     }
 }
