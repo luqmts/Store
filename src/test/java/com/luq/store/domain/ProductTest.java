@@ -13,21 +13,22 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ProductTest {
-    Product product;
-    Supplier supplier;
+    private final LocalDateTime now = LocalDateTime.now();
+
+    private Product fakeProduct;
+    private Supplier fakeSupplier;
 
     @BeforeEach
     public void setUp(){
         String user = "Jimmy McGill";
-        LocalDateTime now = LocalDateTime.now();
 
-        supplier = new Supplier(
+        fakeSupplier = new Supplier(
             1, "Sony Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
             new Mail("sony@mail2.com"), new Phone("11000001111"),
             user, now, user, now
         );
-        product = new Product(
-            1, "Playstation 4", "PS4", "Video Game Console by Sony.", 2000.00F, supplier,
+        fakeProduct = new Product(
+            1, "Playstation 4", "PS4", "Video Game Console by Sony.", 2000.00F, fakeSupplier,
             user, now, user, now
         );
     }
@@ -37,7 +38,7 @@ public class ProductTest {
     public void testProductToStringMethod() {
         assertEquals(
             "Product(id=1, name=Playstation 4)",
-            product.toString(),
+            fakeProduct.toString(),
             "Product toString() method must return on right format"
         );
     }
@@ -46,12 +47,15 @@ public class ProductTest {
     @DisplayName("Ensure object is being created correctly")
     public void testProductCreationGrouped() {
         assertAll(
-            () -> assertEquals("PS4", product.getSku()),
-            () -> assertEquals("Playstation 4", product.getName()),
-            () -> assertEquals("Video Game Console by Sony.", product.getDescription()),
-            () -> assertEquals(2000.00F, product.getPrice()),
-            () -> assertEquals("Jimmy McGill", product.getCreatedBy()),
-            () -> assertEquals("Jimmy McGill", product.getModifiedBy())
+            () -> assertEquals(1, fakeProduct.getId()),
+            () -> assertEquals("PS4", fakeProduct.getSku()),
+            () -> assertEquals("Playstation 4", fakeProduct.getName()),
+            () -> assertEquals("Video Game Console by Sony.", fakeProduct.getDescription()),
+            () -> assertEquals(2000.00F, fakeProduct.getPrice()),
+            () -> assertEquals(now, fakeProduct.getCreated()),
+            () -> assertEquals("Jimmy McGill", fakeProduct.getModifiedBy()),
+            () -> assertEquals(now, fakeProduct.getModified()),
+            () -> assertEquals("Jimmy McGill", fakeProduct.getModifiedBy())
         );
     }
 
@@ -61,24 +65,24 @@ public class ProductTest {
         LocalDateTime now = LocalDateTime.now();
         String user = "Kim Wexler";
 
-        product.setSku("PS5");
-        product.setName("Playstation 5");
-        product.setDescription("A new generation Video Game Console by Sony.");
-        product.setPrice(4000.00F);
-        product.setCreatedBy(user);
-        product.setModifiedBy(user);
-        product.setCreated(now);
-        product.setModified(now);
+        fakeProduct.setSku("PS5");
+        fakeProduct.setName("Playstation 5");
+        fakeProduct.setDescription("A new generation Video Game Console by Sony.");
+        fakeProduct.setPrice(4000.00F);
+        fakeProduct.setCreatedBy(user);
+        fakeProduct.setModifiedBy(user);
+        fakeProduct.setCreated(now);
+        fakeProduct.setModified(now);
 
         assertAll(
-            () -> assertEquals("PS5", product.getSku()),
-            () -> assertEquals("Playstation 5", product.getName()),
-            () -> assertEquals(4000.00F, product.getPrice()),
-            () -> assertEquals("A new generation Video Game Console by Sony.", product.getDescription()),
-            () -> assertEquals("Kim Wexler", product.getCreatedBy()),
-            () -> assertEquals("Kim Wexler", product.getModifiedBy()),
-            () -> assertEquals(now, product.getCreated()),
-            () -> assertEquals(now, product.getModified())
+            () -> assertEquals("PS5", fakeProduct.getSku()),
+            () -> assertEquals("Playstation 5", fakeProduct.getName()),
+            () -> assertEquals(4000.00F, fakeProduct.getPrice()),
+            () -> assertEquals("A new generation Video Game Console by Sony.", fakeProduct.getDescription()),
+            () -> assertEquals("Kim Wexler", fakeProduct.getCreatedBy()),
+            () -> assertEquals(now, fakeProduct.getCreated()),
+            () -> assertEquals("Kim Wexler", fakeProduct.getModifiedBy()),
+            () -> assertEquals(now, fakeProduct.getModified())
         );
     }
 
@@ -86,15 +90,16 @@ public class ProductTest {
     @DisplayName("Product attributes must not be null")
     public void testProductAttributesNotNull(){
         assertAll(
-            () -> assertNotNull(product.getName()),
-            () -> assertNotNull(product.getSku()),
-            () -> assertNotNull(product.getDescription()),
-            () -> assertNotNull(product.getSupplier()),
-            () -> assertNotNull(product.getPrice()),
-            () -> assertNotNull(product.getCreatedBy()),
-            () -> assertNotNull(product.getCreated()),
-            () -> assertNotNull(product.getModifiedBy()),
-            () -> assertNotNull(product.getModified())
+            () -> assertNotNull(fakeProduct.getId()),
+            () -> assertNotNull(fakeProduct.getName()),
+            () -> assertNotNull(fakeProduct.getSku()),
+            () -> assertNotNull(fakeProduct.getDescription()),
+            () -> assertNotNull(fakeProduct.getSupplier()),
+            () -> assertNotNull(fakeProduct.getPrice()),
+            () -> assertNotNull(fakeProduct.getCreatedBy()),
+            () -> assertNotNull(fakeProduct.getCreated()),
+            () -> assertNotNull(fakeProduct.getModifiedBy()),
+            () -> assertNotNull(fakeProduct.getModified())
         );
     }
 
@@ -102,8 +107,8 @@ public class ProductTest {
     @DisplayName("Ensure Product's Supplier is being instanced correctly")
     public void testProductSupplierIsValid(){
         assertAll(
-            () -> assertEquals(supplier.getId(), product.getSupplier().getId()),
-            () -> assertInstanceOf(Supplier.class, product.getSupplier())
+            () -> assertEquals(fakeSupplier.getId(), fakeProduct.getSupplier().getId()),
+            () -> assertInstanceOf(Supplier.class, fakeProduct.getSupplier())
         );
     }
 }

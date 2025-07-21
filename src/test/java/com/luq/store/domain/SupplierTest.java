@@ -15,14 +15,14 @@ import com.luq.store.valueobjects.Phone;
 import java.time.LocalDateTime;
 
 public class SupplierTest {
-    Supplier supplier;
+    private final LocalDateTime now = LocalDateTime.now();
+    private Supplier fakeSupplier;
 
     @BeforeEach
     public void setUp(){
         String user = "Jimmy McGill";
-        LocalDateTime now = LocalDateTime.now();
 
-        supplier = new Supplier(
+        fakeSupplier = new Supplier(
             1, "Ooo Comércios e Vendas S/A", new Cnpj("94.907.898/0001-20"),
             new Mail("Ooo@gmail.com"), new Phone("11940028922"),
             user, now, user, now
@@ -33,9 +33,9 @@ public class SupplierTest {
     @DisplayName("Ensure toString method is returning correctly")
     public void testSupplierToStringMethod() {
         assertEquals(
-                "Supplier(id=1, name=Ooo Comércios e Vendas S/A)",
-                supplier.toString(),
-                "Supplier toString() method must return on right format"
+            "Supplier(id=1, name=Ooo Comércios e Vendas S/A)",
+            fakeSupplier.toString(),
+            "Supplier toString() method must return on right format"
         );
     }
 
@@ -43,12 +43,15 @@ public class SupplierTest {
     @DisplayName("Ensure object is being created correctly")
     public void testSupplierCreationGrouped(){
         assertAll(
-            () -> assertEquals("Ooo Comércios e Vendas S/A", supplier.getName()),
-            () -> assertEquals("94.907.898/0001-20", supplier.getCnpj().toString()),
-            () -> assertEquals("Ooo@gmail.com", supplier.getMail().toString()),
-            () -> assertEquals("11940028922", supplier.getPhone().toString()),
-            () -> assertEquals("Jimmy McGill", supplier.getCreatedBy()),
-            () -> assertEquals("Jimmy McGill", supplier.getModifiedBy())
+            () -> assertEquals(1, fakeSupplier.getId()),
+            () -> assertEquals("Ooo Comércios e Vendas S/A", fakeSupplier.getName()),
+            () -> assertEquals("94.907.898/0001-20", fakeSupplier.getCnpj().toString()),
+            () -> assertEquals("Ooo@gmail.com", fakeSupplier.getMail().toString()),
+            () -> assertEquals("11940028922", fakeSupplier.getPhone().toString()),
+            () -> assertEquals(now, fakeSupplier.getCreated()),
+            () -> assertEquals("Jimmy McGill", fakeSupplier.getCreatedBy()),
+            () -> assertEquals(now, fakeSupplier.getModified()),
+            () -> assertEquals("Jimmy McGill", fakeSupplier.getModifiedBy())
         );
     }
 
@@ -58,24 +61,24 @@ public class SupplierTest {
         LocalDateTime now = LocalDateTime.now();
         String user = "Kim Wexler";
 
-        supplier.setName("Marceline Instrumentos Musicais S/A");
-        supplier.setCnpj(new Cnpj("08.968.789/0001-80"));
-        supplier.setMail(new Mail("marceline_213@mail.com"));
-        supplier.setPhone(new Phone("11990909090"));
-        supplier.setCreatedBy(user);
-        supplier.setModifiedBy(user);
-        supplier.setCreated(now);
-        supplier.setModified(now);
+        fakeSupplier.setName("Marceline Instrumentos Musicais S/A");
+        fakeSupplier.setCnpj(new Cnpj("08.968.789/0001-80"));
+        fakeSupplier.setMail(new Mail("marceline_213@mail.com"));
+        fakeSupplier.setPhone(new Phone("11990909090"));
+        fakeSupplier.setCreatedBy(user);
+        fakeSupplier.setModifiedBy(user);
+        fakeSupplier.setCreated(now);
+        fakeSupplier.setModified(now);
 
         assertAll(
-            () -> assertEquals("Marceline Instrumentos Musicais S/A", supplier.getName()),
-            () -> assertEquals("08.968.789/0001-80", supplier.getCnpj().toString()),
-            () -> assertEquals("marceline_213@mail.com", supplier.getMail().toString()),
-            () -> assertEquals("11990909090", supplier.getPhone().toString()),
-            () -> assertEquals("Kim Wexler", supplier.getCreatedBy()),
-            () -> assertEquals("Kim Wexler", supplier.getModifiedBy()),
-            () -> assertEquals(now, supplier.getCreated()),
-            () -> assertEquals(now, supplier.getModified())
+            () -> assertEquals("Marceline Instrumentos Musicais S/A", fakeSupplier.getName()),
+            () -> assertEquals("08.968.789/0001-80", fakeSupplier.getCnpj().toString()),
+            () -> assertEquals("marceline_213@mail.com", fakeSupplier.getMail().toString()),
+            () -> assertEquals("11990909090", fakeSupplier.getPhone().toString()),
+            () -> assertEquals("Kim Wexler", fakeSupplier.getCreatedBy()),
+            () -> assertEquals("Kim Wexler", fakeSupplier.getModifiedBy()),
+            () -> assertEquals(now, fakeSupplier.getCreated()),
+            () -> assertEquals(now, fakeSupplier.getModified())
         );
     }
 
@@ -83,14 +86,15 @@ public class SupplierTest {
     @DisplayName("Supplier attributes must not be null")
     public void testSupplierAttributesNotNull(){
         assertAll(
-            () -> assertNotNull(supplier.getName()),
-            () -> assertNotNull(supplier.getCnpj()),
-            () -> assertNotNull(supplier.getMail()),
-            () -> assertNotNull(supplier.getPhone()),
-            () -> assertNotNull(supplier.getCreatedBy()),
-            () -> assertNotNull(supplier.getCreated()),
-            () -> assertNotNull(supplier.getModifiedBy()),
-            () -> assertNotNull(supplier.getModified())
+            () -> assertNotNull(fakeSupplier.getId()),
+            () -> assertNotNull(fakeSupplier.getName()),
+            () -> assertNotNull(fakeSupplier.getCnpj()),
+            () -> assertNotNull(fakeSupplier.getMail()),
+            () -> assertNotNull(fakeSupplier.getPhone()),
+            () -> assertNotNull(fakeSupplier.getCreatedBy()),
+            () -> assertNotNull(fakeSupplier.getCreated()),
+            () -> assertNotNull(fakeSupplier.getModifiedBy()),
+            () -> assertNotNull(fakeSupplier.getModified())
         );
     }
 }
