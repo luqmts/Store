@@ -51,7 +51,6 @@ public class SupplyRepositoryTest {
     @Test
     @DisplayName("Test if Supply filtered by only one filter is being returned correctly")
     public void testFindByOneFilter() {
-        supplyRepository.save(this.fakeSupply1);
         Sort sort = Sort.by("id").ascending();
         List<Supply> result = supplyRepository.findByProductId(sort, fakeProduct1.getId());
 

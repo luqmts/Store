@@ -55,9 +55,6 @@ public class ProductRepositoryTest {
     @Test
     @DisplayName("Test if Product filtered by only one filter is being returned correctly")
     public void testFindBySupplierIdAndNameAndSkuOneFilter() {
-        pRepository.save(fakeProduct1);
-        pRepository.save(fakeProduct2);
-
         Sort sort = Sort.by("id").ascending();
         List<Product> result = pRepository.findBySupplierIdAndNameAndSku(sort, 1, null, null);
 
@@ -70,9 +67,6 @@ public class ProductRepositoryTest {
     @Test
     @DisplayName("Test if Product filtered by no filter is being returned correctly")
     public void testFindBySupplierIdAndNameAndSkuNoFilter() {
-        pRepository.save(this.fakeProduct1);
-        pRepository.save(this.fakeProduct2);
-
         Sort sort = Sort.by("id").ascending();
         List<Product> result = pRepository.findBySupplierIdAndNameAndSku(sort, null, null, null);
 
@@ -86,9 +80,6 @@ public class ProductRepositoryTest {
     @Test
     @DisplayName("Test if Product filtered by all filters is being returned correctly")
     public void testFindBySupplierIdAndNameAndSkuAllFilters() {
-        pRepository.save(fakeProduct1);
-        pRepository.save(fakeProduct2);
-
         Sort sort = Sort.by("id").ascending();
         List<Product> result = pRepository.findBySupplierIdAndNameAndSku(sort, 2, "Playstation 5 Controller", "PS5Cont");
 

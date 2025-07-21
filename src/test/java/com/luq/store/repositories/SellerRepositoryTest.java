@@ -40,8 +40,6 @@ public class SellerRepositoryTest {
     @Test
     @DisplayName("Test if Seller filtered by only one filter is being returned correctly")
     public void testFindByOneFilter() {
-        sRepository.save(this.fakeSeller1);
-        sRepository.save(this.fakeSeller2);
         Sort sort = Sort.by("id").ascending();
         List<Seller> result = sRepository.findByDepartmentAndNameAndMailAndPhone(
             sort, null, "Walter White", null, null
@@ -56,9 +54,6 @@ public class SellerRepositoryTest {
     @Test
     @DisplayName("Test if Seller filtered by no filter is being returned correctly")
     public void testFindByNoFilter() {
-        sRepository.save(this.fakeSeller1);
-        sRepository.save(this.fakeSeller2);
-
         Sort sort = Sort.by("id").ascending();
         List<Seller> result = sRepository.findByDepartmentAndNameAndMailAndPhone(
             sort, null, null, null, null
@@ -74,9 +69,6 @@ public class SellerRepositoryTest {
     @Test
     @DisplayName("Test if Seller filtered by all filters is being returned correctly")
     public void testFindByAllFilters() {
-        sRepository.save(this.fakeSeller1);
-        sRepository.save(this.fakeSeller2);
-
         Sort sort = Sort.by("id").ascending();
         List<Seller> result = sRepository.findByDepartmentAndNameAndMailAndPhone(
             sort, Department.FOOD, "Jesse Pinkman", "Jesse Pinkman@Cooking.com", "11904040404"

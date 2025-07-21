@@ -24,32 +24,26 @@ public class UserRepositoryTest {
 
     @BeforeEach
     public void setUp(){
-        fakeUser1 = new User("Test User 01", new Mail("testUser1@Mail.com"), "passworduser", UserRole.USER);
-        fakeUser2 = new User("Test User 02", new Mail("testUser2@Mail.com"), "passwordadmin", UserRole.ADMIN);
+        fakeUser1 = uRepository.save(new User("Test User 01", new Mail("testUser1@Mail.com"), "passworduser", UserRole.USER));
+        fakeUser2 = uRepository.save(new User("Test User 02", new Mail("testUser2@Mail.com"), "passwordadmin", UserRole.ADMIN));
     }
 
     @Test
     @DisplayName("Test if User filtered by name is being returned correctly")
     public void testFindByOneFilter() {
-        uRepository.save(fakeUser1);
-        uRepository.save(fakeUser2);
-
         Sort sort = Sort.by("name").ascending();
         List<User> result = uRepository.findByNameAndLoginAndRole(sort, "Test User 01", null, null);
 
         assertAll(
             () -> assertEquals(1, result.size()),
-            () -> assertEquals(fakeUser1, result.getFirst())
+            () -> assertEquals(this.fakeUser1, result.getFirst())
         );
     }
 
     @Test
     @DisplayName("Test if User filtered by no filter is being returned correctly")
     public void testFindByNoFilter() {
-        uRepository.save(this.fakeUser1);
-        uRepository.save(this.fakeUser2);
-
-        Sort sort = Sort.by("id").ascending();
+        Sort sort = Sort.by("name").ascending();
         List<User> result = uRepository.findByNameAndLoginAndRole(sort, null, null, null);
 
         assertAll(
@@ -62,9 +56,6 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("Test if User filtered by all filters is being returned correctly")
     public void testFindByAllFilters() {
-        uRepository.save(this.fakeUser1);
-        uRepository.save(this.fakeUser2);
-
         Sort sort = Sort.by("id").ascending();
         List<User> result = uRepository.findByNameAndLoginAndRole(sort, "Test User 02", "testUser2@Mail.com", UserRole.ADMIN);
 
