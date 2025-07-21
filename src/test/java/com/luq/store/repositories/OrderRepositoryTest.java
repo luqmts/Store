@@ -70,31 +70,29 @@ public class OrderRepositoryTest {
             new Phone("11904040404"), Department.FOOD
         ));
 
-        fakeOrder1 = new Order(400.00F, 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1);
-        fakeOrder2 = new Order(400.00F, 5, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2);
+        fakeOrder1 = oRepository.save(new Order(
+            400.00F, 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1
+        ));
+        fakeOrder2 = oRepository.save(new Order(
+            800.00F, 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2
+        ));
     }
 
     @Test
     @DisplayName("Test if Order filtered by only one filter is being returned correctly")
     public void testFindByOneFilter() {
-        oRepository.save(this.fakeOrder1);
-        oRepository.save(this.fakeOrder2);
-
         Sort sort = Sort.by("id").ascending();
-        List<Order> result = oRepository.findByProductSellerCustomer(sort, 1, null, null);
+        List<Order> result = oRepository.findByProductSellerCustomer(sort, null, 1, null);
 
         assertAll(
             () -> assertEquals(1, result.size()),
-            () -> assertEquals(fakeOrder1, result.getFirst())
+            () -> assertEquals(this.fakeOrder1, result.getFirst())
         );
     }
 
     @Test
     @DisplayName("Test if Order filtered by no filter is being returned correctly")
     public void testFindByNoFilter() {
-        oRepository.save(this.fakeOrder1);
-        oRepository.save(this.fakeOrder2);
-
         Sort sort = Sort.by("id").ascending();
         List<Order> result = oRepository.findByProductSellerCustomer(sort, null, null, null);
 
@@ -108,9 +106,6 @@ public class OrderRepositoryTest {
     @Test
     @DisplayName("Test if Order filtered by all filters is being returned correctly")
     public void testFindByAllFilters() {
-        oRepository.save(this.fakeOrder1);
-        oRepository.save(this.fakeOrder2);
-
         Sort sort = Sort.by("id").ascending();
         List<Order> result = oRepository.findByProductSellerCustomer(sort, 2, 2, 2);
 
