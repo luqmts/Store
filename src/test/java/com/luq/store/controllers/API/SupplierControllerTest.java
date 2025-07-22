@@ -1,8 +1,5 @@
 package com.luq.store.controllers.API;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luq.store.valueobjects.Cnpj;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,8 +17,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -65,10 +72,10 @@ public class SupplierControllerTest {
         when(sService.getAll()).thenReturn(List.of(fakeSupplier1));
         String supplierJson = objectMapper.writeValueAsString(fakeSupplier1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/supplier"))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+        mockMvc.perform(get("/api/supplier"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
             .andExpect(content().json("[" + supplierJson + "]"));
 
         verify(sService, times(1)).getAll();
@@ -81,9 +88,9 @@ public class SupplierControllerTest {
         when(sService.getById(1)).thenReturn(fakeSupplier1);
         String supplierJson = objectMapper.writeValueAsString(fakeSupplier1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/supplier/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/api/supplier/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(supplierJson));
 
         verify(sService, times(1)).getById(1);
@@ -97,11 +104,11 @@ public class SupplierControllerTest {
         String supplierJson = objectMapper.writeValueAsString(fakeSupplier1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/supplier")
+            post("/api/supplier")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(supplierJson)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            ).andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(supplierJson));
 
         verify(sService, times(1)).register(fakeSupplier1);
@@ -115,10 +122,10 @@ public class SupplierControllerTest {
         String supplierJson = objectMapper.writeValueAsString(fakeSupplier1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/supplier")
+            post("/api/supplier")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(supplierJson)
-            ).andExpect(MockMvcResultMatchers.status().isForbidden());
+            ).andExpect(status().isForbidden());
 
         verifyNoInteractions(sService);
     }
@@ -131,11 +138,11 @@ public class SupplierControllerTest {
         String supplierJson = objectMapper.writeValueAsString(fakeSupplier2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/supplier/1")
+            put("/api/supplier/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(supplierJson)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            ).andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(supplierJson));
 
         verify(sService, times(1)).update(1, fakeSupplier2);
@@ -149,10 +156,10 @@ public class SupplierControllerTest {
         String supplierJson = objectMapper.writeValueAsString(fakeSupplier2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/supplier/1")
+            put("/api/supplier/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(supplierJson)
-        ).andExpect(MockMvcResultMatchers.status().isForbidden());
+        ).andExpect(status().isForbidden());
 
         verifyNoInteractions(sService);
     }
@@ -161,8 +168,8 @@ public class SupplierControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if deleting a Supplier with a admin's role user is going successfully")
     public void testDeleteMethodWithAdmin() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/supplier/1"))
-             .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(delete("/api/supplier/1"))
+             .andExpect(status().isOk());
 
         verify(sService, times(1)).delete(1);
     }
@@ -171,8 +178,8 @@ public class SupplierControllerTest {
     @WithMockUser()
     @DisplayName("Testing if deleting a Supplier with a user's role user is going unauthorized")
     public void testDeleteMethodWithUser() throws Exception {
-        mockMvc.perform( MockMvcRequestBuilders.put("/api/supplier/1"))
-            .andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(put("/api/supplier/1"))
+            .andExpect(status().isForbidden());
 
         verifyNoInteractions(sService);
     }

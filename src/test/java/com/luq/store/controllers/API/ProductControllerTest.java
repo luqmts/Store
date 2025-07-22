@@ -1,8 +1,5 @@
 package com.luq.store.controllers.API;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luq.store.domain.Product;
 import com.luq.store.services.ProductService;
@@ -21,8 +18,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -47,15 +54,15 @@ public class ProductControllerTest {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         Supplier fakeSupplier1 = new Supplier(
-                1, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
-                new Mail("microsoft@mail.com"), new Phone("11000001111"),
-                user, now, user, now
+            1, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
+            new Mail("microsoft@mail.com"), new Phone("11000001111"),
+            user, now, user, now
         );
 
         Supplier fakeSupplier2 = new Supplier(
-                2, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
-                new Mail("sony@mail.com"), new Phone("11222225555"),
-                user, now, user, now
+            2, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
+            new Mail("sony@mail.com"), new Phone("11222225555"),
+            user, now, user, now
         );
 
         fakeProduct1 = new Product(
@@ -76,10 +83,10 @@ public class ProductControllerTest {
         when(pService.getAll()).thenReturn(List.of(fakeProduct1));
         String productJson = objectMapper.writeValueAsString(fakeProduct1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/product"))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+        mockMvc.perform(get("/api/product"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
             .andExpect(content().json("[" + productJson + "]"));
 
         verify(pService, times(1)).getAll();
@@ -92,9 +99,9 @@ public class ProductControllerTest {
         when(pService.getById(1)).thenReturn(fakeProduct1);
         String productJson = objectMapper.writeValueAsString(fakeProduct1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/product/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/api/product/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(productJson));
 
         verify(pService, times(1)).getById(1);
@@ -108,11 +115,11 @@ public class ProductControllerTest {
         String productJson = objectMapper.writeValueAsString(fakeProduct1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/product")
+            post("/api/product")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            ).andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(productJson));
 
 
@@ -127,10 +134,10 @@ public class ProductControllerTest {
         String productJson = objectMapper.writeValueAsString(fakeProduct1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/product")
+            post("/api/product")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson)
-        ).andExpect(MockMvcResultMatchers.status().isForbidden());
+        ).andExpect(status().isForbidden());
 
         verifyNoInteractions(pService);
     }
@@ -143,11 +150,11 @@ public class ProductControllerTest {
         String productJson = objectMapper.writeValueAsString(fakeProduct2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/product/1")
+            put("/api/product/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            ).andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(productJson));
 
         verify(pService, times(1)).update(1, fakeProduct2);
@@ -161,10 +168,10 @@ public class ProductControllerTest {
         String productJson = objectMapper.writeValueAsString(fakeProduct2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/product/1")
+            put("/api/product/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson)
-        ).andExpect(MockMvcResultMatchers.status().isForbidden());
+        ).andExpect(status().isForbidden());
 
         verifyNoInteractions(pService);
     }
@@ -173,8 +180,8 @@ public class ProductControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if deleting a Product with a admin's role user is going successfully")
     public void testDeleteMethodWithAdmin() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/product/1"))
-            .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(delete("/api/product/1"))
+            .andExpect(status().isOk());
 
         verify(pService, times(1)).delete(1);
     }
@@ -183,8 +190,8 @@ public class ProductControllerTest {
     @WithMockUser()
     @DisplayName("Testing if deleting a Product with a user's role user is going unauthorized")
     public void testDeleteMethodWithUser() throws Exception {
-        mockMvc.perform( MockMvcRequestBuilders.put("/api/product/1"))
-            .andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(put("/api/product/1"))
+            .andExpect(status().isForbidden());
 
         verifyNoInteractions(pService);
     }

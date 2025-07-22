@@ -13,15 +13,22 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -52,10 +59,10 @@ public class CustomerControllerTest {
         when(cService.getAll()).thenReturn(List.of(fakeCustomer1));
         String customerJson = objectMapper.writeValueAsString(fakeCustomer1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/customer"))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+        mockMvc.perform(get("/api/customer"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
             .andExpect(content().json("[" + customerJson + "]"));
 
         verify(cService, times(1)).getAll();
@@ -68,9 +75,9 @@ public class CustomerControllerTest {
         when(cService.getById(1)).thenReturn(fakeCustomer1);
         String customerJson = objectMapper.writeValueAsString(fakeCustomer1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/customer/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/api/customer/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(customerJson));
 
         verify(cService, times(1)).getById(1);
@@ -84,10 +91,10 @@ public class CustomerControllerTest {
         String customerJson = objectMapper.writeValueAsString(fakeCustomer1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/customer")
+            post("/api/customer")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(customerJson)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
+            ).andExpect(status().isOk())
             .andExpect(content().json(customerJson));
 
         verify(cService, times(1)).register(fakeCustomer1);
@@ -101,10 +108,10 @@ public class CustomerControllerTest {
         String customerJson = objectMapper.writeValueAsString(fakeCustomer1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/customer")
+            post("/api/customer")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(customerJson)
-        ).andExpect(MockMvcResultMatchers.status().isForbidden());
+        ).andExpect(status().isForbidden());
 
         verifyNoInteractions(cService);
     }
@@ -117,11 +124,11 @@ public class CustomerControllerTest {
         String customerJson = objectMapper.writeValueAsString(fakeCustomer2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/customer/1")
+            put("/api/customer/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(customerJson)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            ).andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(customerJson));
 
         verify(cService, times(1)).update(1, fakeCustomer2);
@@ -135,10 +142,10 @@ public class CustomerControllerTest {
         String customerJson = objectMapper.writeValueAsString(fakeCustomer2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/customer/1")
+            put("/api/customer/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(customerJson)
-        ).andExpect(MockMvcResultMatchers.status().isForbidden());
+        ).andExpect(status().isForbidden());
 
         verifyNoInteractions(cService);
     }
@@ -147,8 +154,8 @@ public class CustomerControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if deleting a Customer with a admin's role user is going successfully")
     public void testDeleteMethodWithAdmin() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/customer/1"))
-            .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(delete("/api/customer/1"))
+            .andExpect(status().isOk());
 
         verify(cService, times(1)).delete(1);
     }
@@ -157,8 +164,8 @@ public class CustomerControllerTest {
     @WithMockUser()
     @DisplayName("Testing if deleting a Customer with a user's role user is going unauthorized")
     public void testDeleteMethodWithUser() throws Exception {
-        mockMvc.perform( MockMvcRequestBuilders.put("/api/customer/1"))
-            .andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(put("/api/customer/1"))
+            .andExpect(status().isForbidden());
 
         verifyNoInteractions(cService);
     }

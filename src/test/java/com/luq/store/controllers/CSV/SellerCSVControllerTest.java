@@ -15,13 +15,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.unbescape.csv.CsvEscape.escapeCsv;
@@ -83,11 +83,11 @@ public class SellerCSVControllerTest {
         ));
 
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/seller/csv")
+            get("/seller/csv")
                 .param("sortBy", "id")
                 .param("direction", "asc")
                 .param("name", "Walter White")
-        ).andExpect(MockMvcResultMatchers.status().isOk())
+        ).andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"sellers.csv\""))
         .andExpect(content().contentType("text/csv;charset=UTF-8"))
         .andExpect(content().string(row));
@@ -123,10 +123,10 @@ public class SellerCSVControllerTest {
         );
 
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/seller/csv")
+            get("/seller/csv")
                 .param("sortBy", "id")
                 .param("direction", "asc")
-        ).andExpect(MockMvcResultMatchers.status().isOk())
+        ).andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"sellers.csv\""))
         .andExpect(content().contentType("text/csv;charset=UTF-8"))
         .andExpect(content().string(row));
@@ -139,11 +139,11 @@ public class SellerCSVControllerTest {
         String row = "id,name,mail,phone,department,created,created_by,modified,modified_by\n";
 
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/seller/csv")
+            get("/seller/csv")
                 .param("sortBy", "id")
                 .param("direction", "asc")
                 .param("name", "Saul Goodman")
-        ).andExpect(MockMvcResultMatchers.status().isOk())
+        ).andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"sellers.csv\""))
         .andExpect(content().contentType("text/csv;charset=UTF-8"))
         .andExpect(content().string(row));

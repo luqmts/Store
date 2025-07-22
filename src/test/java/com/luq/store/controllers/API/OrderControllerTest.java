@@ -16,16 +16,23 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -96,10 +103,10 @@ public class OrderControllerTest {
         when(oService.getAll()).thenReturn(List.of(fakeOrder1));
         String orderJson = objectMapper.writeValueAsString(fakeOrder1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/order"))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+        mockMvc.perform(get("/api/order"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
             .andExpect(content().json("[" + orderJson + "]"));
 
 
@@ -113,9 +120,9 @@ public class OrderControllerTest {
         when(oService.getById(1)).thenReturn(fakeOrder1);
         String orderJson = objectMapper.writeValueAsString(fakeOrder1);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/order/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/api/order/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(content().json(orderJson));
 
         verify(oService, times(1)).getById(1);
@@ -129,11 +136,11 @@ public class OrderControllerTest {
         String orderJson = objectMapper.writeValueAsString(fakeOrder1);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/order")
+            post("/api/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(orderJson)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            ).andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(orderJson));
 
         verify(oService, times(1)).register(fakeOrder1);
@@ -147,10 +154,10 @@ public class OrderControllerTest {
         String orderJson = objectMapper.writeValueAsString(fakeOrder2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/order")
+            post("/api/order")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(orderJson)
-        ).andExpect(MockMvcResultMatchers.status().isForbidden());
+        ).andExpect(status().isForbidden());
 
         verifyNoInteractions(oService);
     }
@@ -163,11 +170,11 @@ public class OrderControllerTest {
         String orderJson = objectMapper.writeValueAsString(fakeOrder2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/order/1")
+            put("/api/order/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(orderJson)
-            ).andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            ).andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(orderJson));
 
 
@@ -182,10 +189,10 @@ public class OrderControllerTest {
         String orderJson = objectMapper.writeValueAsString(fakeOrder2);
 
         mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/order/1")
+            put("/api/order/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(orderJson)
-        ).andExpect(MockMvcResultMatchers.status().isForbidden());
+        ).andExpect(status().isForbidden());
 
         verifyNoInteractions(oService);
     }
@@ -194,8 +201,8 @@ public class OrderControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if deleting a Customer with a admin's role user is going successfully")
     public void testDeleteMethodWithAdmin() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/order/1"))
-            .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(delete("/api/order/1"))
+            .andExpect(status().isOk());
 
         verify(oService, times(1)).delete(1);
     }
@@ -204,8 +211,8 @@ public class OrderControllerTest {
     @WithMockUser()
     @DisplayName("Testing if deleting a Customer with a user's role user is going unauthorized")
     public void testDeleteMethodWithUser() throws Exception {
-        mockMvc.perform( MockMvcRequestBuilders.put("/api/order/1"))
-            .andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(put("/api/order/1"))
+            .andExpect(status().isForbidden());
 
         verifyNoInteractions(oService);
     }
