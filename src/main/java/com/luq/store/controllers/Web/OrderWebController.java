@@ -29,11 +29,11 @@ public class OrderWebController {
 
     @Autowired
     public OrderWebController(
-            OrderService oService,
-            ProductService pService,
-            SellerService sellerService,
-            CustomerService cService,
-            SupplyService supplyService
+        OrderService oService,
+        ProductService pService,
+        SellerService sellerService,
+        CustomerService cService,
+        SupplyService supplyService
     ){
         this.oService = oService;
         this.pService = pService;
@@ -86,7 +86,8 @@ public class OrderWebController {
     public ModelAndView orderFormEdit(@PathVariable("id") int id){
         Order order = oService.getById(id);
         ModelAndView mv = new ModelAndView("order-form");
-        Supply supply = supplyService.getByProductId(order.getProduct());
+        Supply supply = supplyService.getByProduct(order.getProduct());
+
         mv.addObject("order", order);
         mv.addObject("page", "order");
         mv.addObject("products", pService.getAllRegisteredOnSupply(supply.getId()));
@@ -98,7 +99,7 @@ public class OrderWebController {
 
     @PostMapping(path="/order/form")
     public String postOrder(Order order, Model model){
-        Supply supply = supplyService.getById(order.getProduct().getId());
+        Supply supply = supplyService.getByProduct(order.getProduct());
         Integer orderQuantity = (order.getId() != null) ? oService.getById(order.getId()).getQuantity() : 0;
 
         if (

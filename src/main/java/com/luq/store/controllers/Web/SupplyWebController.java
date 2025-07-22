@@ -74,7 +74,7 @@ public class SupplyWebController {
     public String postSupply(Supply supply, Model model){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (supply.getId() == null) {
-            if (sService.getByProductId(supply.getProduct()) == null) {
+            if (sService.getByProduct(supply.getProduct()) == null) {
                 supply.setCreatedBy(authentication.getName());
                 supply.setCreated(LocalDateTime.now());
                 supply.setModifiedBy(authentication.getName());
