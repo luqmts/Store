@@ -31,6 +31,20 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
 
     @Query("""
         SELECT p FROM Product p
+        WHERE (
+            p NOT IN (SELECT s.product FROM Supply s)
+            OR p in (
+                SELECT s.product FROM Supply s
+                WHERE s.id = :supplyId
+            )
+        )
+    """)
+    List<Product> findAllNotRegisteredOnSupply(
+        @Param("supplyId") int supplyId
+    );
+
+    @Query("""
+        SELECT p FROM Product p
         WHERE (p IN (
             SELECT s.product FROM Supply s
             WHERE s.quantity > 0
@@ -46,6 +60,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
         ))
     """)
     List<Product> findAllRegisteredOnSupply(
-            @Param("supplyId") int supplyId
+        @Param("supplyId") int supplyId
     );
 }

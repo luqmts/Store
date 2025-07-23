@@ -65,7 +65,7 @@ public class SupplyWebController {
         ModelAndView mv = new ModelAndView("supply-form");
         mv.addObject("supply", supply);
         mv.addObject("page", "supply");
-        mv.addObject("products", pService.getAll());
+        mv.addObject("products", pService.getAllNotRegisteredOnSupply(supply.getId()));
         
         return mv;
     }
@@ -84,6 +84,7 @@ public class SupplyWebController {
             else {
                 model.addAttribute("productError", "This product is already registered on supply, please update it instead");
                 model.addAttribute("page", "supply");
+                model.addAttribute("supply", supply);
                 model.addAttribute("products", pService.getAll());
                 return "supply-form";
             }
