@@ -13,7 +13,6 @@ import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.Phone;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -327,6 +326,29 @@ public class OrderWebControllerTest {
     }
 
     @Test
+    @WithMockUser
+    @DisplayName("If order's quantity is greater than on supply's quantity, error will be returned on quantityError model registering a new Order")
+    public void testSubmitNewOrderAsUserWithInvalidQuantity() throws Exception{
+        when(supplyService.getById(1)).thenReturn(fakeSupply);
+        when(supplyService.getByProduct(fakeProduct1)).thenReturn(fakeSupply);
+
+        mockMvc.perform(
+            post("/order/form")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("totalPrice", "500.00F")
+                .param("quantity", "51")
+                .param("orderDate", LocalDate.now().toString())
+                .param("product.id", "1")
+                .param("seller.id", "1")
+                .param("customer.id", "1")
+        ).andExpect(status().isOk())
+        .andExpect(model().attribute("quantityError", "You  inserted a quantity greater that actually have in supply, please change it"))
+        .andExpect(view().name("order-form"));
+
+        verify(oService, times(0)).register(any(Order.class));
+    }
+
+    @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can submit new Orders")
     public void testSubmitNewOrderAsAdmin() throws Exception{
@@ -361,6 +383,29 @@ public class OrderWebControllerTest {
                 .param("id", "1")
                 .param("totalPrice", "500.00F")
                 .param("quantity", "2")
+                .param("orderDate", LocalDate.now().toString())
+                .param("product.id", "1")
+                .param("seller.id", "1")
+                .param("customer.id", "1")
+        ).andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/order/list"));
+
+        verify(oService, times(1)).update(eq(1), any(Order.class));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("If order's quantity is greater than on supply's quantity, error will be returned on quantityError model registering a new Order")
+    public void testSubmitEditOrderAsUserWithInvalidQuantity() throws Exception{
+        when(oService.getById(1)).thenReturn(fakeOrder1);
+        when(supplyService.getByProduct(fakeProduct1)).thenReturn(fakeSupply);
+
+        mockMvc.perform(
+            post("/order/form")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .param("id", "1")
+                .param("totalPrice", "500.00F")
+                .param("quantity", "51")
                 .param("orderDate", LocalDate.now().toString())
                 .param("product.id", "1")
                 .param("seller.id", "1")
