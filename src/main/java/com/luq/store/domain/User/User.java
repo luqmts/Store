@@ -3,10 +3,7 @@ package com.luq.store.domain.User;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.converters.MailConverter;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,17 +20,22 @@ import java.util.Objects;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString(onlyExplicitlyIncluded = true)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @ToString.Include
     private String id;
 
     @Column(name="Name", length = 50)
+    @ToString.Include
     private String name;
     @Convert(converter = MailConverter.class)
     @Column(name="Login", length = 50)
+    @ToString.Include
     private Mail login;
     private String password;
+    @ToString.Include
     private UserRole role;
 
     @Transient
@@ -54,7 +56,8 @@ public class User implements UserDetails {
     public User(String name, Mail login, String password, String confirmPassword, UserRole role) {
         this.name = name;
         this.login = login;
-        this.password = password.equals(confirmPassword) ? password : null;
+        this.password = password;
+        this.confirmPassword = confirmPassword;
         this.role = role;
     }
 

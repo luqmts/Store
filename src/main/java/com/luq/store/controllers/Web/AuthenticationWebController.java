@@ -67,6 +67,7 @@ public class AuthenticationWebController {
     public ModelAndView registerPage(){
         ModelAndView mv = new ModelAndView("user-form");
         mv.addObject("user", new User());
+        mv.addObject("updatePassword", false);
         mv.addObject("page", "user");
         mv.addObject("roles", UserRole.values());
 
@@ -104,7 +105,7 @@ public class AuthenticationWebController {
 
         var token = tService.generateToken((User) auth.getPrincipal());
         ResponseEntity.ok(new LoginResponseDTO(token));
-        return "redirect:/product/list";
+        return "redirect:/order/list";
     }
 
     @PostMapping(path="/user/form")
@@ -117,7 +118,12 @@ public class AuthenticationWebController {
         boolean userCreation = user.getId() == null || user.getId().isBlank();
         boolean updatePassword = updatePasswordString.equals("true");
 
-        if (user.getPassword() == null && (userCreation || updatePassword)){
+        if (user.getLogin() == null){
+            model.addAttribute("mailError", "Invalid mail");
+            hasError = true;
+        }
+
+        if (!user.getPassword().equals(user.getConfirmPassword()) && (userCreation || updatePassword)){
             model.addAttribute("passwordError", "Passwords don't match");
             hasError = true;
         }

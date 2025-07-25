@@ -8,7 +8,7 @@
     <body>
         <div th:replace="~{fragments :: navbar}"></div>
 
-        <form th:action="@{/user/form(updatePassword=${updatePassword ? 'true' : 'false'})}" th:object="${user}" method="POST">
+        <form th:action="@{/user/form(updatePassword(updatePassword=${T(java.lang.Boolean).TRUE.equals(updatePassword)})}" th:object="${user}" method="POST">
             <input type="hidden" name="id" th:value="${user.id}">
             <div class="mb-3" th:unless="${updatePassword}">
                 <label for="inputName" class="form-label">Name</label>
@@ -20,12 +20,12 @@
                 <input type="email" name="login" class="form-control" id="inputLogin" aria-describedby="loginHelp" th:value="${user.login}" required>
                 <div id="loginHelp" class="form-text">Insert user's login.</div>
             </div>
-            <div class="mb-3" th:unless="${user.id != null && !updatePassword}">
+            <div class="mb-3" th:unless="${user.id != null && !T(java.lang.Boolean).TRUE.equals(updatePassword)}">
                 <label for="inputPassword" class="form-label">Password</label>
                 <input type="password" name="password" class="form-control" id="inputPassword" aria-describedby="passwordHelp" required>
                 <div id="passwordHelp" class="form-text">Insert user's password.</div>
             </div>
-            <div class="mb-3" th:unless="${user.id != null && !updatePassword}">
+            <div class="mb-3" th:unless="${user.id != null && !T(java.lang.Boolean).TRUE.equals(updatePassword)}">
                 <label for="inputConfirmPassword" class="form-label">Confirm Password</label>
                 <input
                     type="password" name="confirmPassword" th:value="${user.confirmPassword}" class="form-control"
