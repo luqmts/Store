@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -50,15 +51,15 @@ public class OrderTest {
 
         fakeProduct1 = new Product(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
-            200.00F, fakeSupplier1, user, now, user, now
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
         fakeProduct2 = new Product(
                 2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-                250.00F, fakeSupplier2, user, now, user, now
+                BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
         fakeOrder = new Order(
-            1, 400.00F, 2, LocalDate.now(),
+            1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
     }
@@ -79,7 +80,7 @@ public class OrderTest {
         assertAll(
             () -> assertEquals(1, fakeOrder.getId()),
             () -> assertEquals(LocalDate.now(), fakeOrder.getOrderDate()),
-            () -> assertEquals(400.00F, fakeOrder.getTotalPrice()),
+            () -> assertEquals(BigDecimal.valueOf(400.00), fakeOrder.getTotalPrice()),
             () -> assertEquals(fakeProduct1, fakeOrder.getProduct()),
             () -> assertEquals(fakeSeller1, fakeOrder.getSeller()),
             () -> assertEquals(fakeCustomer1, fakeOrder.getCustomer()),
@@ -98,7 +99,7 @@ public class OrderTest {
 
         fakeOrder.setQuantity(4);
         fakeOrder.setOrderDate(LocalDate.now().plusDays(5));
-        fakeOrder.setTotalPrice(1000.00F);
+        fakeOrder.setTotalPrice(BigDecimal.valueOf(1000.00));
         fakeOrder.setProduct(fakeProduct2);
         fakeOrder.setCustomer(fakeCustomer2);
         fakeOrder.setSeller(fakeSeller2);
@@ -110,7 +111,7 @@ public class OrderTest {
         assertAll(
             () -> assertEquals(4, fakeOrder.getQuantity()),
             () -> assertEquals(LocalDate.now().plusDays(5), fakeOrder.getOrderDate()),
-            () -> assertEquals(1000.00F, fakeOrder.getTotalPrice()),
+            () -> assertEquals(BigDecimal.valueOf(1000.00), fakeOrder.getTotalPrice()),
             () -> assertEquals(fakeProduct2, fakeOrder.getProduct()),
             () -> assertEquals(fakeCustomer2, fakeOrder.getCustomer()),
             () -> assertEquals(fakeSeller2, fakeOrder.getSeller()),

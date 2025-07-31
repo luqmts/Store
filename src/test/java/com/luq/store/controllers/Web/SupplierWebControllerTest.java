@@ -1,6 +1,5 @@
 package com.luq.store.controllers.Web;
 
-import com.luq.store.domain.Department;
 import com.luq.store.domain.Supplier;
 import com.luq.store.infra.security.SecurityConfig;
 import com.luq.store.repositories.UserRepository;
@@ -10,7 +9,6 @@ import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.Phone;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

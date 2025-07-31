@@ -2,6 +2,7 @@ package com.luq.store.controllers.API;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luq.store.domain.*;
+import com.luq.store.domain.Customer;
 import com.luq.store.services.OrderService;
 import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -79,19 +81,19 @@ public class OrderControllerTest {
 
         Product fakeProduct1 = new Product(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
-            200.00F, fakeSupplier1, user, now, user, now
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
         Product fakeProduct2 = new Product(
             2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-            250.00F, fakeSupplier2, user, now, user, now
+            BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
         fakeOrder1 = new Order(
-            1, 400.00F, 2, LocalDate.now(),
+            1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
         fakeOrder2 = new Order(
-            2, 1000.00F, 4, LocalDate.now(),
+            2, BigDecimal.valueOf(1000.00), 4, LocalDate.now(),
             fakeProduct2, fakeSeller2, fakeCustomer2, user, now, user, now
         );
     }

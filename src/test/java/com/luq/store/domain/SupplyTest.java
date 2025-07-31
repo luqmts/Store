@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,11 +32,11 @@ public class SupplyTest {
         );
         fakeProduct1 = new Product(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
-            200.00F, fakeSupplier1, user, now, user, now
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
         fakeProduct2 = new Product(
                 2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-                250.00F, fakeSupplier2, user, now, user, now
+                BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
         fakeSupply = new Supply(1, 100, fakeProduct1, user, now, user, now);

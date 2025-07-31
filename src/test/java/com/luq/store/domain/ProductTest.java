@@ -8,6 +8,7 @@ import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.Phone;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +29,7 @@ public class ProductTest {
             user, now, user, now
         );
         fakeProduct = new Product(
-            1, "Playstation 4", "PS4", "Video Game Console by Sony.", 2000.00F, fakeSupplier,
+            1, "Playstation 4", "PS4", "Video Game Console by Sony.", BigDecimal.valueOf(2000.00), fakeSupplier,
             user, now, user, now
         );
     }
@@ -51,7 +52,7 @@ public class ProductTest {
             () -> assertEquals("PS4", fakeProduct.getSku()),
             () -> assertEquals("Playstation 4", fakeProduct.getName()),
             () -> assertEquals("Video Game Console by Sony.", fakeProduct.getDescription()),
-            () -> assertEquals(2000.00F, fakeProduct.getPrice()),
+            () -> assertEquals(BigDecimal.valueOf(2000.00), fakeProduct.getPrice()),
             () -> assertEquals(now, fakeProduct.getCreated()),
             () -> assertEquals("Jimmy McGill", fakeProduct.getModifiedBy()),
             () -> assertEquals(now, fakeProduct.getModified()),
@@ -68,7 +69,7 @@ public class ProductTest {
         fakeProduct.setSku("PS5");
         fakeProduct.setName("Playstation 5");
         fakeProduct.setDescription("A new generation Video Game Console by Sony.");
-        fakeProduct.setPrice(4000.00F);
+        fakeProduct.setPrice(BigDecimal.valueOf(4000.00));
         fakeProduct.setCreatedBy(user);
         fakeProduct.setModifiedBy(user);
         fakeProduct.setCreated(now);
@@ -77,7 +78,7 @@ public class ProductTest {
         assertAll(
             () -> assertEquals("PS5", fakeProduct.getSku()),
             () -> assertEquals("Playstation 5", fakeProduct.getName()),
-            () -> assertEquals(4000.00F, fakeProduct.getPrice()),
+            () -> assertEquals(BigDecimal.valueOf(4000.00), fakeProduct.getPrice()),
             () -> assertEquals("A new generation Video Game Console by Sony.", fakeProduct.getDescription()),
             () -> assertEquals("Kim Wexler", fakeProduct.getCreatedBy()),
             () -> assertEquals(now, fakeProduct.getCreated()),

@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -67,12 +68,12 @@ public class ProductControllerTest {
 
         fakeProduct1 = new Product(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
-            200.00F, fakeSupplier1, user, now, user, now
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
 
         fakeProduct2 = new Product(
             2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-            250.00F, fakeSupplier2, user, now, user, now
+            BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
     }
 

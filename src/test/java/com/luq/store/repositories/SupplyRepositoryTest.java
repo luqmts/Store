@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -42,7 +43,7 @@ public class SupplyRepositoryTest {
 
         fakeProduct1 = pRepository.save(new Product(
             "XOneCont", "Xbox One Controller", "Controller for Xbox One Console",
-            fakeSupplier1, 200.00F
+            fakeSupplier1, BigDecimal.valueOf(200.00)
         ));
 
         fakeSupply1 = supplyRepository.save(new Supply(20, fakeProduct1));

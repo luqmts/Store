@@ -17,6 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
@@ -59,11 +60,11 @@ public class ProductCSVControllerTest {
 
         this.fakeProduct1 = new Product(
             "XOneCont", "Xbox One Controller", "Controller for Xbox One Console",
-            fakeSupplier1, 200.00F
+            fakeSupplier1, BigDecimal.valueOf(200.00)
         );
         this.fakeProduct2 = new Product(
             "PS5Cont", "Playstation 5 Controller", "Controller for Playstation 5 Console",
-            fakeSupplier2, 250.00F
+            fakeSupplier2, BigDecimal.valueOf(250.00)
         );
 
         this.fakeProduct1.setCreated(now);

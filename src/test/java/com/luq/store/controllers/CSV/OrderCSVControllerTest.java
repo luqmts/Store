@@ -1,6 +1,7 @@
 package com.luq.store.controllers.CSV;
 
 import com.luq.store.domain.*;
+import com.luq.store.domain.Customer;
 import com.luq.store.repositories.*;
 import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
@@ -17,6 +18,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -71,11 +73,11 @@ public class OrderCSVControllerTest {
 
         fakeProduct1 = pRepository.save(new Product(
             "XOneCont", "Xbox One Controller", "Controller for Xbox One Console",
-            fakeSupplier1, 200.00F
+            fakeSupplier1, BigDecimal.valueOf(200.00)
         ));
         fakeProduct2 = pRepository.save(new Product(
             "PS5Cont", "Playstation 5 Controller", "Controller for Playstation 5 Console",
-            fakeSupplier2, 250.00F
+            fakeSupplier2, BigDecimal.valueOf(250.00)
         ));
 
         fakeSeller1 = sellerRepository.save(new Seller(
@@ -87,8 +89,8 @@ public class OrderCSVControllerTest {
             new Phone("11904040404"), Department.FOOD
         ));
 
-        fakeOrder1 = new Order(400.00F, 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1);
-        fakeOrder2 = new Order(800.00F, 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2);
+        fakeOrder1 = new Order(BigDecimal.valueOf(400.00), 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1);
+        fakeOrder2 = new Order(BigDecimal.valueOf(800.00), 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2);
         fakeOrder1.setCreated(now);
         fakeOrder1.setCreatedBy(user);
         fakeOrder1.setModified(now);

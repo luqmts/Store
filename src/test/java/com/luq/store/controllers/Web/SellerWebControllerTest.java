@@ -248,6 +248,7 @@ public class SellerWebControllerTest {
                 .param("department", "TECHNOLOGY")
         ).andExpect(status().isOk())
         .andExpect(view().name("seller-form"))
+        .andExpect(model().attributeExists("seller"))
         .andExpect(model().attribute("departments", Department.values()))
         .andExpect(model().attribute("mailError", "Invalid mail"));
 
@@ -267,6 +268,7 @@ public class SellerWebControllerTest {
                 .param("department", "TECHNOLOGY")
         ).andExpect(status().isOk())
         .andExpect(view().name("seller-form"))
+        .andExpect(model().attributeExists("seller"))
         .andExpect(model().attribute("departments", Department.values()))
         .andExpect(model().attribute("phoneError", "Invalid phone"));
 
@@ -286,6 +288,7 @@ public class SellerWebControllerTest {
                 .param("department", "TECHNOLOGY")
         ).andExpect(status().isOk())
         .andExpect(view().name("seller-form"))
+        .andExpect(model().attributeExists("seller"))
         .andExpect(model().attribute("departments", Department.values()))
         .andExpect(model().attribute("phoneError", "Invalid phone"))
         .andExpect(model().attribute("mailError", "Invalid mail"));
@@ -344,6 +347,7 @@ public class SellerWebControllerTest {
                 .param("department", "TECHNOLOGY")
         ).andExpect(status().isOk())
         .andExpect(view().name("seller-form"))
+        .andExpect(model().attributeExists("seller"))
         .andExpect(model().attribute("departments", Department.values()))
         .andExpect(model().attribute("mailError", "Invalid mail"));
 
@@ -366,6 +370,7 @@ public class SellerWebControllerTest {
                 .param("department", "TECHNOLOGY")
         ).andExpect(status().isOk())
         .andExpect(view().name("seller-form"))
+        .andExpect(model().attributeExists("seller"))
         .andExpect(model().attribute("departments", Department.values()))
         .andExpect(model().attribute("phoneError", "Invalid phone"));
 
@@ -388,6 +393,7 @@ public class SellerWebControllerTest {
                 .param("department", "TECHNOLOGY")
         ).andExpect(status().isOk())
         .andExpect(view().name("seller-form"))
+        .andExpect(model().attributeExists("seller"))
         .andExpect(model().attribute("departments", Department.values()))
         .andExpect(model().attribute("phoneError", "Invalid phone"))
         .andExpect(model().attribute("mailError", "Invalid mail"));

@@ -1,6 +1,7 @@
 package com.luq.store.services;
 
 import com.luq.store.domain.*;
+import com.luq.store.domain.Customer;
 import com.luq.store.repositories.OrderRepository;
 import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -42,23 +44,23 @@ public class OrderServiceTest {
         Customer fakeCustomer2 = new Customer(2, "Test Customer 02", user, now, user, now);
 
         fakeSupplier1 = new Supplier(
-            1,  "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
+            1, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
             new Mail("microsoft@mail.com"), new Phone("11000001111"),
             user, now, user, now
         );
         fakeSupplier2 = new Supplier(
-            2,   "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
+            2, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
             new Mail("sony@mail.com"), new Phone("11222225555"),
             user, now, user, now
         );
 
         fakeProduct1 = new Product(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
-            200.00F, fakeSupplier1, user, now, user, now
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
         fakeProduct2 = new Product(
             2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-            250.00F, fakeSupplier2, user, now, user, now
+            BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
         fakeSeller1 = new Seller(
@@ -73,11 +75,11 @@ public class OrderServiceTest {
         );
 
         fakeOrder1 = new Order(
-                1, 400.00F, 2, LocalDate.now(),
+                1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
                 fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
         fakeOrder2 = new Order(
-                2, 1000.00F, 4, LocalDate.now(),
+                2, BigDecimal.valueOf(1000.00), 4, LocalDate.now(),
                 fakeProduct2, fakeSeller2, fakeCustomer2, user, now, user, now
         );
     }

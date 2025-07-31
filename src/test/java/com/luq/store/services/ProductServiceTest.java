@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -53,11 +54,11 @@ public class ProductServiceTest {
 
         fakeProduct1 = new Product(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
-            200.00F, fakeSupplier1, user, now, user, now
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
         fakeProduct2 = new Product(
             2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-            250.00F, fakeSupplier2, user, now, user, now
+            BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
     }
     
