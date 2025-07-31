@@ -1,6 +1,9 @@
 package com.luq.store.controllers.Web;
 
 import com.luq.store.domain.Customer;
+import com.luq.store.dto.request.customer.CustomerRegisterDTO;
+import com.luq.store.dto.request.customer.CustomerUpdateDTO;
+import com.luq.store.dto.response.customer.CustomerResponseDTO;
 import com.luq.store.infra.security.SecurityConfig;
 import com.luq.store.repositories.UserRepository;
 import com.luq.store.services.CustomerService;
@@ -45,22 +48,27 @@ public class CustomerWebControllerTest {
     @MockBean
     private UserRepository uRepository;
 
-    private Customer fakeCustomer1, fakeCustomer2;
+    private CustomerResponseDTO fakeCustomer1Response, fakeCustomer2Response;
 
     @BeforeEach
     public void setUp(){
         String user = "Jimmy McGill";
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        fakeCustomer1 = new Customer(1, "Test Customer 01", user, now, user, now);
-        fakeCustomer2 = new Customer(2, "Test Customer 02", user, now, user, now);
+        fakeCustomer1Response = new CustomerResponseDTO(1, "Test Customer 01", user, now, user, now);
+        fakeCustomer2Response = new CustomerResponseDTO(2, "Test Customer 02", user, now, user, now);
+
+        CustomerRegisterDTO fakeCustomer1Register = new CustomerRegisterDTO("Test Customer 01");
+        CustomerRegisterDTO fakeCustomer2Register = new CustomerRegisterDTO("Test Customer 02");
+
+        CustomerUpdateDTO fakeCustomer1Update = new CustomerUpdateDTO("Test Customer 01");
     }
 
     @Test
     @WithMockUser
     @DisplayName("Test if all Customers are being returned on getAllSorted method with no filters applied and default user")
     public void testListAllCustomers() throws Exception{
-        when(cService.getAllSorted("id", "asc", null)).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAllSorted("id", "asc", null)).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(
             get("/customer/list")
@@ -69,7 +77,7 @@ public class CustomerWebControllerTest {
         ).andExpect(status().isOk())
         .andExpect(view().name("customer-list"))
         .andExpect(model().attributeExists("customers"))
-        .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
         .andExpect(model().attribute("page", "customer"))
         .andExpect(model().attribute("sortBy", "id"))
         .andExpect(model().attribute("direction", "asc"));
@@ -79,7 +87,7 @@ public class CustomerWebControllerTest {
     @WithMockUser
     @DisplayName("Test if Customer is being returned on getAllSorted method with filters applied and default user")
     public void testListCustomersWithOneFilter() throws Exception{
-        when(cService.getAllSorted("id", "asc", "Test Customer 01")).thenReturn(List.of(fakeCustomer1));
+        when(cService.getAllSorted("id", "asc", "Test Customer 01")).thenReturn(List.of(fakeCustomer1Response));
 
         mockMvc.perform(
             get("/customer/list")
@@ -89,7 +97,7 @@ public class CustomerWebControllerTest {
         ).andExpect(status().isOk())
         .andExpect(view().name("customer-list"))
         .andExpect(model().attributeExists("customers"))
-        .andExpect(model().attribute("customers", List.of(fakeCustomer1)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response)))
         .andExpect(model().attribute("page", "customer"))
         .andExpect(model().attribute("sortBy", "id"))
         .andExpect(model().attribute("direction", "asc"))
@@ -148,13 +156,13 @@ public class CustomerWebControllerTest {
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can access Customer form page (Edit Customer)")
     public void testCustomerEditFormAsAdmin() throws Exception{
-        when(cService.getById(1)).thenReturn(fakeCustomer1);
+        when(cService.getById(1)).thenReturn(fakeCustomer1Response);
 
         mockMvc.perform(get("/customer/form/1"))
         .andExpect(status().isOk())
         .andExpect(view().name("customer-form"))
         .andExpect(model().attributeExists("customer"))
-        .andExpect(model().attribute("customer", fakeCustomer1))
+        .andExpect(model().attribute("customer", fakeCustomer1Response))
         .andExpect(model().attribute("page", "customer"));
     }
 
@@ -165,7 +173,7 @@ public class CustomerWebControllerTest {
         mockMvc.perform(
             post("/customer/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("name", "Customer without id")
+                .param("name", "New Customer")
         ).andExpect(status().isForbidden());
     }
 
@@ -176,11 +184,11 @@ public class CustomerWebControllerTest {
         mockMvc.perform(
             post("/customer/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("name", "Customer without id")
+                .param("name", "New Customer")
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/customer/list"));
 
-        verify(cService, times(1)).register(any(Customer.class));
+        verify(cService, times(1)).register(any(CustomerRegisterDTO.class));
     }
 
     @Test
@@ -191,7 +199,7 @@ public class CustomerWebControllerTest {
             post("/customer/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "1")
-                .param("name", "Customer without id")
+                .param("name", "Customer being edited")
         ).andExpect(status().isForbidden());
     }
 
@@ -199,17 +207,17 @@ public class CustomerWebControllerTest {
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can submit a edit on Customer")
     public void testSubmitEditCustomerAsAdmin() throws Exception{
-        when(cService.getById(1)).thenReturn(fakeCustomer1);
+        when(cService.getById(1)).thenReturn(fakeCustomer1Response);
 
         mockMvc.perform(
             post("/customer/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "1")
-                .param("name", "Customer without id")
+                .param("name", "Customer being edited")
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/customer/list"));
 
-        verify(cService, times(1)).update(eq(1), any(Customer.class));
+        verify(cService, times(1)).update(eq(1), any(CustomerUpdateDTO.class));
     }
 
     @Test

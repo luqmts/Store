@@ -1,6 +1,10 @@
 package com.luq.store.controllers.Web;
 
 import com.luq.store.domain.*;
+import com.luq.store.domain.Customer;
+import com.luq.store.dto.request.customer.CustomerRegisterDTO;
+import com.luq.store.dto.response.customer.CustomerResponseDTO;
+import com.luq.store.mapper.CustomerMapper;
 import com.luq.store.services.CustomerService;
 import com.luq.store.services.OrderService;
 import com.luq.store.services.ProductService;
@@ -24,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -62,15 +67,18 @@ public class OrderWebControllerTest {
     private Supply fakeSupply;
     private Product fakeProduct1, fakeProduct2;
     private Seller fakeSeller1, fakeSeller2;
-    private Customer fakeCustomer1, fakeCustomer2;
+    private CustomerResponseDTO fakeCustomer1Response, fakeCustomer2Response;
 
     @BeforeEach
     public void setUp(){
         String user = "Jimmy McGill";
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        fakeCustomer1 = new Customer(1, "Test Customer 01", user, now, user, now);
-        fakeCustomer2 = new Customer(2, "Test Customer 02", user, now, user, now);
+        CustomerRegisterDTO fakeCustomer1Register = new CustomerRegisterDTO("Test Customer 01");
+        CustomerRegisterDTO fakeCustomer2Register = new CustomerRegisterDTO("Test Customer 02");
+
+        fakeCustomer1Response = new CustomerResponseDTO(1, "Test Customer 01", user, now, user, now);
+        fakeCustomer2Response = new CustomerResponseDTO(2, "Test Customer 02", user, now, user, now);
 
         fakeSeller1 = new Seller(
             1, "Walter White",
@@ -96,22 +104,22 @@ public class OrderWebControllerTest {
 
         fakeProduct1 = new Product(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
-            200.00F, fakeSupplier1, user, now, user, now
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
         fakeProduct2 = new Product(
             2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-            250.00F, fakeSupplier2, user, now, user, now
+            BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
         fakeSupply = new Supply(1, 50, fakeProduct1, user, now, user, now);
 
         fakeOrder1 = new Order(
-            1, 400.00F, 2, LocalDate.now(),
-            fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
+            1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
+            fakeProduct1, fakeSeller1, CustomerMapper.toEntity(fakeCustomer1Register), user, now, user, now
         );
         fakeOrder2 = new Order(
-            2, 1000.00F, 4, LocalDate.now(),
-            fakeProduct2, fakeSeller2, fakeCustomer2, user, now, user, now
+            2, BigDecimal.valueOf(1000.00), 4, LocalDate.now(),
+            fakeProduct2, fakeSeller2, CustomerMapper.toEntity(fakeCustomer2Register), user, now, user, now
         );
     }
 
@@ -122,7 +130,7 @@ public class OrderWebControllerTest {
         when(oService.getAllSorted("id", "asc", null, null, null)).thenReturn(List.of(fakeOrder1, fakeOrder2));
         when(pService.getAll()).thenReturn(List.of(fakeProduct1, fakeProduct2));
         when(sellerService.getAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-        when(cService.getAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(
             get("/order/list")
@@ -136,7 +144,7 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("sortBy", "id"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("products", List.of(fakeProduct1, fakeProduct2)))
-        .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
         .andExpect(model().attribute("sellers", List.of(fakeSeller1, fakeSeller2)));
     }
 
@@ -147,7 +155,7 @@ public class OrderWebControllerTest {
         when(oService.getAllSorted("id", "asc", 1, null, null)).thenReturn(List.of(fakeOrder1));
         when(pService.getAll()).thenReturn(List.of(fakeProduct1, fakeProduct2));
         when(sellerService.getAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-        when(cService.getAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(
             get("/order/list")
@@ -163,7 +171,7 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("productId", 1))
         .andExpect(model().attribute("products", List.of(fakeProduct1, fakeProduct2)))
-        .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
         .andExpect(model().attribute("sellers", List.of(fakeSeller1, fakeSeller2)));
     }
 
@@ -174,7 +182,7 @@ public class OrderWebControllerTest {
         when(oService.getAllSorted("id", "asc", 1, 1, 1)).thenReturn(List.of(fakeOrder1));
         when(pService.getAll()).thenReturn(List.of(fakeProduct1, fakeProduct2));
         when(sellerService.getAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-        when(cService.getAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(
             get("/order/list")
@@ -194,7 +202,7 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("sellerId", 1))
         .andExpect(model().attribute("customerId", 1))
         .andExpect(model().attribute("products", List.of(fakeProduct1, fakeProduct2)))
-        .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
         .andExpect(model().attribute("sellers", List.of(fakeSeller1, fakeSeller2)));
     }
 
@@ -205,7 +213,7 @@ public class OrderWebControllerTest {
         when(oService.getAllSorted("id", "asc", 5, null, null)).thenReturn(List.of());
         when(pService.getAll()).thenReturn(List.of(fakeProduct1, fakeProduct2));
         when(sellerService.getAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-        when(cService.getAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(
             get("/order/list")
@@ -221,7 +229,7 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("productId", 5))
         .andExpect(model().attribute("products", List.of(fakeProduct1, fakeProduct2)))
-        .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
         .andExpect(model().attribute("sellers", List.of(fakeSeller1, fakeSeller2)));
     }
 
@@ -231,7 +239,7 @@ public class OrderWebControllerTest {
     public void testOrderFormAsDefaultUser() throws Exception{
         when(pService.getAllRegisteredOnSupply()).thenReturn(List.of(fakeProduct1, fakeProduct2));
         when(sellerService.getAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-        when(cService.getAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(get("/order/form"))
             .andExpect(status().isOk())
@@ -239,7 +247,7 @@ public class OrderWebControllerTest {
             .andExpect(model().attributeExists("order"))
             .andExpect(model().attribute("page", "order"))
             .andExpect(model().attribute("products", List.of(fakeProduct1, fakeProduct2)))
-            .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+            .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
             .andExpect(model().attribute("sellers", List.of(fakeSeller1, fakeSeller2)));
     }
 
@@ -249,7 +257,7 @@ public class OrderWebControllerTest {
     public void testOrderFormAsAdmin() throws Exception{
         when(pService.getAllRegisteredOnSupply()).thenReturn(List.of(fakeProduct1, fakeProduct2));
         when(sellerService.getAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-        when(cService.getAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(get("/order/form"))
         .andExpect(status().isOk())
@@ -257,7 +265,7 @@ public class OrderWebControllerTest {
         .andExpect(model().attributeExists("order"))
         .andExpect(model().attribute("page", "order"))
         .andExpect(model().attribute("products", List.of(fakeProduct1, fakeProduct2)))
-        .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
         .andExpect(model().attribute("sellers", List.of(fakeSeller1, fakeSeller2)));
     }
 
@@ -269,7 +277,7 @@ public class OrderWebControllerTest {
         when(supplyService.getByProduct(fakeOrder1.getProduct())).thenReturn(fakeSupply);
         when(pService.getAllRegisteredOnSupply(1)).thenReturn(List.of(fakeProduct1, fakeProduct2));
         when(sellerService.getAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-        when(cService.getAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(get("/order/form/1"))
             .andExpect(status().isOk())
@@ -278,7 +286,7 @@ public class OrderWebControllerTest {
             .andExpect(model().attribute("order", fakeOrder1))
             .andExpect(model().attribute("page", "order"))
             .andExpect(model().attribute("products", List.of(fakeProduct1, fakeProduct2)))
-            .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+            .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
             .andExpect(model().attribute("sellers", List.of(fakeSeller1, fakeSeller2)));
     }
 
@@ -290,7 +298,7 @@ public class OrderWebControllerTest {
         when(supplyService.getByProduct(fakeOrder1.getProduct())).thenReturn(fakeSupply);
         when(pService.getAllRegisteredOnSupply(1)).thenReturn(List.of(fakeProduct1, fakeProduct2));
         when(sellerService.getAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-        when(cService.getAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
+        when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(get("/order/form/1"))
         .andExpect(status().isOk())
@@ -299,7 +307,7 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("order", fakeOrder1))
         .andExpect(model().attribute("page", "order"))
         .andExpect(model().attribute("products", List.of(fakeProduct1, fakeProduct2)))
-        .andExpect(model().attribute("customers", List.of(fakeCustomer1, fakeCustomer2)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
         .andExpect(model().attribute("sellers", List.of(fakeSeller1, fakeSeller2)));
     }
 

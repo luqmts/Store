@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CustomerTest {
-    private Customer fakeCustomer, fakeCustomer2;
+    private Customer fakeCustomer;
     private final LocalDateTime now = LocalDateTime.now();
 
     @BeforeEach

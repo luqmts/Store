@@ -1,6 +1,9 @@
 package com.luq.store.services;
 
 import com.luq.store.domain.Customer;
+import com.luq.store.dto.request.customer.CustomerRegisterDTO;
+import com.luq.store.dto.request.customer.CustomerUpdateDTO;
+import com.luq.store.dto.response.customer.CustomerResponseDTO;
 import com.luq.store.repositories.CustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +27,10 @@ public class CustomerServiceTest {
     @InjectMocks
     CustomerService cService;
 
-    Customer fakeCustomer1, fakeCustomer2, result;
+    private CustomerResponseDTO fakeCustomer1Response, result;
+    private CustomerRegisterDTO fakeCustomer1Register, fakeCustomer2Register;
+    private CustomerUpdateDTO fakeCustomer1Update;
+    private Customer fakeCustomer1, fakeCustomer2;
 
     @BeforeEach
     public void setUp(){
@@ -33,19 +39,25 @@ public class CustomerServiceTest {
 
         fakeCustomer1 = new Customer(1, "Test Customer 01", user, now, user, now);
         fakeCustomer2 = new Customer(2, "Test Customer 02", user, now, user, now);
+
+        fakeCustomer1Response = new CustomerResponseDTO(1, "Test Customer 01", user, now, user, now);
+
+        fakeCustomer1Register = new CustomerRegisterDTO("Test Customer 01");
+        fakeCustomer2Register = new CustomerRegisterDTO("Test Customer 02");
+        fakeCustomer1Update = new CustomerUpdateDTO("Test Customer 02");
     }
     
     @Test
     @DisplayName("Test if Customer is being registered correctly")
     public void testRegisterCustomer(){
         when(cRepository.save(fakeCustomer1)).thenReturn(fakeCustomer1);
-        result = cService.register(fakeCustomer1);
+        result = cService.register(fakeCustomer1Register);
 
         assertAll(
             () -> verify(cRepository, atMostOnce()).save(fakeCustomer1),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Customer.class, result),
-            () -> assertEquals(fakeCustomer1, result)
+            () -> assertInstanceOf(CustomerResponseDTO.class, result),
+            () -> assertEquals(fakeCustomer1Response, result)
         );
     }
 
@@ -56,16 +68,16 @@ public class CustomerServiceTest {
         when(cRepository.findById(fakeCustomer1.getId())).thenReturn(Optional.ofNullable(fakeCustomer1));
         when(cRepository.save(fakeCustomer2)).thenReturn(fakeCustomer2);
 
-        cService.register(fakeCustomer1);
-        result = cService.update(fakeCustomer1.getId(), fakeCustomer2);
+        cService.register(fakeCustomer1Register);
+        result = cService.update(fakeCustomer1.getId(), fakeCustomer1Update);
 
         assertAll(
             () -> verify(cRepository, times(2)).save(fakeCustomer1),
             () -> verify(cRepository, times(2)).save(fakeCustomer2),
             () -> verify(cRepository, atMostOnce()).findById(fakeCustomer1.getId()),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Customer.class, result),
-            () -> assertEquals(fakeCustomer2, result)
+            () -> assertInstanceOf(CustomerResponseDTO.class, result),
+            () -> assertEquals(fakeCustomer1Response, result)
         );
     }
 
@@ -73,7 +85,7 @@ public class CustomerServiceTest {
     @DisplayName("Test if Customer is being deleted correctly")
     public void testDeleteCustomer(){
         when(cRepository.save(fakeCustomer1)).thenReturn(fakeCustomer1);
-        cService.register(fakeCustomer1);
+        cService.register(fakeCustomer1Register);
 
         cService.delete(fakeCustomer1.getId());
 
@@ -87,8 +99,8 @@ public class CustomerServiceTest {
         when(cRepository.save(fakeCustomer2)).thenReturn(fakeCustomer2);
         when(cRepository.findAll()).thenReturn(List.of(fakeCustomer1, fakeCustomer2));
 
-        cService.register(fakeCustomer1);
-        cService.register(fakeCustomer2);
+        cService.register(fakeCustomer1Register);
+        cService.register(fakeCustomer2Register);
         assertEquals(2, cService.getAll().size());
         verify(cRepository, atMostOnce()).findAll();
     }
@@ -99,13 +111,13 @@ public class CustomerServiceTest {
         when(cRepository.save(fakeCustomer1)).thenReturn(fakeCustomer1);
         when(cRepository.findById(1)).thenReturn(Optional.ofNullable(fakeCustomer1));
 
-        cService.register(fakeCustomer1);
+        cService.register(fakeCustomer1Register);
         result = cService.getById(1);
         assertAll(
             () -> verify(cRepository, atMostOnce()).findById(1),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Customer.class, result),
-            () -> assertEquals(fakeCustomer1, result)
+            () -> assertInstanceOf(CustomerResponseDTO.class, result),
+            () -> assertEquals(fakeCustomer1Response, result)
         );
     }
 }
