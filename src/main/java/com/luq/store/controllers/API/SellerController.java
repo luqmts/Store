@@ -1,5 +1,8 @@
 package com.luq.store.controllers.API;
 
+import com.luq.store.dto.request.seller.SellerRegisterDTO;
+import com.luq.store.dto.request.seller.SellerUpdateDTO;
+import com.luq.store.dto.response.seller.SellerResponseDTO;
 import com.luq.store.services.SellerService;
 
 import java.util.List;
@@ -14,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.luq.store.domain.Seller;
-
 @RestController
-@RequestMapping("/api/sellers")
+@RequestMapping("/api/seller")
 public class SellerController {
     protected final SellerService sService;
     
@@ -27,23 +28,23 @@ public class SellerController {
     }
 
     @PostMapping
-    public Seller registerSeller(@RequestBody Seller seller){
-        return sService.register(seller);
+    public SellerResponseDTO registerSeller(@RequestBody SellerRegisterDTO data){
+        return sService.register(data);
     }
 
     @GetMapping
-    public List<Seller> getSellers(){
+    public List<SellerResponseDTO> getSellers(){
         return sService.getAll();
     }
 
     @GetMapping(path="/{id}")
-    public Seller getSellerById(@PathVariable("id") int id){
+    public SellerResponseDTO getSellerById(@PathVariable("id") int id){
         return sService.getById(id);
     }
 
     @PutMapping(path="/{id}")
-    public Seller updateSeller(@PathVariable("id") int id, @RequestBody Seller seller){
-        return sService.update(id, seller);
+    public SellerResponseDTO updateSeller(@PathVariable("id") int id, @RequestBody SellerUpdateDTO data){
+        return sService.update(id, data);
     }
 
     @DeleteMapping(path="{id}")

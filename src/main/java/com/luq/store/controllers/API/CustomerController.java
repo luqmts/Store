@@ -1,5 +1,8 @@
 package com.luq.store.controllers.API;
 
+import com.luq.store.dto.request.customer.CustomerRegisterDTO;
+import com.luq.store.dto.request.customer.CustomerUpdateDTO;
+import com.luq.store.dto.response.customer.CustomerResponseDTO;
 import com.luq.store.services.CustomerService;
 
 import java.util.List;
@@ -14,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.luq.store.domain.Customer;
-
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api/customer")
 public class CustomerController {
     protected final CustomerService cService;
     
@@ -27,23 +28,23 @@ public class CustomerController {
     }
 
     @PostMapping
-    public Customer registerCustomer(@RequestBody Customer customer){
-        return cService.register(customer);
+    public CustomerResponseDTO registerCustomer(@RequestBody CustomerRegisterDTO data) {
+        return cService.register(data);
     }
 
     @GetMapping
-    public List<Customer> getCustomers(){
+    public List<CustomerResponseDTO> getCustomers(){
         return cService.getAll();
     }
 
     @GetMapping(path="/{id}")
-    public Customer getCustomerById(@PathVariable("id") int id){
+    public CustomerResponseDTO getCustomerById(@PathVariable("id") int id){
         return cService.getById(id);
     }
 
     @PutMapping(path="/{id}")
-    public Customer updateCustomer(@PathVariable("id") int id, @RequestBody Customer customer){
-        return cService.update(id, customer);
+    public CustomerResponseDTO updateCustomer(@PathVariable("id") int id, @RequestBody CustomerUpdateDTO data){
+        return cService.update(id, data);
     }
 
     @DeleteMapping(path="{id}")

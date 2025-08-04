@@ -4,15 +4,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import com.luq.store.dto.request.customer.CustomerUpdateDTO;
+import com.luq.store.dto.request.supplier.SupplierRegisterDTO;
+import com.luq.store.dto.request.supplier.SupplierUpdateDTO;
+import com.luq.store.dto.response.supplier.SupplierResponseDTO;
+import com.luq.store.exceptions.InvalidCnpjException;
+import com.luq.store.exceptions.InvalidMailException;
+import com.luq.store.exceptions.InvalidPhoneException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.store.domain.Supplier;
@@ -40,7 +44,7 @@ public class SupplierWebController {
         cnpj = (Objects.equals(cnpj, "")) ? null : cnpj;
         mail = (Objects.equals(mail, "")) ? null : mail;
         phone = (Objects.equals(phone, "")) ? null : phone;
-        List<Supplier> sList = sService.getAllSorted(sortBy, direction, name, cnpj, mail, phone);
+        List<SupplierResponseDTO> sList = sService.getAllSorted(sortBy, direction, name, cnpj, mail, phone);
 
         ModelAndView mv = new ModelAndView("supplier-list");
         mv.addObject("suppliers", sList);
@@ -65,7 +69,7 @@ public class SupplierWebController {
 
     @GetMapping("/supplier/form/{id}")
     public ModelAndView supplierFormEdit(@PathVariable("id") int id){
-        Supplier supplier = sService.getById(id);
+        SupplierResponseDTO supplier = sService.getById(id);
         ModelAndView mv = new ModelAndView("supplier-form");
         mv.addObject("page", "supplier");
         mv.addObject("supplier", supplier);
@@ -73,44 +77,31 @@ public class SupplierWebController {
     }
 
     @PostMapping("/supplier/form")
-    public String postSupplier(Supplier supplier, Model model){
-        boolean hasError = false;
-        if (supplier.getMail() == null){
-            model.addAttribute("mailError", "Invalid mail");
-            hasError = true;
+    public String postSupplier(SupplierRegisterDTO data, Model model){
+        try {
+            sService.register(data);
+            return "redirect:/supplier/list";
+        } catch (InvalidCnpjException | InvalidMailException | InvalidPhoneException e) {
+            if (e.getClass().equals(InvalidCnpjException.class)) model.addAttribute("cnpjError", e.getMessage());
+            if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
+            if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
+            model.addAttribute("supplier", data);
+            return "supplier-form";
         }
-        
-        if (supplier.getCnpj() == null){
-            model.addAttribute("cnpjError", "Invalid cnpj");
-            hasError = true;
-        }
-        
-        if (supplier.getPhone() == null){
-            model.addAttribute("phoneError", "Invalid phone");
-            hasError = true;
-        }
-        
-        if (hasError){
-            model.addAttribute("supplier", supplier);
-            return "supplier-form";   
-        }
+    }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (supplier.getId() == null) {
-            supplier.setCreatedBy(authentication.getName());
-            supplier.setCreated(LocalDateTime.now());
-            supplier.setModifiedBy(authentication.getName());
-            supplier.setModified(LocalDateTime.now());
-            sService.register(supplier);
+    @PutMapping(path="/supplier/form/{id}")
+    public String postSupplier(@PathVariable("id") int id, SupplierUpdateDTO data, Model model){
+        try {
+            sService.update(id, data);
+            return "redirect:/supplier/list";
+        } catch (InvalidCnpjException | InvalidMailException | InvalidPhoneException e) {
+            if (e.getClass().equals(InvalidCnpjException.class)) model.addAttribute("cnpjError", e.getMessage());
+            if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
+            if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
+            model.addAttribute("supplier", data);
+            return "supplier-form";
         }
-        else{
-            supplier.setModifiedBy(authentication.getName());
-            supplier.setModified(LocalDateTime.now());
-            sService.update(supplier.getId(), supplier);
-        }
-
-        return "redirect:/supplier/list";
     }
 
     @GetMapping("/supplier/delete/{id}")

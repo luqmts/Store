@@ -1,5 +1,8 @@
 package com.luq.store.controllers.API;
 
+import com.luq.store.dto.request.order.OrderRegisterDTO;
+import com.luq.store.dto.request.order.OrderUpdateDTO;
+import com.luq.store.dto.response.order.OrderResponseDTO;
 import com.luq.store.services.OrderService;
 
 import java.util.List;
@@ -14,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.luq.store.domain.Order;
-
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/order")
 public class OrderController {
     protected final OrderService oService;
     
@@ -27,23 +28,23 @@ public class OrderController {
     }
 
     @PostMapping
-    public Order registerOrder(@RequestBody Order order){
-        return oService.register(order);
+    public OrderResponseDTO registerOrder(@RequestBody OrderRegisterDTO data){
+        return oService.register(data);
     }
 
     @GetMapping
-    public List<Order> getOrders(){
+    public List<OrderResponseDTO> getOrders(){
         return oService.getAll();
     }
 
     @GetMapping(path="/{id}")
-    public Order getOrderById(@PathVariable("id") int id){
+    public OrderResponseDTO getOrderById(@PathVariable("id") int id){
         return oService.getById(id);
     }
 
     @PutMapping(path="/{id}")
-    public Order updateOrder(@PathVariable("id") int id, @RequestBody Order order){
-        return oService.update(id, order);
+    public OrderResponseDTO updateOrder(@PathVariable("id") int id, @RequestBody OrderUpdateDTO data){
+        return oService.update(id, data);
     }
 
     @DeleteMapping(path="{id}")

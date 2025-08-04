@@ -4,15 +4,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import com.luq.store.dto.request.customer.CustomerUpdateDTO;
+import com.luq.store.dto.request.seller.SellerRegisterDTO;
+import com.luq.store.dto.request.seller.SellerUpdateDTO;
+import com.luq.store.dto.response.seller.SellerResponseDTO;
+import com.luq.store.exceptions.InvalidMailException;
+import com.luq.store.exceptions.InvalidPhoneException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.store.domain.Department;
@@ -41,7 +44,7 @@ public class SellerWebController {
         mail = (Objects.equals(mail, "")) ? null : mail;
         phone = (Objects.equals(phone, "")) ? null : phone;
 
-        List<Seller> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
+        List<SellerResponseDTO> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
         
         ModelAndView mv = new ModelAndView("seller-list");
         mv.addObject("page", "seller");
@@ -68,7 +71,7 @@ public class SellerWebController {
 
     @GetMapping(path="/seller/form/{id}")
     public ModelAndView sellerFormEdit(@PathVariable("id") int id){
-        Seller seller = sService.getById(id);
+        SellerResponseDTO seller = sService.getById(id);
         ModelAndView mv = new ModelAndView("seller-form");
         mv.addObject("seller", seller);
         mv.addObject("page", "seller");
@@ -77,40 +80,31 @@ public class SellerWebController {
     }
 
     @PostMapping(path="/seller/form")
-    public String postSeller(Seller seller, Model model){
-        boolean hasError = false;
-        
-        if (seller.getMail() == null){
-            model.addAttribute("mailError", "Invalid mail");
-            hasError = true;
-        }
-        
-        if (seller.getPhone() == null){
-            model.addAttribute("phoneError", "Invalid phone");
-            hasError = true;
-        }
-        
-        if (hasError){
-            model.addAttribute("seller", seller);
+    public String postSeller(SellerRegisterDTO data, Model model){
+        try {
+            sService.register(data);
+            return "redirect:/seller/list";
+        } catch (InvalidMailException | InvalidPhoneException e) {
+            if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
+            if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
+            model.addAttribute("seller", data);
             model.addAttribute("departments", Department.values());
             return "seller-form";
         }
+    }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (seller.getId() == null) {
-            seller.setCreatedBy(authentication.getName());
-            seller.setCreated(LocalDateTime.now());
-            seller.setModifiedBy(authentication.getName());
-            seller.setModified(LocalDateTime.now());
-            sService.register(seller);
-        } else {
-            seller.setModifiedBy(authentication.getName());
-            seller.setModified(LocalDateTime.now());
-            sService.update(seller.getId(), seller);
+    @PutMapping(path="/seller/form/{id}")
+    public String postSeller(@PathVariable("id") int id, SellerUpdateDTO data, Model model){
+        try {
+            sService.update(id, data);
+            return "redirect:/seller/list";
+        } catch (InvalidMailException | InvalidPhoneException e) {
+            if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
+            if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
+            model.addAttribute("seller", data);
+            model.addAttribute("departments", Department.values());
+            return "seller-form";
         }
-
-        return "redirect:/seller/list";    
     }
 
     @GetMapping(path="/seller/delete/{id}")

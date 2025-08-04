@@ -1,6 +1,6 @@
 package com.luq.store.controllers.CSV;
 
-import com.luq.store.domain.Customer;
+import com.luq.store.dto.response.customer.CustomerResponseDTO;
 import com.luq.store.services.CustomerService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,17 +36,17 @@ public class CustomerCSVExportController {
         try (PrintWriter writer = response.getWriter()) {
             writer.println("id,name,created,created_by,modified,modified_by");
 
-            List<Customer> cList = cService.getAllSorted(sortBy, direction, name);
+            List<CustomerResponseDTO> cList = cService.getAllSorted(sortBy, direction, name);
 
-            for (Customer customer : cList) {
+            for (CustomerResponseDTO customer : cList) {
                 String row = String.format(Locale.ROOT,
                 "%d,%s,%s,%s,%s,%s",
-                    customer.getId(),
-                    escapeCsv(customer.getName()),
-                    escapeCsv(customer.getCreated().toString()),
-                    escapeCsv(customer.getCreatedBy()),
-                    escapeCsv(customer.getModified().toString()),
-                    escapeCsv(customer.getModifiedBy())
+                    customer.id(),
+                    escapeCsv(customer.name()),
+                    escapeCsv(customer.created().toString()),
+                    escapeCsv(customer.createdBy()),
+                    escapeCsv(customer.modified().toString()),
+                    escapeCsv(customer.modifiedBy())
                 );
 
                 writer.println(row);

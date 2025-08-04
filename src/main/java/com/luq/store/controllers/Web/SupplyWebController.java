@@ -1,6 +1,11 @@
 package com.luq.store.controllers.Web;
 
 import com.luq.store.domain.Supply;
+import com.luq.store.dto.request.customer.CustomerUpdateDTO;
+import com.luq.store.dto.request.supply.SupplyRegisterDTO;
+import com.luq.store.dto.request.supply.SupplyUpdateDTO;
+import com.luq.store.dto.response.supply.SupplyResponseDTO;
+import com.luq.store.exceptions.ProductRegisteredException;
 import com.luq.store.services.SupplyService;
 import com.luq.store.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
@@ -34,7 +36,7 @@ public class SupplyWebController {
         @RequestParam(name="direction", required=false, defaultValue="desc") String direction,
         @RequestParam(name="product.id", required=false) Integer productId
     ){
-        List<Supply> sList = sService.getAllSorted(sortBy, direction, productId);
+        List<SupplyResponseDTO> sList = sService.getAllSorted(sortBy, direction, productId);
 
         ModelAndView mv = new ModelAndView("supply-list");
         mv.addObject("supply", sList);
@@ -61,38 +63,32 @@ public class SupplyWebController {
 
     @GetMapping(path="/supply/form/{id}")
     public ModelAndView supplyFormEdit(@PathVariable("id") int id){
-        Supply supply = sService.getById(id);
+        SupplyResponseDTO supply = sService.getById(id);
         ModelAndView mv = new ModelAndView("supply-form");
         mv.addObject("supply", supply);
         mv.addObject("page", "supply");
-        mv.addObject("products", pService.getAllNotRegisteredOnSupply(supply.getId()));
+        mv.addObject("products", pService.getAllNotRegisteredOnSupply(supply.id()));
         
         return mv;
     }
 
     @PostMapping(path="/supply/form")
-    public String postSupply(Supply supply, Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (supply.getId() == null) {
-            if (sService.getByProduct(supply.getProduct()) == null) {
-                supply.setCreatedBy(authentication.getName());
-                supply.setCreated(LocalDateTime.now());
-                supply.setModifiedBy(authentication.getName());
-                supply.setModified(LocalDateTime.now());
-                sService.register(supply);
-            }
-            else {
-                model.addAttribute("productError", "This product is already registered on supply, please update it instead");
-                model.addAttribute("page", "supply");
-                model.addAttribute("supply", supply);
-                model.addAttribute("products", pService.getAll());
-                return "supply-form";
-            }
-        } else {
-            supply.setModifiedBy(authentication.getName());
-            supply.setModified(LocalDateTime.now());
-            sService.update(supply.getId(), supply);
+    public String postSupply(SupplyRegisterDTO data, Model model){
+        try {
+            sService.register(data);
+            return "redirect:/supply/list";
+        } catch (ProductRegisteredException e) {
+            model.addAttribute("productError", e.getMessage());
+            model.addAttribute("page", "supply");
+            model.addAttribute("supply", data);
+            model.addAttribute("products", pService.getAll());
+            return "supply-form";
         }
+    }
+
+    @PutMapping(path="/supply/form/{id}")
+    public String postSupply(@PathVariable("id") int id, SupplyUpdateDTO data){
+        sService.update(id, data);
         return "redirect:/supply/list";
     }
 

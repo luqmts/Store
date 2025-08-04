@@ -1,6 +1,6 @@
 package com.luq.store.controllers.CSV;
 
-import com.luq.store.domain.Supplier;
+import com.luq.store.dto.response.supplier.SupplierResponseDTO;
 import com.luq.store.services.SupplierService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,20 +42,20 @@ public class SupplierCSVExportController {
         try (PrintWriter writer = response.getWriter()) {
             writer.println("id,name,cnpj,mail,phone,created,created_by,modified,modified_by");
 
-            List<Supplier> sList = sService.getAllSorted(sortBy, direction, name, cnpj, mail, phone);
+            List<SupplierResponseDTO> sList = sService.getAllSorted(sortBy, direction, name, cnpj, mail, phone);
 
-            for (Supplier supplier : sList) {
+            for (SupplierResponseDTO supplier : sList) {
                 String row = String.format(Locale.ROOT,
                 "%d,%s,%s,%s,%s,%s,%s,%s,%s",
-                    supplier.getId(),
-                    escapeCsv(supplier.getName()),
-                    escapeCsv(supplier.getCnpj().toString()),
-                    escapeCsv(supplier.getMail().toString()),
-                    escapeCsv(supplier.getPhone().toString()),
-                    escapeCsv(supplier.getCreated().toString()),
-                    escapeCsv(supplier.getCreatedBy()),
-                    escapeCsv(supplier.getModified().toString()),
-                    escapeCsv(supplier.getModifiedBy())
+                    supplier.id(),
+                    escapeCsv(supplier.name()),
+                    escapeCsv(supplier.cnpj().toString()),
+                    escapeCsv(supplier.mail().toString()),
+                    escapeCsv(supplier.phone().toString()),
+                    escapeCsv(supplier.created().toString()),
+                    escapeCsv(supplier.createdBy()),
+                    escapeCsv(supplier.modified().toString()),
+                    escapeCsv(supplier.modifiedBy())
                 );
 
                 writer.println(row);

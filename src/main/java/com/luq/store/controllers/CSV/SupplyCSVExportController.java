@@ -1,6 +1,6 @@
 package com.luq.store.controllers.CSV;
 
-import com.luq.store.domain.Supply;
+import com.luq.store.dto.response.supply.SupplyResponseDTO;
 import com.luq.store.services.SupplyService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,18 +34,18 @@ public class SupplyCSVExportController {
         try (PrintWriter writer = response.getWriter()) {
             writer.println("id,product,quantity,created,created_by,modified,modified_by");
 
-            List<Supply> sList = sService.getAllSorted(sortBy, direction, productId);
+            List<SupplyResponseDTO> sList = sService.getAllSorted(sortBy, direction, productId);
 
-            for (Supply supply : sList) {
+            for (SupplyResponseDTO supply : sList) {
                 String row = String.format(Locale.ROOT,
                 "%d,%s,%d,%s,%s,%s,%s",
-                    supply.getId(),
-                    escapeCsv(supply.getProduct().getName()),
-                    supply.getQuantity(),
-                    escapeCsv(supply.getCreated().toString()),
-                    escapeCsv(supply.getCreatedBy()),
-                    escapeCsv(supply.getModified().toString()),
-                    escapeCsv(supply.getModifiedBy())
+                    supply.id(),
+                    escapeCsv(supply.product().getName()),
+                    supply.quantity(),
+                    escapeCsv(supply.created().toString()),
+                    escapeCsv(supply.createdBy()),
+                    escapeCsv(supply.modified().toString()),
+                    escapeCsv(supply.modifiedBy())
                 );
 
                 writer.println(row);

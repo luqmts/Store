@@ -5,16 +5,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.luq.store.domain.Supply;
+import com.luq.store.dto.request.customer.CustomerUpdateDTO;
+import com.luq.store.dto.request.order.OrderRegisterDTO;
+import com.luq.store.dto.request.order.OrderUpdateDTO;
+import com.luq.store.dto.response.order.OrderResponseDTO;
+import com.luq.store.dto.response.supply.SupplyResponseDTO;
+import com.luq.store.exceptions.InvalidQuantityException;
 import com.luq.store.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.store.domain.Order;
@@ -50,7 +53,7 @@ public class OrderWebController {
         @RequestParam(name="seller.id", required=false) Integer sellerId,
         @RequestParam(name="customer.id", required=false) Integer customerId
     ){
-        List<Order> oList = oService.getAllSorted(sortBy, direction, productId, sellerId, customerId);
+        List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, productId, sellerId, customerId);
 
         ModelAndView mv = new ModelAndView("order-list");
         mv.addObject("orders", oList);
@@ -84,13 +87,13 @@ public class OrderWebController {
 
     @GetMapping(path="/order/form/{id}")
     public ModelAndView orderFormEdit(@PathVariable("id") int id){
-        Order order = oService.getById(id);
+        OrderResponseDTO order = oService.getById(id);
         ModelAndView mv = new ModelAndView("order-form");
-        Supply supply = supplyService.getByProduct(order.getProduct());
+        SupplyResponseDTO supply = supplyService.getByProduct(order.product());
 
         mv.addObject("order", order);
         mv.addObject("page", "order");
-        mv.addObject("products", pService.getAllRegisteredOnSupply(supply.getId()));
+        mv.addObject("products", pService.getAllRegisteredOnSupply(supply.id()));
         mv.addObject("sellers", sellerService.getAll());
         mv.addObject("customers", cService.getAll());
         
@@ -98,44 +101,37 @@ public class OrderWebController {
     }
 
     @PostMapping(path="/order/form")
-    public String postOrder(Order order, Model model){
-        Supply supply = supplyService.getByProduct(order.getProduct());
-        Integer orderQuantity = (order.getId() != null) ? oService.getById(order.getId()).getQuantity() : 0;
-
-        if (
-            (order.getId() == null && order.getQuantity() > supply.getQuantity())
-            || (order.getId() != null && (order.getQuantity() - orderQuantity) > supply.getQuantity())
-        ) {
-            model.addAttribute("order", order);
-            model.addAttribute("products", (order.getId() == null) ? pService.getAllRegisteredOnSupply() : pService.getAllRegisteredOnSupply(supply.getId()));
+    public String postOrder(OrderRegisterDTO data, Model model){
+        try {
+            oService.register(data);
+            return "redirect:/order/list";
+        } catch (InvalidQuantityException e) {
+            model.addAttribute("order", data);
+            model.addAttribute("products", pService.getAllRegisteredOnSupply());
             model.addAttribute("page", "order");
             model.addAttribute("sellers", sellerService.getAll());
             model.addAttribute("customers", cService.getAll());
-            model.addAttribute("quantityError", "You  inserted a quantity greater that actually have in supply, please change it");
+            model.addAttribute("quantityError", e.getMessage());
+
             return "order-form";
         }
+    }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    @PutMapping(path="/order/form/{id}")
+    public String postOrder(@PathVariable("id") int id, OrderUpdateDTO data, Model model){
+        try {
+            oService.update(id, data);
+            return "redirect:/order/list";
+        } catch (InvalidQuantityException e) {
+            model.addAttribute("order", data);
+            model.addAttribute("products", pService.getAllRegisteredOnSupply(data.product_id()));
+            model.addAttribute("page", "order");
+            model.addAttribute("sellers", sellerService.getAll());
+            model.addAttribute("customers", cService.getAll());
+            model.addAttribute("quantityError", e.getMessage());
 
-        if (order.getId() == null) {
-            order.setCreatedBy(authentication.getName());
-            order.setCreated(LocalDateTime.now());
-            order.setModifiedBy(authentication.getName());
-            order.setModified(LocalDateTime.now());
-            oService.register(order);
-            supply.setQuantity(supply.getQuantity() - order.getQuantity());
+            return "order-form";
         }
-
-        if (order.getId() != null) {
-            order.setModifiedBy(authentication.getName());
-            order.setModified(LocalDateTime.now());
-            oService.update(order.getId(), order);
-            supply.setQuantity(supply.getQuantity() - (order.getQuantity() - orderQuantity));
-        }
-
-        supplyService.update(supply.getId(), supply);
-
-        return "redirect:/order/list";
     }
 
     @GetMapping(path="/order/delete/{id}")

@@ -1,6 +1,6 @@
 package com.luq.store.controllers.CSV;
 
-import com.luq.store.domain.Order;
+import com.luq.store.dto.response.order.OrderResponseDTO;
 import com.luq.store.services.OrderService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,22 +36,22 @@ public class OrderCSVExportController {
         try (PrintWriter writer = response.getWriter()) {
             writer.println("id,product,seller,customer,orderDate,quantity,totalPrice,created,created_by,modified,modified_by");
 
-            List<Order> oList = oService.getAllSorted(sortBy, direction, productId, sellerId, customerId);
+            List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, productId, sellerId, customerId);
 
-            for (Order order : oList) {
+            for (OrderResponseDTO order : oList) {
                 String row = String.format(Locale.ROOT,
                 "%d,%s,%s,%s,%s,%d,%.2f,%s,%s,%s,%s",
-                    order.getId(),
-                    escapeCsv(order.getProduct().getName()),
-                    escapeCsv(order.getSeller().getName()),
-                    escapeCsv(order.getCustomer().getName()),
-                    escapeCsv(order.getOrderDate().toString()),
-                    order.getQuantity(),
-                    order.getTotalPrice(),
-                    escapeCsv(order.getCreated().toString()),
-                    escapeCsv(order.getCreatedBy()),
-                    escapeCsv(order.getModified().toString()),
-                    escapeCsv(order.getModifiedBy())
+                    order.id(),
+                    escapeCsv(order.product().getName()),
+                    escapeCsv(order.seller().getName()),
+                    escapeCsv(order.customer().getName()),
+                    escapeCsv(order.orderDate().toString()),
+                    order.quantity(),
+                    order.totalPrice(),
+                    escapeCsv(order.created().toString()),
+                    escapeCsv(order.createdBy()),
+                    escapeCsv(order.modified().toString()),
+                    escapeCsv(order.modifiedBy())
                 );
 
                 writer.println(row);

@@ -1,17 +1,14 @@
 package com.luq.store.controllers.Web;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+import com.luq.store.dto.request.customer.CustomerRegisterDTO;
+import com.luq.store.dto.request.customer.CustomerUpdateDTO;
+import com.luq.store.dto.response.customer.CustomerResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.luq.store.domain.Customer;
@@ -33,7 +30,7 @@ public class CustomerWebController {
         @RequestParam(name="name", required=false) String name
     ){
         name = (Objects.equals(name, "")) ? null : name;
-        List<Customer> cList = cService.getAllSorted(sortBy, direction, name);
+        List<CustomerResponseDTO> cList = cService.getAllSorted(sortBy, direction, name);
 
         ModelAndView mv = new ModelAndView("customer-list");
         mv.addObject("customers", cList);
@@ -56,7 +53,7 @@ public class CustomerWebController {
 
     @GetMapping(path="/customer/form/{id}")
     public ModelAndView customerFormEdit(@PathVariable("id") int id){
-        Customer customer = cService.getById(id);
+        CustomerResponseDTO customer = cService.getById(id);
         ModelAndView mv = new ModelAndView("customer-form");
         mv.addObject("customer", customer);
         mv.addObject("page", "customer");
@@ -64,21 +61,15 @@ public class CustomerWebController {
     }
 
     @PostMapping(path="/customer/form")
-    public String postCustomer(Customer customer){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public String postCustomer(CustomerRegisterDTO data){
+        cService.register(data);
 
-        if (customer.getId() == null) {
-            customer.setCreatedBy(authentication.getName());
-            customer.setCreated(LocalDateTime.now());
-            customer.setModifiedBy(authentication.getName());
-            customer.setModified(LocalDateTime.now());
+        return "redirect:/customer/list";
+    }
 
-            cService.register(customer);
-        } else {
-            customer.setModifiedBy(authentication.getName());
-            customer.setModified(LocalDateTime.now());
-            cService.update(customer.getId(), customer);
-        }
+    @PutMapping(path="/customer/form/{id}")
+    public String postCustomer(@PathVariable("id") int id, CustomerUpdateDTO data){
+        cService.update(id, data);
         return "redirect:/customer/list";
     }
 

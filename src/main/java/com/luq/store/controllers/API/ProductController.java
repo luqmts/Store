@@ -1,23 +1,20 @@
 package com.luq.store.controllers.API;
 
+import com.luq.store.dto.request.product.ProductRegisterDTO;
+import com.luq.store.dto.request.product.ProductUpdateDTO;
+import com.luq.store.dto.response.product.ProductResponseDTO;
+import com.luq.store.exceptions.InvalidProductPriceException;
 import com.luq.store.services.ProductService;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.luq.store.domain.Product;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/product")
 public class ProductController {
     protected final ProductService pService;
     
@@ -27,23 +24,23 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product registerProduct(@RequestBody Product product){
-        return pService.register(product);
+    public ProductResponseDTO registerProduct(@RequestBody ProductRegisterDTO data){
+        return pService.register(data);
     }
 
     @GetMapping
-    public List<Product> getProducts(){
+    public List<ProductResponseDTO> getProducts(){
         return pService.getAll();
     }
 
     @GetMapping(path="/{id}")
-    public Product getProductById(@PathVariable("id") int id){
+    public ProductResponseDTO getProductById(@PathVariable("id") int id){
         return pService.getById(id);
     }
 
     @PutMapping(path="/{id}")
-    public Product updateProduct(@PathVariable("id") int id, @RequestBody Product product){
-        return pService.update(id, product);
+    public ProductResponseDTO updateProduct(@PathVariable("id") int id, @RequestBody ProductUpdateDTO data){
+        return pService.update(id, data);
     }
 
     @DeleteMapping(path="{id}")

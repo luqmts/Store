@@ -1,5 +1,8 @@
 package com.luq.store.controllers.API;
 
+import com.luq.store.dto.request.supplier.SupplierRegisterDTO;
+import com.luq.store.dto.request.supplier.SupplierUpdateDTO;
+import com.luq.store.dto.response.supplier.SupplierResponseDTO;
 import com.luq.store.services.SupplierService;
 
 import java.util.List;
@@ -14,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.luq.store.domain.Supplier;
-
 @RestController
-@RequestMapping("/api/suppliers")
+@RequestMapping("/api/supplier")
 public class SupplierController {
     protected final SupplierService sService;
     
@@ -27,22 +28,22 @@ public class SupplierController {
     }
 
     @PostMapping
-    public Supplier registerSupplier(@RequestBody Supplier supplier){
-        return sService.register(supplier);
+    public SupplierResponseDTO registerSupplier(@RequestBody SupplierRegisterDTO data){
+        return sService.register(data);
     }
 
     @GetMapping
-    public List<Supplier> getSuppliers(){
+    public List<SupplierResponseDTO> getSuppliers(){
         return sService.getAll();
     }
 
     @GetMapping(path="/{id}")
-    public Supplier getSupplierById(@PathVariable("id") int id){
+    public SupplierResponseDTO getSupplierById(@PathVariable("id") int id){
         return sService.getById(id);
     }
 
     @PutMapping(path="/{id}")
-    public Supplier updateSupplier(@PathVariable("id") int id, @RequestBody Supplier supplier){
+    public SupplierResponseDTO updateSupplier(@PathVariable("id") int id, @RequestBody SupplierUpdateDTO supplier){
         return sService.update(id, supplier);
     }
 

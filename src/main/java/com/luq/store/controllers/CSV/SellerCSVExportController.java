@@ -1,6 +1,6 @@
 package com.luq.store.controllers.CSV;
 
-import com.luq.store.domain.Seller;
+import com.luq.store.dto.response.seller.SellerResponseDTO;
 import com.luq.store.services.SellerService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,21 +40,20 @@ public class SellerCSVExportController {
 
         try (PrintWriter writer = response.getWriter()) {
             writer.println("id,name,mail,phone,department,created,created_by,modified,modified_by");
-            System.out.println(department);
-            List<Seller> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
+            List<SellerResponseDTO> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
 
-            for (Seller seller : sList) {
+            for (SellerResponseDTO seller : sList) {
                 String row = String.format(Locale.ROOT,
                 "%d,%s,%s,%s,%s,%s,%s,%s,%s",
-                    seller.getId(),
-                    escapeCsv(seller.getName()),
-                    escapeCsv(seller.getMail().toString()),
-                    escapeCsv(seller.getPhone().toString()),
-                    escapeCsv(seller.getDepartment().toString()),
-                    escapeCsv(seller.getCreated().toString()),
-                    escapeCsv(seller.getCreatedBy()),
-                    escapeCsv(seller.getModified().toString()),
-                    escapeCsv(seller.getModifiedBy())
+                    seller.id(),
+                    escapeCsv(seller.name()),
+                    escapeCsv(seller.mail().toString()),
+                    escapeCsv(seller.phone().toString()),
+                    escapeCsv(seller.department().toString()),
+                    escapeCsv(seller.created().toString()),
+                    escapeCsv(seller.createdBy()),
+                    escapeCsv(seller.modified().toString()),
+                    escapeCsv(seller.modifiedBy())
                 );
 
                 writer.println(row);
