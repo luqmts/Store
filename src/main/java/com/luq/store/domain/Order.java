@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -23,7 +24,7 @@ public class Order implements Identifiable{
 
     @Column(name="TotalPrice")
     @ToString.Include
-    private Float totalPrice;
+    private BigDecimal totalPrice;
     @Column(name="Quantity")
     @ToString.Include
     private Integer quantity;
@@ -48,12 +49,13 @@ public class Order implements Identifiable{
     private String modifiedBy;
     private LocalDateTime modified;
 
-    public Order(Float totalPrice, Integer quantity, Product product, Customer customer, LocalDate orderDate){
+    public Order(BigDecimal totalPrice, Integer quantity, LocalDate orderDate, Product product, Seller seller, Customer customer){
         this.totalPrice = totalPrice;
-        this.quantity = quantity; 
-        this.product = product;
-        this.customer = customer;
+        this.quantity = quantity;
         this.orderDate = orderDate;
+        this.product = product;
+        this.seller = seller;
+        this.customer = customer;
     }
 
     @Override

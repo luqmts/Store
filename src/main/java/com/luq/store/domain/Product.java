@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class Product implements Identifiable {
     private String description;
     
     @Min(1)
-    private Float price;
+    private BigDecimal price;
     
     @ManyToOne
     @JoinColumn(name="Supplier")
@@ -40,7 +41,7 @@ public class Product implements Identifiable {
     private String modifiedBy;
     private LocalDateTime modified;
 
-    public Product(String sku, String name, String description, Supplier supplier, Float price) {
+    public Product(String sku, String name, String description, Supplier supplier, BigDecimal price) {
         this.sku = sku;
         this.name = name;
         this.description = description;
