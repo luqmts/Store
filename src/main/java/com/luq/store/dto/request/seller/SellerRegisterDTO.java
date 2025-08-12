@@ -1,13 +1,12 @@
 package com.luq.store.dto.request.seller;
 
-import com.luq.store.domain.Supplier;
+import com.luq.store.domain.Department;
+import com.luq.store.valueobjects.Mail;
+import com.luq.store.valueobjects.Phone;
 
-import java.math.BigDecimal;
-
-public record ProductRegisterDTO(
+public record SellerRegisterDTO(
     String name,
-    String sku,
-    String description,
-    BigDecimal price,
-    Supplier supplier
+    Mail mail,
+    Phone phone,
+    Department department
 ){}
