@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,10 +33,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/product").hasRole("ADMIN")
                 .requestMatchers(
                     HttpMethod.POST,
-                    "/api/customer", "/api/order", "/api/product", "/api/seller", "/api/supplier", "/api/supply"
+                    "/api/customer", "/api/product", "/api/order", "/api/seller", "/api/supplier", "/api/supply"
                 ).hasRole("ADMIN")
                 .requestMatchers(
                     HttpMethod.PUT,
@@ -57,16 +57,16 @@ public class SecurityConfig {
     public SecurityFilterChain webSecurity(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
             .securityMatcher("/**")
-            .csrf(csrf -> csrf.disable())
+            .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/login", "/css/**", "/js/**").permitAll()
                 .requestMatchers(
-                        "/user/**",
-                        "/customer/form", "/customer/form/**", "/customer/delete/**",
-                        "/product/form", "/product/form/**", "/product/delete/**",
-                        "/seller/form", "/seller/form/**", "/seller/delete/**",
-                        "/supplier/form", "/supplier/form/**", "/supplier/delete/**",
-                        "/supply/form", "/supply/form/**", "/supply/delete/**"
+                    "/user/**",
+                    "/customer/form", "/customer/form/**", "/customer/delete/**",
+                    "/product/form", "/product/form/**", "/product/delete/**",
+                    "/seller/form", "/seller/form/**", "/seller/delete/**",
+                    "/supplier/form", "/supplier/form/**", "/supplier/delete/**",
+                    "/supply/form", "/supply/form/**", "/supply/delete/**"
                 ).hasRole("ADMIN")
                     .anyRequest()
                 .authenticated()
@@ -75,7 +75,7 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/order/list", true)
                 .permitAll()
             )
-            .logout((logout) -> logout.permitAll())
+            .logout(LogoutConfigurer::permitAll)
             .build();
     }
 
