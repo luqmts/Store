@@ -2,6 +2,10 @@ package com.luq.store.services;
 
 import com.luq.store.domain.*;
 import com.luq.store.domain.Customer;
+import com.luq.store.dto.request.order.OrderRegisterDTO;
+import com.luq.store.dto.request.order.OrderUpdateDTO;
+import com.luq.store.dto.response.order.OrderResponseDTO;
+import com.luq.store.mapper.OrderMapper;
 import com.luq.store.repositories.OrderRepository;
 import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
@@ -13,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,10 +35,15 @@ public class OrderServiceTest {
     @InjectMocks
     OrderService oService;
 
+    @Autowired
+    OrderMapper oMapper;
+
     Supplier fakeSupplier1, fakeSupplier2;
     Product fakeProduct1, fakeProduct2;
     Seller fakeSeller1, fakeSeller2;
-    Order fakeOrder1, fakeOrder2, result;
+    private OrderResponseDTO fakeOrder1Response, fakeOrder2Response, result;
+    private OrderRegisterDTO fakeOrderRegister;
+    private OrderUpdateDTO fakeOrderUpdate;
 
     @BeforeEach
     public void setUp(){
@@ -64,80 +74,76 @@ public class OrderServiceTest {
         );
 
         fakeSeller1 = new Seller(
-                1, "Walter White",
-                new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.FOOD,
-                user, now, user, now
+            1, "Walter White",
+            new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.FOOD,
+            user, now, user, now
         );
         fakeSeller2 = new Seller(
-                2, "Jesse Pinkman",
-                new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD,
-                user, now, user, now
+            2, "Jesse Pinkman",
+            new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD,
+            user, now, user, now
         );
 
-        fakeOrder1 = new Order(
-                1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
-                fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
+        fakeOrder1Response = new OrderResponseDTO(
+            1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
+            fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
-        fakeOrder2 = new Order(
-                2, BigDecimal.valueOf(1000.00), 4, LocalDate.now(),
-                fakeProduct2, fakeSeller2, fakeCustomer2, user, now, user, now
+        fakeOrder2Response = new OrderResponseDTO(
+            1, BigDecimal.valueOf(600.00), 4, LocalDate.now().plusDays(5),
+            fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
+        );
+
+        fakeOrderRegister = new OrderRegisterDTO(
+            BigDecimal.valueOf(400.00), 2, LocalDate.now(), fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
+        );
+
+        fakeOrderUpdate = new OrderUpdateDTO(
+            1, BigDecimal.valueOf(600.00), 4, LocalDate.now().plusDays(5), fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
         );
     }
     
     @Test
     @DisplayName("Test if Order is being registered correctly")
     public void testRegisterOrder(){
-        when(oRepository.save(fakeOrder1)).thenReturn(fakeOrder1);
-        result = oService.register(fakeOrder1);
+        when(oRepository.save(oMapper.toEntity(fakeOrderRegister))).thenReturn(oMapper.toEntity(fakeOrderRegister));
+        result = oService.register(fakeOrderRegister);
 
         assertAll(
-            () -> verify(oRepository, atMostOnce()).save(fakeOrder1),
+            () -> verify(oRepository, atMostOnce()).save(oMapper.toEntity(fakeOrderRegister)),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Order.class, result),
-            () -> assertEquals(fakeOrder1, result)
+            () -> assertInstanceOf(OrderResponseDTO.class, result),
+            () -> assertEquals(fakeOrder1Response, result)
         );
     }
 
     @Test
     @DisplayName("Test if Order is being updated correctly")
     public void testUpdateOrder(){
-        when(oRepository.save(fakeOrder1)).thenReturn(fakeOrder1);
-        when(oRepository.findById(fakeOrder1.getId())).thenReturn(Optional.ofNullable(fakeOrder1));
-        when(oRepository.save(fakeOrder2)).thenReturn(fakeOrder2);
-
-        oService.register(fakeOrder1);
-        result = oService.update(fakeOrder1.getId(), fakeOrder2);
+        oService.register(fakeOrderRegister);
+        result = oService.update(fakeOrder1Response.id(), fakeOrderUpdate);
 
         assertAll(
-            () -> verify(oRepository, times(2)).save(fakeOrder1),
-            () -> verify(oRepository, times(2)).save(fakeOrder2),
-            () -> verify(oRepository, atMostOnce()).findById(fakeOrder1.getId()),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Order.class, result),
-            () -> assertEquals(fakeOrder2, result)
+            () -> assertInstanceOf(OrderResponseDTO.class, result),
+            () -> assertEquals(fakeOrder2Response, result)
         );
     }
 
     @Test
     @DisplayName("Test if Order is being deleted correctly")
     public void testDeleteOrder(){
-        when(oRepository.save(fakeOrder1)).thenReturn(fakeOrder1);
-        oService.register(fakeOrder1);
+        oService.register(fakeOrderRegister);
 
-        oService.delete(fakeOrder1.getId());
+        oService.delete(fakeOrder1Response.id());
 
-        verify(oRepository, atMostOnce()).deleteById(fakeOrder1.getId());
+        verify(oRepository, atMostOnce()).deleteById(fakeOrder1Response.id());
     }
 
     @Test
     @DisplayName("Test if all Orders registered are being returned on method getAll()")
     public void testGetAllOrders(){
-        when(oRepository.save(fakeOrder1)).thenReturn(fakeOrder1);
-        when(oRepository.save(fakeOrder2)).thenReturn(fakeOrder2);
-        when(oRepository.findAll()).thenReturn(List.of(fakeOrder1, fakeOrder2));
-
-        oService.register(fakeOrder1);
-        oService.register(fakeOrder2);
+        oService.register(fakeOrderRegister);
+        oService.register(fakeOrderRegister);
         assertEquals(2, oService.getAll().size());
         verify(oRepository, atMostOnce()).findAll();
     }
@@ -145,16 +151,13 @@ public class OrderServiceTest {
     @Test
     @DisplayName("Test if Order is being returned by id on method getById()")
     public void testGetOrderById(){
-        when(oRepository.save(fakeOrder1)).thenReturn(fakeOrder1);
-        when(oRepository.findById(1)).thenReturn(Optional.ofNullable(fakeOrder1));
-
-        oService.register(fakeOrder1);
+        oService.register(fakeOrderRegister);
         result = oService.getById(1);
         assertAll(
                 () -> verify(oRepository, atMostOnce()).findById(1),
                 () -> assertNotNull(result),
-                () -> assertInstanceOf(Order.class, result),
-                () -> assertEquals(fakeOrder1, result)
+                () -> assertInstanceOf(OrderResponseDTO.class, result),
+                () -> assertEquals(fakeOrder1Response, result)
         );
     }
 }

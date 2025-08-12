@@ -1,12 +1,14 @@
 package com.luq.store.controllers.API;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.luq.store.dto.request.supplier.SupplierRegisterDTO;
+import com.luq.store.dto.request.supplier.SupplierUpdateDTO;
+import com.luq.store.dto.response.supplier.SupplierResponseDTO;
 import com.luq.store.valueobjects.Cnpj;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.luq.store.domain.Supplier;
 import com.luq.store.services.SupplierService;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.Phone;
@@ -45,23 +47,34 @@ public class SupplierControllerTest {
     @MockBean
     private SupplierService sService;
 
-    private Supplier fakeSupplier1, fakeSupplier2;
+    private SupplierResponseDTO fakeSupplier1Response, fakeSupplier2Response;
+    private SupplierRegisterDTO fakeSupplierRegister;
+    private SupplierUpdateDTO fakeSupplierUpdate;
 
     @BeforeEach
     public void setUp() {
         String user = "Jimmy McGill";
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        fakeSupplier1 = new Supplier(
+        fakeSupplier1Response = new SupplierResponseDTO(
             1, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
             new Mail("microsoft@mail.com"), new Phone("11000001111"),
             user, now, user, now
         );
-
-        fakeSupplier2 = new Supplier(
-            2, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
+        fakeSupplier2Response = new SupplierResponseDTO(
+            1, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
             new Mail("sony@mail.com"), new Phone("11222225555"),
             user, now, user, now
+        );
+
+        fakeSupplierRegister = new SupplierRegisterDTO(
+            "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
+            new Mail("microsoft@mail.com"), new Phone("11000001111")
+        );
+
+        fakeSupplierUpdate = new SupplierUpdateDTO(
+            "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
+            new Mail("sony@mail.com"), new Phone("11222225555")
         );
     }
 
@@ -69,8 +82,8 @@ public class SupplierControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct supplier's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
-        when(sService.getAll()).thenReturn(List.of(fakeSupplier1));
-        String supplierJson = objectMapper.writeValueAsString(fakeSupplier1);
+        when(sService.getAll()).thenReturn(List.of(fakeSupplier1Response));
+        String supplierJson = objectMapper.writeValueAsString(fakeSupplier1Response);
 
         mockMvc.perform(get("/api/supplier"))
             .andExpect(status().isOk())
@@ -85,8 +98,8 @@ public class SupplierControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct supplier's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
-        when(sService.getById(1)).thenReturn(fakeSupplier1);
-        String supplierJson = objectMapper.writeValueAsString(fakeSupplier1);
+        when(sService.getById(1)).thenReturn(fakeSupplier1Response);
+        String supplierJson = objectMapper.writeValueAsString(fakeSupplier1Response);
 
         mockMvc.perform(get("/api/supplier/1"))
                 .andExpect(status().isOk())
@@ -100,8 +113,8 @@ public class SupplierControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if registering a new Supplier with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
-        when(sService.register(fakeSupplier1)).thenReturn(fakeSupplier1);
-        String supplierJson = objectMapper.writeValueAsString(fakeSupplier1);
+        when(sService.register(fakeSupplierRegister)).thenReturn(fakeSupplier1Response);
+        String supplierJson = objectMapper.writeValueAsString(fakeSupplier1Response);
 
         mockMvc.perform(
             post("/api/supplier")
@@ -111,15 +124,15 @@ public class SupplierControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(supplierJson));
 
-        verify(sService, times(1)).register(fakeSupplier1);
+        verify(sService, times(1)).register(fakeSupplierRegister);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if registering a new Supplier with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
-        when(sService.register(fakeSupplier1)).thenReturn(fakeSupplier1);
-        String supplierJson = objectMapper.writeValueAsString(fakeSupplier1);
+        when(sService.register(fakeSupplierRegister)).thenReturn(fakeSupplier1Response);
+        String supplierJson = objectMapper.writeValueAsString(fakeSupplier1Response);
 
         mockMvc.perform(
             post("/api/supplier")
@@ -134,8 +147,8 @@ public class SupplierControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if updating a Supplier with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
-        when(sService.update(1, fakeSupplier2)).thenReturn(fakeSupplier2);
-        String supplierJson = objectMapper.writeValueAsString(fakeSupplier2);
+        when(sService.update(1, fakeSupplierUpdate)).thenReturn(fakeSupplier2Response);
+        String supplierJson = objectMapper.writeValueAsString(fakeSupplier2Response);
 
         mockMvc.perform(
             put("/api/supplier/1")
@@ -145,15 +158,15 @@ public class SupplierControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(supplierJson));
 
-        verify(sService, times(1)).update(1, fakeSupplier2);
+        verify(sService, times(1)).update(1, fakeSupplierUpdate);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if updating a Supplier with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
-        when(sService.register(fakeSupplier2)).thenReturn(fakeSupplier2);
-        String supplierJson = objectMapper.writeValueAsString(fakeSupplier2);
+        when(sService.update(1, fakeSupplierUpdate)).thenReturn(fakeSupplier2Response);
+        String supplierJson = objectMapper.writeValueAsString(fakeSupplier2Response);
 
         mockMvc.perform(
             put("/api/supplier/1")

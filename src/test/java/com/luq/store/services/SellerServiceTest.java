@@ -2,6 +2,9 @@ package com.luq.store.services;
 
 import com.luq.store.domain.Department;
 import com.luq.store.domain.Seller;
+import com.luq.store.dto.request.seller.SellerRegisterDTO;
+import com.luq.store.dto.request.seller.SellerUpdateDTO;
+import com.luq.store.dto.response.seller.SellerResponseDTO;
 import com.luq.store.repositories.SellerRepository;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.Phone;
@@ -27,79 +30,75 @@ public class SellerServiceTest {
     @InjectMocks
     SellerService sService;
 
-    Seller fakeSeller1, fakeSeller2, result;
+    private SellerResponseDTO fakeSeller1Response, fakeSeller2Response, result;
+    private SellerRegisterDTO fakeSellerRegister;
+    private SellerUpdateDTO fakeSellerUpdate;
 
     @BeforeEach
     public void setUp(){
         String user = "Jimmy McGill";
         LocalDateTime now = LocalDateTime.now();
 
-        fakeSeller1 = new Seller(
+        fakeSeller1Response = new SellerResponseDTO(
             1, "Walter White",
             new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.FOOD,
             user, now, user, now
         );
-        fakeSeller2 = new Seller(
-            2, "Jesse Pinkman",
-            new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD,
+        fakeSeller2Response = new SellerResponseDTO(
+            1, "Jesse Pinkman",
+            new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.TECHNOLOGY,
             user, now, user, now
+        );
+
+        fakeSellerRegister = new SellerRegisterDTO(
+            "Jesse Pinkman", new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD
+        );
+
+        fakeSellerUpdate = new SellerUpdateDTO(
+            "Walter White", new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.TECHNOLOGY
         );
     }
     
     @Test
     @DisplayName("Test if Seller is being registered correctly")
     public void testRegisterSeller(){
-        when(sRepository.save(fakeSeller1)).thenReturn(fakeSeller1);
-        result = sService.register(fakeSeller1);
+        result = sService.register(fakeSellerRegister);
 
         assertAll(
-            () -> verify(sRepository, atMostOnce()).save(fakeSeller1),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Seller.class, result),
-            () -> assertEquals(fakeSeller1, result)
+            () -> assertInstanceOf(SellerResponseDTO.class, result),
+            () -> assertEquals(fakeSeller1Response, result)
         );
     }
 
     @Test
     @DisplayName("Test if Seller is being updated correctly")
     public void testUpdateSeller(){
-        when(sRepository.save(fakeSeller1)).thenReturn(fakeSeller1);
-        when(sRepository.findById(fakeSeller1.getId())).thenReturn(Optional.ofNullable(fakeSeller1));
-        when(sRepository.save(fakeSeller2)).thenReturn(fakeSeller2);
-
-        sService.register(fakeSeller1);
-        result = sService.update(fakeSeller1.getId(), fakeSeller2);
+        sService.register(fakeSellerRegister);
+        result = sService.update(fakeSeller1Response.id(), fakeSellerUpdate);
 
         assertAll(
-            () -> verify(sRepository, times(2)).save(fakeSeller1),
-            () -> verify(sRepository, times(2)).save(fakeSeller2),
-            () -> verify(sRepository, atMostOnce()).findById(fakeSeller1.getId()),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Seller.class, result),
-            () -> assertEquals(fakeSeller2, result)
+            () -> assertInstanceOf(SellerResponseDTO.class, result),
+            () -> assertEquals(fakeSeller2Response, result)
         );
     }
 
     @Test
     @DisplayName("Test if Seller is being deleted correctly")
     public void testDeleteSeller(){
-        when(sRepository.save(fakeSeller1)).thenReturn(fakeSeller1);
-        sService.register(fakeSeller1);
+        sService.register(fakeSellerRegister);
 
-        sService.delete(fakeSeller1.getId());
+        sService.delete(fakeSeller1Response.id());
 
-        verify(sRepository, atMostOnce()).deleteById(fakeSeller1.getId());
+        verify(sRepository, atMostOnce()).deleteById(fakeSeller1Response.id());
     }
 
     @Test
     @DisplayName("Test if all Sellers registered are being returned on method getAll()")
     public void testGetAllSellers(){
-        when(sRepository.save(fakeSeller1)).thenReturn(fakeSeller1);
-        when(sRepository.save(fakeSeller2)).thenReturn(fakeSeller2);
-        when(sRepository.findAll()).thenReturn(List.of(fakeSeller1, fakeSeller2));
-
-        sService.register(fakeSeller1);
-        sService.register(fakeSeller2);
+        sService.register(fakeSellerRegister);
+        sService.register(fakeSellerRegister);
         assertEquals(2, sService.getAll().size());
         verify(sRepository, atMostOnce()).findAll();
     }
@@ -107,16 +106,12 @@ public class SellerServiceTest {
     @Test
     @DisplayName("Test if Seller is being returned by id on method getById()")
     public void testGetSellerById(){
-        when(sRepository.save(fakeSeller1)).thenReturn(fakeSeller1);
-        when(sRepository.findById(1)).thenReturn(Optional.ofNullable(fakeSeller1));
-
-        sService.register(fakeSeller1);
+        sService.register(fakeSellerRegister);
         result = sService.getById(1);
         assertAll(
-            () -> verify(sRepository, atMostOnce()).findById(1),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Seller.class, result),
-            () -> assertEquals(fakeSeller1, result)
+            () -> assertInstanceOf(SellerResponseDTO.class, result),
+            () -> assertEquals(fakeSeller1Response, result)
         );
     }
 }

@@ -53,7 +53,7 @@ public class SupplyRepositoryTest {
     @DisplayName("Test if Supply filtered by only one filter is being returned correctly")
     public void testFindByOneFilter() {
         Sort sort = Sort.by("id").ascending();
-        List<Supply> result = supplyRepository.findByProductId(sort, fakeProduct1.getId());
+        List<Supply> result = supplyRepository.getAllByProductId(sort, fakeProduct1.getId());
 
         assertAll(
             () -> assertEquals(1, result.size()),

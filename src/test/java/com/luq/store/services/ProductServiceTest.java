@@ -8,15 +8,15 @@ import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
+import com.luq.store.dto.request.product.ProductRegisterDTO;
+import com.luq.store.dto.request.product.ProductUpdateDTO;
+import com.luq.store.dto.response.product.ProductResponseDTO;
 import com.luq.store.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.luq.store.domain.Product;
 import com.luq.store.domain.Supplier;
 import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
@@ -34,7 +34,9 @@ public class ProductServiceTest {
     ProductService pService;
 
     Supplier fakeSupplier1, fakeSupplier2;
-    Product fakeProduct1, fakeProduct2, result;
+    private ProductResponseDTO fakeProduct1Response, fakeProduct2Response, result;
+    private ProductRegisterDTO fakeProductRegister;
+    private ProductUpdateDTO fakeProductUpdate;
 
     @BeforeEach
     public void setUp(){
@@ -52,70 +54,67 @@ public class ProductServiceTest {
             user, now, user, now
         );
 
-        fakeProduct1 = new Product(
+        fakeProduct1Response = new ProductResponseDTO(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
             BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
-        fakeProduct2 = new Product(
-            2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
+
+        fakeProduct2Response = new ProductResponseDTO(
+            1, "PS5 Controller", "PS5Cont", "Controller for PlayStation 5 Console",
             BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
+        );
+
+        fakeProductRegister = new ProductRegisterDTO(
+            "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
+            BigDecimal.valueOf(200.00), fakeSupplier1.getId()
+        );
+
+        fakeProductUpdate = new ProductUpdateDTO(
+            "PS5 Controller", "PS5Cont", "Controller for PlayStation 5 Console",
+            BigDecimal.valueOf(250.00), fakeSupplier2.getId()
         );
     }
     
     @Test
     @DisplayName("Test if Product is being registered correctly")
     public void testRegisterProduct(){
-        when(pRepository.save(fakeProduct1)).thenReturn(fakeProduct1);
-        result = pService.register(fakeProduct1);
+        result = pService.register(fakeProductRegister);
 
         assertAll(
-            () -> verify(pRepository, atMostOnce()).save(fakeProduct1),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Product.class, result),
-            () -> assertEquals(fakeProduct1, result)
+            () -> assertInstanceOf(ProductResponseDTO.class, result),
+            () -> assertEquals(fakeProduct1Response, result)
         );
     }
 
     @Test
     @DisplayName("Test if Product is being updated correctly")
     public void testUpdateProduct(){
-        when(pRepository.save(fakeProduct1)).thenReturn(fakeProduct1);
-        when(pRepository.findById(fakeProduct1.getId())).thenReturn(Optional.ofNullable(fakeProduct1));
-        when(pRepository.save(fakeProduct2)).thenReturn(fakeProduct2);
-
-        pService.register(fakeProduct1);
-        result = pService.update(fakeProduct1.getId(), fakeProduct2);
+        pService.register(fakeProductRegister);
+        result = pService.update(fakeProduct1Response.id(), fakeProductUpdate);
 
         assertAll(
-            () -> verify(pRepository, times(2)).save(fakeProduct1),
-            () -> verify(pRepository, times(2)).save(fakeProduct2),
-            () -> verify(pRepository, atMostOnce()).findById(fakeProduct1.getId()),
             () -> assertNotNull(result),
-            () -> assertInstanceOf(Product.class, result),
-            () -> assertEquals(fakeProduct2, result)
+            () -> assertInstanceOf(ProductResponseDTO.class, result),
+            () -> assertEquals(fakeProduct2Response, result)
         );
     }
 
     @Test
     @DisplayName("Test if Product is being deleted correctly")
     public void testDeleteProduct(){
-        when(pRepository.save(fakeProduct1)).thenReturn(fakeProduct1);
-        pService.register(fakeProduct1);
+        pService.register(fakeProductRegister);
 
-        pService.delete(fakeProduct1.getId());
+        pService.delete(fakeProduct1Response.id());
 
-        verify(pRepository, atMostOnce()).deleteById(fakeProduct1.getId());
+        verify(pRepository, atMostOnce()).deleteById(fakeProduct1Response.id());
     }
 
     @Test
     @DisplayName("Test if all Products registered are being returned on method getALl()")
     public void testGetAllProducts() {
-        when(pRepository.save(fakeProduct1)).thenReturn(fakeProduct1);
-        when(pRepository.save(fakeProduct2)).thenReturn(fakeProduct2);
-        when(pRepository.findAll()).thenReturn(List.of(fakeProduct1, fakeProduct2));
-
-        pService.register(fakeProduct1);
-        pService.register(fakeProduct2);
+        pService.register(fakeProductRegister);
+        pService.register(fakeProductRegister);
         assertEquals(2, pService.getAll().size());
         verify(pRepository, atMostOnce()).findAll();
     }
@@ -123,16 +122,13 @@ public class ProductServiceTest {
     @Test
     @DisplayName("Test if Product is being returned by id on method getById()")
     public void testGetProductById(){
-        when(pRepository.save(fakeProduct1)).thenReturn(fakeProduct1);
-        when(pRepository.findById(1)).thenReturn(Optional.ofNullable(fakeProduct1));
-
-        pService.register(fakeProduct1);
+        pService.register(fakeProductRegister);
         result = pService.getById(1);
         assertAll(
                 () -> verify(pRepository, atMostOnce()).findById(1),
                 () -> assertNotNull(result),
-                () -> assertInstanceOf(Product.class, result),
-                () -> assertEquals(fakeProduct1, result)
+                () -> assertInstanceOf(ProductResponseDTO.class, result),
+                () -> assertEquals(fakeProduct1Response, result)
         );
     }
 }

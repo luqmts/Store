@@ -1,7 +1,9 @@
 package com.luq.store.controllers.API;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.luq.store.domain.Product;
+import com.luq.store.dto.request.product.ProductRegisterDTO;
+import com.luq.store.dto.request.product.ProductUpdateDTO;
+import com.luq.store.dto.response.product.ProductResponseDTO;
 import com.luq.store.services.ProductService;
 import com.luq.store.valueobjects.Cnpj;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +49,9 @@ public class ProductControllerTest {
     @MockBean
     private ProductService pService;
 
-    private Product fakeProduct1, fakeProduct2;
+    private ProductResponseDTO fakeProduct1Response, fakeProduct2Response;
+    private ProductRegisterDTO fakeProductRegister;
+    private ProductUpdateDTO fakeProductUpdate;
 
     @BeforeEach
     public void setUp() {
@@ -66,14 +70,24 @@ public class ProductControllerTest {
             user, now, user, now
         );
 
-        fakeProduct1 = new Product(
+        fakeProduct1Response = new ProductResponseDTO(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
             BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
 
-        fakeProduct2 = new Product(
-            2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
+        fakeProduct2Response = new ProductResponseDTO(
+            1, "PS5 Controller", "PS5Cont", "Controller for PlayStation 5 Console",
             BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
+        );
+
+        fakeProductRegister = new ProductRegisterDTO(
+            "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
+            BigDecimal.valueOf(200.00), fakeSupplier1.getId()
+        );
+
+        fakeProductUpdate = new ProductUpdateDTO(
+            "PS5 Controller", "PS5Cont", "Controller for PlayStation 5 Console",
+            BigDecimal.valueOf(250.00), fakeSupplier2.getId()
         );
     }
 
@@ -81,8 +95,8 @@ public class ProductControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct product's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
-        when(pService.getAll()).thenReturn(List.of(fakeProduct1));
-        String productJson = objectMapper.writeValueAsString(fakeProduct1);
+        when(pService.getAll()).thenReturn(List.of(fakeProduct1Response));
+        String productJson = objectMapper.writeValueAsString(fakeProduct1Response);
 
         mockMvc.perform(get("/api/product"))
             .andExpect(status().isOk())
@@ -97,8 +111,8 @@ public class ProductControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct product's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
-        when(pService.getById(1)).thenReturn(fakeProduct1);
-        String productJson = objectMapper.writeValueAsString(fakeProduct1);
+        when(pService.getById(1)).thenReturn(fakeProduct1Response);
+        String productJson = objectMapper.writeValueAsString(fakeProduct1Response);
 
         mockMvc.perform(get("/api/product/1"))
                 .andExpect(status().isOk())
@@ -112,8 +126,8 @@ public class ProductControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if registering a new Product with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
-        when(pService.register(fakeProduct1)).thenReturn(fakeProduct1);
-        String productJson = objectMapper.writeValueAsString(fakeProduct1);
+        when(pService.register(fakeProductRegister)).thenReturn(fakeProduct1Response);
+        String productJson = objectMapper.writeValueAsString(fakeProduct1Response);
 
         mockMvc.perform(
             post("/api/product")
@@ -124,15 +138,15 @@ public class ProductControllerTest {
             .andExpect(content().json(productJson));
 
 
-        verify(pService, times(1)).register(fakeProduct1);
+        verify(pService, times(1)).register(fakeProductRegister);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if registering a new Product with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
-        when(pService.register(fakeProduct1)).thenReturn(fakeProduct1);
-        String productJson = objectMapper.writeValueAsString(fakeProduct1);
+        when(pService.register(fakeProductRegister)).thenReturn(fakeProduct1Response);
+        String productJson = objectMapper.writeValueAsString(fakeProduct1Response);
 
         mockMvc.perform(
             post("/api/product")
@@ -147,8 +161,8 @@ public class ProductControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if updating a Product with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
-        when(pService.update(1, fakeProduct2)).thenReturn(fakeProduct2);
-        String productJson = objectMapper.writeValueAsString(fakeProduct2);
+        when(pService.update(1, fakeProductUpdate)).thenReturn(fakeProduct2Response);
+        String productJson = objectMapper.writeValueAsString(fakeProduct2Response);
 
         mockMvc.perform(
             put("/api/product/1")
@@ -158,15 +172,15 @@ public class ProductControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(productJson));
 
-        verify(pService, times(1)).update(1, fakeProduct2);
+        verify(pService, times(1)).update(1, fakeProductUpdate);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if updating a Product with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
-        when(pService.register(fakeProduct2)).thenReturn(fakeProduct2);
-        String productJson = objectMapper.writeValueAsString(fakeProduct2);
+        when(pService.update(1, fakeProductUpdate)).thenReturn(fakeProduct2Response);
+        String productJson = objectMapper.writeValueAsString(fakeProduct2Response);
 
         mockMvc.perform(
             put("/api/product/1")

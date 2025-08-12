@@ -2,7 +2,9 @@ package com.luq.store.controllers.API;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luq.store.domain.*;
-import com.luq.store.domain.Customer;
+import com.luq.store.dto.request.order.OrderRegisterDTO;
+import com.luq.store.dto.request.order.OrderUpdateDTO;
+import com.luq.store.dto.response.order.OrderResponseDTO;
 import com.luq.store.services.OrderService;
 import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
@@ -47,7 +49,9 @@ public class OrderControllerTest {
     @MockBean
     private OrderService oService;
 
-    private Order fakeOrder1, fakeOrder2;
+    private OrderResponseDTO fakeOrder1Response, fakeOrder2Response;
+    private OrderRegisterDTO fakeOrderRegister;
+    private OrderUpdateDTO fakeOrderUpdate;
 
     @BeforeEach
     public void setUp() {
@@ -88,13 +92,21 @@ public class OrderControllerTest {
             BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
-        fakeOrder1 = new Order(
+        fakeOrder1Response = new OrderResponseDTO(
             1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
-        fakeOrder2 = new Order(
-            2, BigDecimal.valueOf(1000.00), 4, LocalDate.now(),
-            fakeProduct2, fakeSeller2, fakeCustomer2, user, now, user, now
+        fakeOrder2Response = new OrderResponseDTO(
+            1, BigDecimal.valueOf(600.00), 4, LocalDate.now().plusDays(5),
+            fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
+        );
+
+        fakeOrderRegister = new OrderRegisterDTO(
+            BigDecimal.valueOf(400.00), 2, LocalDate.now(), fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
+        );
+
+        fakeOrderUpdate = new OrderUpdateDTO(
+            1, BigDecimal.valueOf(600.00), 4, LocalDate.now().plusDays(5), fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
         );
     }
 
@@ -102,8 +114,8 @@ public class OrderControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct order's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
-        when(oService.getAll()).thenReturn(List.of(fakeOrder1));
-        String orderJson = objectMapper.writeValueAsString(fakeOrder1);
+        when(oService.getAll()).thenReturn(List.of(fakeOrder1Response));
+        String orderJson = objectMapper.writeValueAsString(fakeOrder1Response);
 
         mockMvc.perform(get("/api/order"))
             .andExpect(status().isOk())
@@ -119,8 +131,8 @@ public class OrderControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct order's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
-        when(oService.getById(1)).thenReturn(fakeOrder1);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder1);
+        when(oService.getById(1)).thenReturn(fakeOrder1Response);
+        String orderJson = objectMapper.writeValueAsString(fakeOrder1Response);
 
         mockMvc.perform(get("/api/order/1"))
                 .andExpect(status().isOk())
@@ -134,8 +146,8 @@ public class OrderControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if registering a new Customer with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
-        when(oService.register(fakeOrder1)).thenReturn(fakeOrder1);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder1);
+        when(oService.register(fakeOrderRegister)).thenReturn(fakeOrder1Response);
+        String orderJson = objectMapper.writeValueAsString(fakeOrder1Response);
 
         mockMvc.perform(
             post("/api/order")
@@ -145,15 +157,15 @@ public class OrderControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(orderJson));
 
-        verify(oService, times(1)).register(fakeOrder1);
+        verify(oService, times(1)).register(fakeOrderRegister);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if registering a new Customer with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
-        when(oService.register(fakeOrder1)).thenReturn(fakeOrder1);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder2);
+        when(oService.register(fakeOrderRegister)).thenReturn(fakeOrder1Response);
+        String orderJson = objectMapper.writeValueAsString(fakeOrder1Response);
 
         mockMvc.perform(
             post("/api/order")
@@ -168,8 +180,8 @@ public class OrderControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if updating a Customer with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
-        when(oService.update(1, fakeOrder2)).thenReturn(fakeOrder2);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder2);
+        when(oService.update(1, fakeOrderUpdate)).thenReturn(fakeOrder2Response);
+        String orderJson = objectMapper.writeValueAsString(fakeOrder2Response);
 
         mockMvc.perform(
             put("/api/order/1")
@@ -180,15 +192,15 @@ public class OrderControllerTest {
             .andExpect(content().json(orderJson));
 
 
-        verify(oService, times(1)).update(1, fakeOrder2);
+        verify(oService, times(1)).update(1, fakeOrderUpdate);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if updating a Customer with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
-        when(oService.register(fakeOrder2)).thenReturn(fakeOrder2);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder2);
+        when(oService.update(1, fakeOrderUpdate)).thenReturn(fakeOrder2Response);
+        String orderJson = objectMapper.writeValueAsString(fakeOrder2Response);
 
         mockMvc.perform(
             put("/api/order/1")

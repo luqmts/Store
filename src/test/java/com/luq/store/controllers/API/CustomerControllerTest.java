@@ -44,8 +44,8 @@ public class CustomerControllerTest {
     private CustomerService cService;
 
     private CustomerResponseDTO fakeCustomer1Response, fakeCustomer2Response;
-    private CustomerRegisterDTO fakeCustomer1Register, fakeCustomer2Register;
-    private CustomerUpdateDTO fakeCustomer1Update;
+    private CustomerRegisterDTO fakeCustomerRegister;
+    private CustomerUpdateDTO fakeCustomerUpdate;
 
     @BeforeEach
     public void setUp() {
@@ -53,12 +53,11 @@ public class CustomerControllerTest {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         fakeCustomer1Response = new CustomerResponseDTO(1, "Test Customer 01", user, now, user, now);
-        fakeCustomer2Response = new CustomerResponseDTO(2, "Test Customer 02", user, now, user, now);
+        fakeCustomer2Response = new CustomerResponseDTO(1, "Test Customer 02", user, now, user, now);
 
-        fakeCustomer1Register = new CustomerRegisterDTO("Test Customer 01");
-        fakeCustomer2Register = new CustomerRegisterDTO("Test Customer 02");
+        fakeCustomerRegister = new CustomerRegisterDTO("Test Customer 01");
 
-        fakeCustomer1Update = new CustomerUpdateDTO("Test Customer 01");
+        fakeCustomerUpdate = new CustomerUpdateDTO("Test Customer 02");
     }
 
     @Test
@@ -96,7 +95,7 @@ public class CustomerControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if registering a new Customer with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
-        when(cService.register(fakeCustomer1Register)).thenReturn(fakeCustomer1Response);
+        when(cService.register(fakeCustomerRegister)).thenReturn(fakeCustomer1Response);
         String customerJson = objectMapper.writeValueAsString(fakeCustomer1Response);
 
         mockMvc.perform(
@@ -106,14 +105,14 @@ public class CustomerControllerTest {
             ).andExpect(status().isOk())
             .andExpect(content().json(customerJson));
 
-        verify(cService, times(1)).register(fakeCustomer1Register);
+        verify(cService, times(1)).register(fakeCustomerRegister);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if registering a new Customer with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
-        when(cService.register(fakeCustomer1Register)).thenReturn(fakeCustomer1Response);
+        when(cService.register(fakeCustomerRegister)).thenReturn(fakeCustomer1Response);
         String customerJson = objectMapper.writeValueAsString(fakeCustomer1Response);
 
         mockMvc.perform(
@@ -129,7 +128,7 @@ public class CustomerControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if updating a Customer with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
-        when(cService.update(1, fakeCustomer1Update)).thenReturn(fakeCustomer2Response);
+        when(cService.update(1, fakeCustomerUpdate)).thenReturn(fakeCustomer2Response);
         String customerJson = objectMapper.writeValueAsString(fakeCustomer2Response);
 
         mockMvc.perform(
@@ -140,14 +139,14 @@ public class CustomerControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(customerJson));
 
-        verify(cService, times(1)).update(1, fakeCustomer1Update);
+        verify(cService, times(1)).update(1, fakeCustomerUpdate);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if updating a Customer with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
-        when(cService.register(fakeCustomer2Register)).thenReturn(fakeCustomer2Response);
+        when(cService.update(1, fakeCustomerUpdate)).thenReturn(fakeCustomer2Response);
         String customerJson = objectMapper.writeValueAsString(fakeCustomer2Response);
 
         mockMvc.perform(

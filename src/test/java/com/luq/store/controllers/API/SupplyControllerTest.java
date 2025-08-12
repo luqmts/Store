@@ -3,7 +3,9 @@ package com.luq.store.controllers.API;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luq.store.domain.Product;
 import com.luq.store.domain.Supplier;
-import com.luq.store.domain.Supply;
+import com.luq.store.dto.request.supply.SupplyRegisterDTO;
+import com.luq.store.dto.request.supply.SupplyUpdateDTO;
+import com.luq.store.dto.response.supply.SupplyResponseDTO;
 import com.luq.store.services.SupplyService;
 import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
@@ -47,7 +49,9 @@ public class SupplyControllerTest {
     @MockBean
     private SupplyService sService;
 
-    private Supply fakeSupply1, fakeSupply2;
+    private SupplyResponseDTO fakeSupply1Response, fakeSupply2Response;
+    private SupplyRegisterDTO fakeSupplyRegister;
+    private SupplyUpdateDTO fakeSupplyUpdate;
 
     @BeforeEach
     public void setUp() {
@@ -74,16 +78,20 @@ public class SupplyControllerTest {
             BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
-        fakeSupply1 = new Supply(1, 100, fakeProduct1, user, now, user, now);
-        fakeSupply2 = new Supply(2, 300, fakeProduct2, user, now, user, now);
+        fakeSupply1Response = new SupplyResponseDTO(1, 100, fakeProduct1, user, now, user, now);
+        fakeSupply2Response = new SupplyResponseDTO(2, 300, fakeProduct2, user, now, user, now);
+
+        fakeSupplyRegister = new SupplyRegisterDTO(100, fakeProduct1.getId());
+
+        fakeSupplyUpdate = new SupplyUpdateDTO(300, fakeProduct2.getId());
     }
 
     @Test
     @WithMockUser
     @DisplayName("Testing if correct supply's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
-        when(sService.getAll()).thenReturn(List.of(fakeSupply1));
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply1);
+        when(sService.getAll()).thenReturn(List.of(fakeSupply1Response));
+        String supplyJson = objectMapper.writeValueAsString(fakeSupply1Response);
 
         mockMvc.perform(get("/api/supply"))
             .andExpect(status().isOk())
@@ -98,8 +106,8 @@ public class SupplyControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct supply's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
-        when(sService.getById(1)).thenReturn(fakeSupply1);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply1);
+        when(sService.getById(1)).thenReturn(fakeSupply1Response);
+        String supplyJson = objectMapper.writeValueAsString(fakeSupply1Response);
 
         mockMvc.perform(get("/api/supply/1"))
             .andExpect(status().isOk())
@@ -113,8 +121,8 @@ public class SupplyControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if registering a new Supply with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
-        when(sService.register(fakeSupply1)).thenReturn(fakeSupply1);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply1);
+        when(sService.register(fakeSupplyRegister)).thenReturn(fakeSupply1Response);
+        String supplyJson = objectMapper.writeValueAsString(fakeSupply1Response);
 
         mockMvc.perform(
             post("/api/supply")
@@ -124,15 +132,15 @@ public class SupplyControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(supplyJson));
 
-        verify(sService, times(1)).register(fakeSupply1);
+        verify(sService, times(1)).register(fakeSupplyRegister);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if registering a new Supply with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
-        when(sService.register(fakeSupply1)).thenReturn(fakeSupply1);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply1);
+        when(sService.register(fakeSupplyRegister)).thenReturn(fakeSupply1Response);
+        String supplyJson = objectMapper.writeValueAsString(fakeSupply1Response);
 
         mockMvc.perform(
             post("/api/supply")
@@ -147,8 +155,8 @@ public class SupplyControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if updating a Supply with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
-        when(sService.update(1, fakeSupply2)).thenReturn(fakeSupply2);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply2);
+        when(sService.update(1, fakeSupplyUpdate)).thenReturn(fakeSupply2Response);
+        String supplyJson = objectMapper.writeValueAsString(fakeSupply2Response);
 
         mockMvc.perform(
             put("/api/supply/1")
@@ -158,15 +166,15 @@ public class SupplyControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(supplyJson));
 
-        verify(sService, times(1)).update(1, fakeSupply2);
+        verify(sService, times(1)).update(1, fakeSupplyUpdate);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if updating a Supply with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
-        when(sService.register(fakeSupply2)).thenReturn(fakeSupply2);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply2);
+        when(sService.update(1, fakeSupplyUpdate)).thenReturn(fakeSupply2Response);
+        String supplyJson = objectMapper.writeValueAsString(fakeSupply2Response);
 
         mockMvc.perform(
             put("/api/supply/1")

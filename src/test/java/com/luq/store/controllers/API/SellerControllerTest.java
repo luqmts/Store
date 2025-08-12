@@ -2,7 +2,9 @@ package com.luq.store.controllers.API;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.luq.store.domain.Department;
-import com.luq.store.domain.Seller;
+import com.luq.store.dto.request.seller.SellerRegisterDTO;
+import com.luq.store.dto.request.seller.SellerUpdateDTO;
+import com.luq.store.dto.response.seller.SellerResponseDTO;
 import com.luq.store.services.SellerService;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.Phone;
@@ -44,22 +46,32 @@ public class SellerControllerTest {
     @MockBean
     private SellerService sService;
 
-    private Seller fakeSeller1, fakeSeller2;
+    private SellerResponseDTO fakeSeller1Response, fakeSeller2Response;
+    private SellerRegisterDTO fakeSellerRegister;
+    private SellerUpdateDTO fakeSellerUpdate;
 
     @BeforeEach
     public void setUp() {
         String user = "Jimmy McGill";
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        fakeSeller1 = new Seller(
+        fakeSeller1Response = new SellerResponseDTO(
             1, "Walter White",
             new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.FOOD,
             user, now, user, now
         );
-        fakeSeller2 = new Seller(
-            2, "Jesse Pinkman",
-            new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD,
+        fakeSeller2Response = new SellerResponseDTO(
+            1, "Jesse Pinkman",
+            new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.TECHNOLOGY,
             user, now, user, now
+        );
+
+        fakeSellerRegister = new SellerRegisterDTO(
+            "Jesse Pinkman", new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD
+        );
+
+        fakeSellerUpdate = new SellerUpdateDTO(
+            "Walter White", new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.TECHNOLOGY
         );
     }
 
@@ -67,8 +79,8 @@ public class SellerControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct seller's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
-        when(sService.getAll()).thenReturn(List.of(fakeSeller1));
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller1);
+        when(sService.getAll()).thenReturn(List.of(fakeSeller1Response));
+        String sellerJson = objectMapper.writeValueAsString(fakeSeller1Response);
 
         mockMvc.perform(get("/api/seller"))
             .andExpect(status().isOk())
@@ -83,8 +95,8 @@ public class SellerControllerTest {
     @WithMockUser
     @DisplayName("Testing if correct seller's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
-        when(sService.getById(1)).thenReturn(fakeSeller1);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller1);
+        when(sService.getById(1)).thenReturn(fakeSeller1Response);
+        String sellerJson = objectMapper.writeValueAsString(fakeSeller1Response);
 
         mockMvc.perform(get("/api/seller/1"))
                 .andExpect(status().isOk())
@@ -98,8 +110,8 @@ public class SellerControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if registering a new Seller with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
-        when(sService.register(fakeSeller1)).thenReturn(fakeSeller1);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller1);
+        when(sService.register(fakeSellerRegister)).thenReturn(fakeSeller1Response);
+        String sellerJson = objectMapper.writeValueAsString(fakeSeller1Response);
 
         mockMvc.perform(
             post("/api/seller")
@@ -110,15 +122,15 @@ public class SellerControllerTest {
             .andExpect(content().json(sellerJson));
 
 
-        verify(sService, times(1)).register(fakeSeller1);
+        verify(sService, times(1)).register(fakeSellerRegister);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if registering a new Seller with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
-        when(sService.register(fakeSeller1)).thenReturn(fakeSeller1);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller1);
+        when(sService.register(fakeSellerRegister)).thenReturn(fakeSeller2Response);
+        String sellerJson = objectMapper.writeValueAsString(fakeSeller2Response);
 
         mockMvc.perform(
             post("/api/seller")
@@ -133,8 +145,8 @@ public class SellerControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @DisplayName("Testing if updating a Seller with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
-        when(sService.update(1, fakeSeller2)).thenReturn(fakeSeller2);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller2);
+        when(sService.update(1, fakeSellerUpdate)).thenReturn(fakeSeller2Response);
+        String sellerJson = objectMapper.writeValueAsString(fakeSeller2Response);
 
         mockMvc.perform(
             put("/api/seller/1")
@@ -144,15 +156,15 @@ public class SellerControllerTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().json(sellerJson));
 
-        verify(sService, times(1)).update(1, fakeSeller2);
+        verify(sService, times(1)).update(1, fakeSellerUpdate);
     }
 
     @Test
     @WithMockUser()
     @DisplayName("Testing if updating a Seller with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
-        when(sService.register(fakeSeller2)).thenReturn(fakeSeller2);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller2);
+        when(sService.update(1, fakeSellerUpdate)).thenReturn(fakeSeller2Response);
+        String sellerJson = objectMapper.writeValueAsString(fakeSeller2Response);
 
         mockMvc.perform(
             put("/api/seller/1")

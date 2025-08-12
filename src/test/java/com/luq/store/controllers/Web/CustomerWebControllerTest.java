@@ -49,6 +49,8 @@ public class CustomerWebControllerTest {
     private UserRepository uRepository;
 
     private CustomerResponseDTO fakeCustomer1Response, fakeCustomer2Response;
+    private CustomerRegisterDTO fakeCustomerRegister;
+    private CustomerUpdateDTO fakeCustomerUpdate;
 
     @BeforeEach
     public void setUp(){
@@ -56,30 +58,29 @@ public class CustomerWebControllerTest {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         fakeCustomer1Response = new CustomerResponseDTO(1, "Test Customer 01", user, now, user, now);
-        fakeCustomer2Response = new CustomerResponseDTO(2, "Test Customer 02", user, now, user, now);
+        fakeCustomer2Response = new CustomerResponseDTO(1, "Test Customer 02", user, now, user, now);
 
-        CustomerRegisterDTO fakeCustomer1Register = new CustomerRegisterDTO("Test Customer 01");
-        CustomerRegisterDTO fakeCustomer2Register = new CustomerRegisterDTO("Test Customer 02");
+        fakeCustomerRegister = new CustomerRegisterDTO("Test Customer 01");
 
-        CustomerUpdateDTO fakeCustomer1Update = new CustomerUpdateDTO("Test Customer 01");
+        fakeCustomerUpdate = new CustomerUpdateDTO("Test Customer 02");
     }
 
     @Test
     @WithMockUser
     @DisplayName("Test if all Customers are being returned on getAllSorted method with no filters applied and default user")
     public void testListAllCustomers() throws Exception{
-        when(cService.getAllSorted("id", "asc", null)).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+        when(cService.getAllSorted("name", "asc", null)).thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(
             get("/customer/list")
-                .param("sortBy", "id")
+                .param("sortBy", "name")
                 .param("direction", "asc")
         ).andExpect(status().isOk())
         .andExpect(view().name("customer-list"))
         .andExpect(model().attributeExists("customers"))
         .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
         .andExpect(model().attribute("page", "customer"))
-        .andExpect(model().attribute("sortBy", "id"))
+        .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"));
     }
 
@@ -87,11 +88,11 @@ public class CustomerWebControllerTest {
     @WithMockUser
     @DisplayName("Test if Customer is being returned on getAllSorted method with filters applied and default user")
     public void testListCustomersWithOneFilter() throws Exception{
-        when(cService.getAllSorted("id", "asc", "Test Customer 01")).thenReturn(List.of(fakeCustomer1Response));
+        when(cService.getAllSorted("name", "asc", "Test Customer 01")).thenReturn(List.of(fakeCustomer1Response));
 
         mockMvc.perform(
             get("/customer/list")
-                .param("sortBy", "id")
+                .param("sortBy", "name")
                 .param("direction", "asc")
                 .param("name", "Test Customer 01")
         ).andExpect(status().isOk())
@@ -99,7 +100,7 @@ public class CustomerWebControllerTest {
         .andExpect(model().attributeExists("customers"))
         .andExpect(model().attribute("customers", List.of(fakeCustomer1Response)))
         .andExpect(model().attribute("page", "customer"))
-        .andExpect(model().attribute("sortBy", "id"))
+        .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("name", "Test Customer 01"));
     }
@@ -108,11 +109,11 @@ public class CustomerWebControllerTest {
     @WithMockUser
     @DisplayName("Test if no Customer is being returned on getAllSorted method correctly as a default user")
     public void testListWithNoCustomers() throws Exception{
-        when(cService.getAllSorted("id", "asc", "return nothing")).thenReturn(List.of());
+        when(cService.getAllSorted("name", "asc", "return nothing")).thenReturn(List.of());
 
         mockMvc.perform(
             get("/customer/list")
-                .param("sortBy", "id")
+                .param("sortBy", "name")
                 .param("direction", "asc")
                 .param("name", "return nothing")
         ).andExpect(status().isOk())
@@ -120,7 +121,7 @@ public class CustomerWebControllerTest {
         .andExpect(model().attributeExists("customers"))
         .andExpect(model().attribute("customers", List.of()))
         .andExpect(model().attribute("page", "customer"))
-        .andExpect(model().attribute("sortBy", "id"))
+        .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("name", "return nothing"));
     }
@@ -159,11 +160,11 @@ public class CustomerWebControllerTest {
         when(cService.getById(1)).thenReturn(fakeCustomer1Response);
 
         mockMvc.perform(get("/customer/form/1"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("customer-form"))
-        .andExpect(model().attributeExists("customer"))
-        .andExpect(model().attribute("customer", fakeCustomer1Response))
-        .andExpect(model().attribute("page", "customer"));
+            .andExpect(status().isOk())
+            .andExpect(view().name("customer-form"))
+            .andExpect(model().attributeExists("customer"))
+            .andExpect(model().attribute("customer", fakeCustomer1Response))
+            .andExpect(model().attribute("page", "customer"));
     }
 
     @Test
@@ -184,11 +185,11 @@ public class CustomerWebControllerTest {
         mockMvc.perform(
             post("/customer/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("name", "New Customer")
+                .param("name", fakeCustomerRegister.name())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/customer/list"));
 
-        verify(cService, times(1)).register(any(CustomerRegisterDTO.class));
+        verify(cService, times(1)).register(fakeCustomerRegister);
     }
 
     @Test
@@ -213,11 +214,11 @@ public class CustomerWebControllerTest {
             post("/customer/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "1")
-                .param("name", "Customer being edited")
+                .param("name", fakeCustomerUpdate.name())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/customer/list"));
 
-        verify(cService, times(1)).update(eq(1), any(CustomerUpdateDTO.class));
+        verify(cService, times(1)).update(eq(1), fakeCustomerUpdate);
     }
 
     @Test
