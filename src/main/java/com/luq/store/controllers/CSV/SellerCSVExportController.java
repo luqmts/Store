@@ -42,22 +42,21 @@ public class SellerCSVExportController {
             writer.println("id,name,mail,phone,department,created,created_by,modified,modified_by");
             List<SellerResponseDTO> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
 
-            for (SellerResponseDTO seller : sList) {
-                String row = String.format(Locale.ROOT,
-                "%d,%s,%s,%s,%s,%s,%s,%s,%s",
-                    seller.id(),
-                    escapeCsv(seller.name()),
-                    escapeCsv(seller.mail().toString()),
-                    escapeCsv(seller.phone().toString()),
-                    escapeCsv(seller.department().toString()),
-                    escapeCsv(seller.created().toString()),
-                    escapeCsv(seller.createdBy()),
-                    escapeCsv(seller.modified().toString()),
-                    escapeCsv(seller.modifiedBy())
-                );
-
-                writer.println(row);
-            }
+            sList
+                .stream()
+                .map(data -> String.format(
+                    Locale.ROOT,
+                        "%d,%s,%s,%s,%s,%s,%s,%s,%s",
+                        data.id(),
+                        escapeCsv(data.name()),
+                        escapeCsv(data.mail().toString()),
+                        escapeCsv(data.phone().toString()),
+                        escapeCsv(data.department().toString()),
+                        escapeCsv(data.created().toString()),
+                        escapeCsv(data.createdBy()),
+                        escapeCsv(data.modified().toString()),
+                        escapeCsv(data.modifiedBy())
+                )).forEach(writer::println);
         }
     }
 }

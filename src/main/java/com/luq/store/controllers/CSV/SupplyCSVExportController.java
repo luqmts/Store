@@ -36,20 +36,19 @@ public class SupplyCSVExportController {
 
             List<SupplyResponseDTO> sList = sService.getAllSorted(sortBy, direction, productId);
 
-            for (SupplyResponseDTO supply : sList) {
-                String row = String.format(Locale.ROOT,
-                "%d,%s,%d,%s,%s,%s,%s",
-                    supply.id(),
-                    escapeCsv(supply.product().getName()),
-                    supply.quantity(),
-                    escapeCsv(supply.created().toString()),
-                    escapeCsv(supply.createdBy()),
-                    escapeCsv(supply.modified().toString()),
-                    escapeCsv(supply.modifiedBy())
-                );
-
-                writer.println(row);
-            }
+            sList
+                .stream()
+                .map(data -> String.format(
+                    Locale.ROOT,
+                    "%d,%s,%d,%s,%s,%s,%s",
+                    data.id(),
+                    escapeCsv(data.product().getName()),
+                    data.quantity(),
+                    escapeCsv(data.created().toString()),
+                    escapeCsv(data.createdBy()),
+                    escapeCsv(data.modified().toString()),
+                    escapeCsv(data.modifiedBy())
+                )).forEach(writer::println);
         }
     }
 }

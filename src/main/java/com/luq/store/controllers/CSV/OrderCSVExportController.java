@@ -38,24 +38,23 @@ public class OrderCSVExportController {
 
             List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, productId, sellerId, customerId);
 
-            for (OrderResponseDTO order : oList) {
-                String row = String.format(Locale.ROOT,
-                "%d,%s,%s,%s,%s,%d,%.2f,%s,%s,%s,%s",
-                    order.id(),
-                    escapeCsv(order.product().getName()),
-                    escapeCsv(order.seller().getName()),
-                    escapeCsv(order.customer().getName()),
-                    escapeCsv(order.orderDate().toString()),
-                    order.quantity(),
-                    order.totalPrice(),
-                    escapeCsv(order.created().toString()),
-                    escapeCsv(order.createdBy()),
-                    escapeCsv(order.modified().toString()),
-                    escapeCsv(order.modifiedBy())
-                );
-
-                writer.println(row);
-            }
+            oList
+                .stream()
+                .map(data -> String.format(
+                    Locale.ROOT,
+                    "%d,%s,%s,%s,%s,%d,%.2f,%s,%s,%s,%s",
+                    data.id(),
+                    escapeCsv(data.product().getName()),
+                    escapeCsv(data.seller().getName()),
+                    escapeCsv(data.customer().getName()),
+                    escapeCsv(data.orderDate().toString()),
+                    data.quantity(),
+                    data.totalPrice(),
+                    escapeCsv(data.created().toString()),
+                    escapeCsv(data.createdBy()),
+                    escapeCsv(data.modified().toString()),
+                    escapeCsv(data.modifiedBy())
+                )).forEach(writer::println);
         }
     }
 }

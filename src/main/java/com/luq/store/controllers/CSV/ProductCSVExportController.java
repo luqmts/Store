@@ -35,29 +35,27 @@ public class ProductCSVExportController {
 
         response.setContentType("text/csv; charset=UTF-8");
         response.setHeader("Content-Disposition", "attachment; filename=\"products.csv\"");
+        List<ProductResponseDTO> pList = pService.getAllSorted(sortBy, direction, supplierId, name, sku);
 
         try (PrintWriter writer = response.getWriter()) {
             writer.println("id,name,price,sku,supplier,description,created,created_by,modified,modified_by");
 
-            List<ProductResponseDTO> pList = pService.getAllSorted(sortBy, direction, supplierId, name, sku);
-
-            for (ProductResponseDTO product : pList) {
-                String row = String.format(Locale.ROOT,
-                "%d,%s,%.2f,%s,%s,%s,%s,%s,%s,%s",
-                    product.id(),
-                    escapeCsv(product.name()),
-                    product.price(),
-                    escapeCsv(product.sku()),
-                    escapeCsv(product.supplier().getName()),
-                    escapeCsv(product.description()),
-                    escapeCsv(product.created().toString()),
-                    escapeCsv(product.createdBy()),
-                    escapeCsv(product.modified().toString()),
-                    escapeCsv(product.modifiedBy())
-                );
-
-                writer.println(row);
-            }
+            pList
+                .stream()
+                .map(data -> String.format(
+                    Locale.ROOT,
+                    "%d,%s,%.2f,%s,%s,%s,%s,%s,%s,%s",
+                    data.id(),
+                    escapeCsv(data.name()),
+                    data.price(),
+                    escapeCsv(data.sku()),
+                    escapeCsv(data.supplier().getName()),
+                    escapeCsv(data.description()),
+                    escapeCsv(data.created().toString()),
+                    escapeCsv(data.createdBy()),
+                    escapeCsv(data.modified().toString()),
+                    escapeCsv(data.modifiedBy())
+                )).forEach(writer::println);
         }
     }
 }

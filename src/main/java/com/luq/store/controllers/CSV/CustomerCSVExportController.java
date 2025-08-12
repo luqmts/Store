@@ -38,19 +38,18 @@ public class CustomerCSVExportController {
 
             List<CustomerResponseDTO> cList = cService.getAllSorted(sortBy, direction, name);
 
-            for (CustomerResponseDTO customer : cList) {
-                String row = String.format(Locale.ROOT,
-                "%d,%s,%s,%s,%s,%s",
-                    customer.id(),
-                    escapeCsv(customer.name()),
-                    escapeCsv(customer.created().toString()),
-                    escapeCsv(customer.createdBy()),
-                    escapeCsv(customer.modified().toString()),
-                    escapeCsv(customer.modifiedBy())
-                );
-
-                writer.println(row);
-            }
+            cList
+                .stream()
+                .map(data -> String.format(
+                    Locale.ROOT,
+                    "%d,%s,%s,%s,%s,%s",
+                    data.id(),
+                    escapeCsv(data.name()),
+                    escapeCsv(data.created().toString()),
+                    escapeCsv(data.createdBy()),
+                    escapeCsv(data.modified().toString()),
+                    escapeCsv(data.modifiedBy())
+                )).forEach(writer::println);
         }
     }
 }
