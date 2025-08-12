@@ -26,6 +26,10 @@ public class AuthorizationService implements UserDetailsService {
 
     public User getById(String id) { return uRepository.findById(id).orElse(null); }
 
+    public List<User> getAll() {
+        return uRepository.findAll();
+    }
+
     public List<User> getAllSorted(String sortBy, String direction, String name, String login, String role) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 

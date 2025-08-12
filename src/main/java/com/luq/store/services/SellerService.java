@@ -1,6 +1,7 @@
 package com.luq.store.services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.luq.store.dto.request.seller.SellerRegisterDTO;
@@ -8,6 +9,7 @@ import com.luq.store.dto.request.seller.SellerUpdateDTO;
 import com.luq.store.dto.response.seller.SellerResponseDTO;
 import com.luq.store.exceptions.InvalidMailException;
 import com.luq.store.exceptions.InvalidPhoneException;
+import com.luq.store.exceptions.MultipleValidationException;
 import com.luq.store.exceptions.NotFoundException;
 import com.luq.store.mapper.SellerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +49,12 @@ public class SellerService {
     }
 
     public SellerResponseDTO register(SellerRegisterDTO data) {
-        if (data.mail().toString().isBlank()) throw new InvalidMailException("Invalid mail");
-        if (data.phone().toString().isBlank()) throw new InvalidPhoneException("Invalid phone");
+        List<IllegalArgumentException> errors = new ArrayList<>();
+
+        if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
+        if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
+
+        if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Seller seller = sMapper.toEntity(data);
@@ -63,8 +69,12 @@ public class SellerService {
     }
 
     public SellerResponseDTO update(int id, SellerUpdateDTO data) {
-        if (data.mail().toString().isBlank()) throw new InvalidMailException("Invalid mail");
-        if (data.phone().toString().isBlank()) throw new InvalidPhoneException("Invalid phone");
+        List<IllegalArgumentException> errors = new ArrayList<>();
+
+        if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
+        if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
+
+        if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 
         Seller seller = sRepository.findById(id).orElse(null);
 

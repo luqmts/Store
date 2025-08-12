@@ -10,6 +10,8 @@ import com.luq.store.dto.request.seller.SellerUpdateDTO;
 import com.luq.store.dto.response.seller.SellerResponseDTO;
 import com.luq.store.exceptions.InvalidMailException;
 import com.luq.store.exceptions.InvalidPhoneException;
+import com.luq.store.exceptions.MultipleValidationException;
+import com.luq.store.mapper.SellerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +27,9 @@ import com.luq.store.services.SellerService;
 @Controller
 public class SellerWebController {
     protected final SellerService sService;
+
+    @Autowired
+    private SellerMapper sMapper;
     
     @Autowired
     public SellerWebController(SellerService sService){
@@ -84,10 +89,18 @@ public class SellerWebController {
         try {
             sService.register(data);
             return "redirect:/seller/list";
-        } catch (InvalidMailException | InvalidPhoneException e) {
-            if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
-            if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
-            model.addAttribute("seller", data);
+        } catch (MultipleValidationException e) {
+            e.getExceptions()
+                .stream()
+                .filter(ex -> ex instanceof  InvalidMailException)
+                .findFirst()
+                .ifPresent(ex -> model.addAttribute("mailError", ex.getMessage()));
+            e.getExceptions()
+                .stream()
+                .filter(ex -> ex instanceof  InvalidPhoneException)
+                .findFirst()
+                .ifPresent(ex -> model.addAttribute("phoneError", ex.getMessage()));
+            model.addAttribute("seller", sMapper.toEntity(data));
             model.addAttribute("departments", Department.values());
             return "seller-form";
         }
@@ -101,7 +114,7 @@ public class SellerWebController {
         } catch (InvalidMailException | InvalidPhoneException e) {
             if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
             if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
-            model.addAttribute("seller", data);
+            model.addAttribute("seller", sMapper.toEntity(data));
             model.addAttribute("departments", Department.values());
             return "seller-form";
         }

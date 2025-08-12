@@ -11,6 +11,8 @@ import com.luq.store.dto.response.supplier.SupplierResponseDTO;
 import com.luq.store.exceptions.InvalidCnpjException;
 import com.luq.store.exceptions.InvalidMailException;
 import com.luq.store.exceptions.InvalidPhoneException;
+import com.luq.store.exceptions.MultipleValidationException;
+import com.luq.store.mapper.SupplierMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,7 +27,10 @@ import com.luq.store.services.SupplierService;
 @Controller
 public class SupplierWebController {
     protected final SupplierService sService;
-    
+
+    @Autowired
+    private SupplierMapper sMapper;
+
     @Autowired
     public SupplierWebController(SupplierService sService){
         this.sService = sService;
@@ -81,11 +86,23 @@ public class SupplierWebController {
         try {
             sService.register(data);
             return "redirect:/supplier/list";
-        } catch (InvalidCnpjException | InvalidMailException | InvalidPhoneException e) {
-            if (e.getClass().equals(InvalidCnpjException.class)) model.addAttribute("cnpjError", e.getMessage());
-            if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
-            if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
-            model.addAttribute("supplier", data);
+        } catch (MultipleValidationException e) {
+            e.getExceptions()
+                .stream()
+                .filter(ex -> ex instanceof  InvalidCnpjException)
+                .findFirst()
+                .ifPresent(ex -> model.addAttribute("cnpjError", ex.getMessage()));
+            e.getExceptions()
+                .stream()
+                .filter(ex -> ex instanceof  InvalidMailException)
+                .findFirst()
+                .ifPresent(ex -> model.addAttribute("mailError", ex.getMessage()));
+            e.getExceptions()
+                .stream()
+                .filter(ex -> ex instanceof  InvalidPhoneException)
+                .findFirst()
+                .ifPresent(ex -> model.addAttribute("phoneError", ex.getMessage()));
+            model.addAttribute("supplier", sMapper.toEntity(data));
             return "supplier-form";
         }
     }
@@ -99,7 +116,7 @@ public class SupplierWebController {
             if (e.getClass().equals(InvalidCnpjException.class)) model.addAttribute("cnpjError", e.getMessage());
             if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
             if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
-            model.addAttribute("supplier", data);
+            model.addAttribute("supplier", sMapper.toEntity(data));
             return "supplier-form";
         }
     }

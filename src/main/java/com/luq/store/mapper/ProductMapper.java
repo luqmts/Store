@@ -3,6 +3,7 @@ package com.luq.store.mapper;
 import com.luq.store.domain.Product;
 import com.luq.store.domain.Supplier;
 import com.luq.store.dto.request.product.ProductRegisterDTO;
+import com.luq.store.dto.request.product.ProductUpdateDTO;
 import com.luq.store.dto.response.product.ProductResponseDTO;
 import com.luq.store.exceptions.NotFoundException;
 import com.luq.store.services.SupplierService;
@@ -19,6 +20,25 @@ public class ProductMapper {
     private SupplierMapper sMapper;
 
     public Product toEntity(ProductRegisterDTO data) {
+        Supplier supplier;
+
+        try {
+            supplier = sMapper.toEntity(sService.getById(data.supplier_id()));
+        } catch (NullPointerException e) {
+            throw new NotFoundException("Supplier not found");
+        }
+
+        Product product = new Product();
+        product.setName(data.name());
+        product.setSku(data.sku());
+        product.setDescription(data.description());
+        product.setPrice(data.price());
+        product.setSupplier(supplier);
+
+        return product;
+    }
+
+    public Product toEntity(ProductUpdateDTO data) {
         Supplier supplier;
 
         try {

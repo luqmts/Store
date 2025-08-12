@@ -3,15 +3,13 @@ package com.luq.store.services;
 import com.luq.store.dto.request.supplier.SupplierRegisterDTO;
 import com.luq.store.dto.request.supplier.SupplierUpdateDTO;
 import com.luq.store.dto.response.supplier.SupplierResponseDTO;
-import com.luq.store.exceptions.InvalidCnpjException;
-import com.luq.store.exceptions.InvalidMailException;
-import com.luq.store.exceptions.InvalidPhoneException;
-import com.luq.store.exceptions.NotFoundException;
+import com.luq.store.exceptions.*;
 import com.luq.store.mapper.SupplierMapper;
 import com.luq.store.repositories.SupplierRepository;
 import com.luq.store.domain.Supplier;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,13 +45,16 @@ public class SupplierService {
     }
 
     public SupplierResponseDTO register(SupplierRegisterDTO data) {
-        if (data.mail().toString().isBlank()) throw new InvalidMailException("Invalid mail");
-        if (data.phone().toString().isBlank()) throw new InvalidPhoneException("Invalid phone");
-        if (data.cnpj().toString().isBlank()) throw new InvalidCnpjException("Invalid cnpj");
+        List<IllegalArgumentException> errors = new ArrayList<>();
+
+        if (data.cnpj() == null) errors.add(new InvalidCnpjException("Invalid cnpj"));
+        if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
+        if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
+
+        if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Supplier supplier = sMapper.toEntity(data);
-
 
         supplier.setModifiedBy(authentication.getName());
         supplier.setModified(LocalDateTime.now());
@@ -65,9 +66,13 @@ public class SupplierService {
     }
 
     public SupplierResponseDTO update(int id, SupplierUpdateDTO data) {
-        if (data.mail().toString().isBlank()) throw new InvalidMailException("Invalid mail");
-        if (data.phone().toString().isBlank()) throw new InvalidPhoneException("Invalid phone");
-        if (data.cnpj().toString().isBlank()) throw new InvalidCnpjException("Invalid cnpj");
+        List<IllegalArgumentException> errors = new ArrayList<>();
+
+        if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
+        if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
+        if (data.cnpj() == null) errors.add(new InvalidCnpjException("Invalid cnpj"));
+
+        if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 
         Supplier supplier = sRepository.findById(id).orElse(null);
 

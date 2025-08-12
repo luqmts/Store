@@ -2,6 +2,7 @@ package com.luq.store.mapper;
 
 import com.luq.store.domain.Seller;
 import com.luq.store.dto.request.seller.SellerRegisterDTO;
+import com.luq.store.dto.request.seller.SellerUpdateDTO;
 import com.luq.store.dto.response.seller.SellerResponseDTO;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,16 @@ import java.util.List;
 @Component
 public class SellerMapper {
     public Seller toEntity(SellerRegisterDTO data) {
+        Seller seller = new Seller();
+        seller.setName(data.name());
+        seller.setMail(data.mail());
+        seller.setPhone(data.phone());
+        seller.setDepartment(data.department());
+
+        return seller;
+    }
+
+    public Seller toEntity(SellerUpdateDTO data) {
         Seller seller = new Seller();
         seller.setName(data.name());
         seller.setMail(data.mail());

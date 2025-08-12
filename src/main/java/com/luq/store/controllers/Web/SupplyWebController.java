@@ -5,7 +5,9 @@ import com.luq.store.dto.request.customer.CustomerUpdateDTO;
 import com.luq.store.dto.request.supply.SupplyRegisterDTO;
 import com.luq.store.dto.request.supply.SupplyUpdateDTO;
 import com.luq.store.dto.response.supply.SupplyResponseDTO;
+import com.luq.store.exceptions.InvalidQuantityException;
 import com.luq.store.exceptions.ProductRegisteredException;
+import com.luq.store.mapper.SupplyMapper;
 import com.luq.store.services.SupplyService;
 import com.luq.store.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ import java.util.List;
 public class SupplyWebController {
     protected final SupplyService sService;
     protected final ProductService pService;
+
+    @Autowired
+    private SupplyMapper sMapper;
 
     @Autowired
     public SupplyWebController(SupplyService sService, ProductService pService){
@@ -77,19 +82,28 @@ public class SupplyWebController {
         try {
             sService.register(data);
             return "redirect:/supply/list";
-        } catch (ProductRegisteredException e) {
+        } catch (ProductRegisteredException | InvalidQuantityException e) {
             model.addAttribute("productError", e.getMessage());
+            model.addAttribute("quantityError", e.getMessage());
             model.addAttribute("page", "supply");
-            model.addAttribute("supply", data);
+            model.addAttribute("supply", sMapper.toEntity(data));
             model.addAttribute("products", pService.getAll());
             return "supply-form";
         }
     }
 
     @PutMapping(path="/supply/form/{id}")
-    public String postSupply(@PathVariable("id") int id, SupplyUpdateDTO data){
-        sService.update(id, data);
-        return "redirect:/supply/list";
+    public String postSupply(@PathVariable("id") int id, SupplyUpdateDTO data, Model model){
+        try {
+            sService.update(id, data);
+            return "redirect:/supply/list";
+        } catch (InvalidQuantityException e) {
+            model.addAttribute("quantityError", e.getMessage());
+            model.addAttribute("page", "supply");
+            model.addAttribute("supply", sMapper.toEntity(data));
+            model.addAttribute("products", pService.getAll());
+            return "supply-form";
+        }
     }
 
     @GetMapping(path="/supply/delete/{id}")

@@ -31,15 +31,19 @@ public class OrderService {
     @Autowired
     private ProductMapper pMapper;
     @Autowired
+    private CustomerMapper cMapper;
+    @Autowired
+    private CustomerService cService;
+    @Autowired
     private ProductService pService;
     @Autowired
     private SellerMapper sMapper;
     @Autowired
-    private SellerService sService;
+    private SellerService sellerService;
     @Autowired
-    private CustomerMapper cMapper;
+    private SupplyService supplyService;
     @Autowired
-    private CustomerService cService;
+    private SupplyMapper supplyMapper;
 
     public List<OrderResponseDTO> getAll() {
         return oMapper.toDTOList(oRepository.findAll());
@@ -61,13 +65,19 @@ public class OrderService {
     }
 
     public OrderResponseDTO register(OrderRegisterDTO data) {
-        Order order = oMapper.toEntity(data);
-        Supply supply = sRepository.getByProductId(data.product_id());
+        System.out.println(data.product_id());
+        Supply supply = supplyMapper.toEntity(supplyService.getByProductId(data.product_id()));
+        System.out.println(supply);
+        System.out.println(data.quantity());
+        System.out.println(supply.getQuantity());
 
-        if (order.getQuantity().compareTo(supply.getQuantity()) > 0)
+        if (supply.getId() == null) throw new NotFoundException("Supply not found for this product");
+
+        if (data.quantity().compareTo(supply.getQuantity()) > 0)
             throw new InvalidQuantityException("A quantity greater that actually have in supply was inserted, please change it");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Order order = oMapper.toEntity(data);
 
         order.setModifiedBy(authentication.getName());
         order.setModified(LocalDateTime.now());
@@ -100,7 +110,7 @@ public class OrderService {
         order.setQuantity(data.quantity());
         order.setOrderDate(data.orderDate());
         order.setProduct(pMapper.toEntity(pService.getById(data.product_id())));
-        order.setSeller(sMapper.toEntity(sService.getById(data.seller_id())));
+        order.setSeller(sMapper.toEntity(sellerService.getById(data.seller_id())));
         order.setCustomer(cMapper.toEntity(cService.getById(data.customer_id())));
 
         order.setModifiedBy(authentication.getName());

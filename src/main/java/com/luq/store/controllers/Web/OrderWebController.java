@@ -11,6 +11,8 @@ import com.luq.store.dto.request.order.OrderUpdateDTO;
 import com.luq.store.dto.response.order.OrderResponseDTO;
 import com.luq.store.dto.response.supply.SupplyResponseDTO;
 import com.luq.store.exceptions.InvalidQuantityException;
+import com.luq.store.exceptions.NotFoundException;
+import com.luq.store.mapper.OrderMapper;
 import com.luq.store.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -29,6 +31,9 @@ public class OrderWebController {
     protected final SellerService sellerService;
     protected final CustomerService cService;
     protected final SupplyService supplyService;
+
+    @Autowired
+    private OrderMapper oMapper;
 
     @Autowired
     public OrderWebController(
@@ -89,10 +94,11 @@ public class OrderWebController {
     public ModelAndView orderFormEdit(@PathVariable("id") int id){
         OrderResponseDTO order = oService.getById(id);
         ModelAndView mv = new ModelAndView("order-form");
-        SupplyResponseDTO supply = supplyService.getByProduct(order.product());
+        SupplyResponseDTO supply = supplyService.getByProductId(order.product().getId());
 
         mv.addObject("order", order);
         mv.addObject("page", "order");
+        mv.addObject("id", order.id());
         mv.addObject("products", pService.getAllRegisteredOnSupply(supply.id()));
         mv.addObject("sellers", sellerService.getAll());
         mv.addObject("customers", cService.getAll());
@@ -105,13 +111,14 @@ public class OrderWebController {
         try {
             oService.register(data);
             return "redirect:/order/list";
-        } catch (InvalidQuantityException e) {
-            model.addAttribute("order", data);
+        } catch (InvalidQuantityException | NotFoundException e) {
+            model.addAttribute("order", oMapper.toEntity(data));
             model.addAttribute("products", pService.getAllRegisteredOnSupply());
             model.addAttribute("page", "order");
             model.addAttribute("sellers", sellerService.getAll());
             model.addAttribute("customers", cService.getAll());
             model.addAttribute("quantityError", e.getMessage());
+            model.addAttribute("supplyError", e.getMessage());
 
             return "order-form";
         }
@@ -123,9 +130,10 @@ public class OrderWebController {
             oService.update(id, data);
             return "redirect:/order/list";
         } catch (InvalidQuantityException e) {
-            model.addAttribute("order", data);
+            model.addAttribute("order", oMapper.toEntity(data));
             model.addAttribute("products", pService.getAllRegisteredOnSupply(data.product_id()));
             model.addAttribute("page", "order");
+            model.addAttribute("page", data.id());
             model.addAttribute("sellers", sellerService.getAll());
             model.addAttribute("customers", cService.getAll());
             model.addAttribute("quantityError", e.getMessage());

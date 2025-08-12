@@ -5,6 +5,7 @@ import com.luq.store.domain.Order;
 import com.luq.store.domain.Product;
 import com.luq.store.domain.Seller;
 import com.luq.store.dto.request.order.OrderRegisterDTO;
+import com.luq.store.dto.request.order.OrderUpdateDTO;
 import com.luq.store.dto.response.order.OrderResponseDTO;
 import com.luq.store.exceptions.NotFoundException;
 import com.luq.store.services.CustomerService;
@@ -32,6 +33,40 @@ public class OrderMapper {
 
 
     public Order toEntity(OrderRegisterDTO data) {
+        Product product;
+        Seller seller;
+        Customer customer;
+
+        try {
+            product = pMapper.toEntity(pService.getById(data.product_id()));
+        } catch (NullPointerException e) {
+            throw new NotFoundException("Product not found");
+        }
+
+        try {
+            seller = sMapper.toEntity(sService.getById(data.seller_id()));
+        } catch (NullPointerException e) {
+            throw new NotFoundException("Seller not found");
+        }
+
+        try {
+            customer = cMapper.toEntity(cService.getById(data.customer_id()));
+        } catch (NullPointerException e) {
+            throw new NotFoundException("Customer not found");
+        }
+
+        Order order = new Order();
+        order.setTotalPrice(data.totalPrice());
+        order.setQuantity(data.quantity());
+        order.setOrderDate(data.orderDate());
+        order.setProduct(product);
+        order.setSeller(seller);
+        order.setCustomer(customer);
+
+        return order;
+    }
+
+    public Order toEntity(OrderUpdateDTO data) {
         Product product;
         Seller seller;
         Customer customer;

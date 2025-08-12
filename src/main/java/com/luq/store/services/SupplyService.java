@@ -5,6 +5,7 @@ import com.luq.store.domain.Product;
 import com.luq.store.dto.request.supply.SupplyRegisterDTO;
 import com.luq.store.dto.request.supply.SupplyUpdateDTO;
 import com.luq.store.dto.response.supply.SupplyResponseDTO;
+import com.luq.store.exceptions.InvalidQuantityException;
 import com.luq.store.exceptions.NotFoundException;
 import com.luq.store.exceptions.ProductRegisteredException;
 import com.luq.store.mapper.ProductMapper;
@@ -48,11 +49,14 @@ public class SupplyService {
         return sMapper.toDTO(supply);
     }
 
-    public SupplyResponseDTO getByProduct(Product product) {
-        return sMapper.toDTO(sRepository.getByProductId(product.getId()));
+    public SupplyResponseDTO getByProductId(Integer product_id) {
+        return sMapper.toDTO(sRepository.getByProductId(product_id));
     }
 
     public SupplyResponseDTO register(SupplyRegisterDTO data) {
+        if (data.quantity().compareTo(0) < 0)
+            throw new InvalidQuantityException("Quantity must be greater or equal to 0");
+
         if (sRepository.getByProductId(data.product_id()) != null)
             throw new ProductRegisteredException("This product is already registered on supply, please update it instead");
 

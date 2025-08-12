@@ -7,6 +7,7 @@ import com.luq.store.dto.request.product.ProductRegisterDTO;
 import com.luq.store.dto.request.product.ProductUpdateDTO;
 import com.luq.store.dto.response.product.ProductResponseDTO;
 import com.luq.store.exceptions.InvalidProductPriceException;
+import com.luq.store.mapper.ProductMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,9 @@ import com.luq.store.services.SupplierService;
 public class ProductWebController {
     protected final ProductService pService;
     protected final SupplierService sService;
+
+    @Autowired
+    private ProductMapper pMapper;
     
     @Autowired
     public ProductWebController(ProductService pService, SupplierService sService){
@@ -80,7 +84,7 @@ public class ProductWebController {
             return "redirect:/product/list";
         } catch (InvalidProductPriceException e) {
             model.addAttribute("priceError", e.getMessage());
-            model.addAttribute("product", data);
+            model.addAttribute("product", pMapper.toEntity(data));
             model.addAttribute("suppliers", sService.getAll());
 
             return "product-form";
@@ -94,7 +98,7 @@ public class ProductWebController {
             return "redirect:/product/list";
         } catch (InvalidProductPriceException e) {
             model.addAttribute("priceError", e.getMessage());
-            model.addAttribute("product", data);
+            model.addAttribute("product", pMapper.toEntity(data));
             model.addAttribute("suppliers", sService.getAll());
 
             return "product-form";
