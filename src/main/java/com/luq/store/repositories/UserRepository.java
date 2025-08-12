@@ -21,9 +21,9 @@ public interface UserRepository extends JpaRepository<User, String> {
         AND (:login IS NULL OR u.login LIKE :login || '%')
     """)
     List<User> findByNameAndLoginAndRole(
-            Sort sort,
-            @Param("name") String name,
-            @Param("login") String login,
-            @Param("role") UserRole role
+        Sort sort,
+        @Param("name") String name,
+        @Param("login") String login,
+        @Param("role") UserRole role
     );
 }
