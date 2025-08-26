@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record OrderRegisterDTO(
+    BigDecimal unitPrice,
     BigDecimal totalPrice,
     Integer quantity,
     LocalDate orderDate,

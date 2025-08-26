@@ -89,8 +89,8 @@ public class OrderCSVControllerTest {
             new Phone("11904040404"), Department.FOOD
         ));
 
-        fakeOrder1 = new Order(BigDecimal.valueOf(400.00), 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1);
-        fakeOrder2 = new Order(BigDecimal.valueOf(800.00), 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2);
+        fakeOrder1 = new Order(BigDecimal.valueOf(400.00), BigDecimal.valueOf(80.00), 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1);
+        fakeOrder2 = new Order(BigDecimal.valueOf(800.00), BigDecimal.valueOf(100.00), 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2);
         fakeOrder1.setCreated(now);
         fakeOrder1.setCreatedBy(user);
         fakeOrder1.setModified(now);

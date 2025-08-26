@@ -125,20 +125,20 @@ public class OrderWebControllerTest {
         fakeSupply = new Supply(1, 50, fakeProduct1, user, now, user, now);
 
         fakeOrder1Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
+            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
         fakeOrder2Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(1000.00), 4, LocalDate.now(),
+            1, BigDecimal.valueOf(1000.00), BigDecimal.valueOf(250.00), 4, LocalDate.now(),
             fakeProduct2, fakeSeller2, fakeCustomer2, user, now, user, now
         );
 
         fakeOrderRegister = new OrderRegisterDTO(
-            BigDecimal.valueOf(400.00), 2, LocalDate.now(),
+            BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(),
             fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
         );
         fakeOrderUpdate = new OrderUpdateDTO(
-            1, BigDecimal.valueOf(1000.00), 4, LocalDate.now(),
+            1, BigDecimal.valueOf(1000.00), BigDecimal.valueOf(250.00), 4, LocalDate.now(),
             fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
         );
     }

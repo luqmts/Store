@@ -25,6 +25,9 @@ public class Order implements Identifiable{
     @Column(name="TotalPrice")
     @ToString.Include
     private BigDecimal totalPrice;
+    @Column(name="UnitPrice")
+    @ToString.Include
+    private BigDecimal unitPrice;
     @Column(name="Quantity")
     @ToString.Include
     private Integer quantity;
@@ -49,8 +52,9 @@ public class Order implements Identifiable{
     private String modifiedBy;
     private LocalDateTime modified;
 
-    public Order(BigDecimal totalPrice, Integer quantity, LocalDate orderDate, Product product, Seller seller, Customer customer){
+    public Order(BigDecimal totalPrice, BigDecimal unitPrice, Integer quantity, LocalDate orderDate, Product product, Seller seller, Customer customer){
         this.totalPrice = totalPrice;
+        this.unitPrice = unitPrice;
         this.quantity = quantity;
         this.orderDate = orderDate;
         this.product = product;

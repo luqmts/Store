@@ -1,5 +1,6 @@
 package com.luq.store.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.luq.store.domain.*;
 import com.luq.store.domain.Customer;
 import com.luq.store.dto.request.order.OrderRegisterDTO;
@@ -85,26 +86,26 @@ public class OrderServiceTest {
         );
 
         fakeOrder1Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
+            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00),2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
         fakeOrder2Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(600.00), 4, LocalDate.now().plusDays(5),
+            1, BigDecimal.valueOf(600.00), BigDecimal.valueOf(150.00), 4, LocalDate.now().plusDays(5),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
 
         fakeOrderRegister = new OrderRegisterDTO(
-            BigDecimal.valueOf(400.00), 2, LocalDate.now(), fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
+            BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(), fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
         );
 
         fakeOrderUpdate = new OrderUpdateDTO(
-            1, BigDecimal.valueOf(600.00), 4, LocalDate.now().plusDays(5), fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
+            1, BigDecimal.valueOf(600.00), BigDecimal.valueOf(150.00), 4, LocalDate.now().plusDays(5), fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
         );
     }
     
     @Test
     @DisplayName("Test if Order is being registered correctly")
-    public void testRegisterOrder(){
+    public void testRegisterOrder() throws JsonProcessingException {
         when(oRepository.save(oMapper.toEntity(fakeOrderRegister))).thenReturn(oMapper.toEntity(fakeOrderRegister));
         result = oService.register(fakeOrderRegister);
 
@@ -118,7 +119,7 @@ public class OrderServiceTest {
 
     @Test
     @DisplayName("Test if Order is being updated correctly")
-    public void testUpdateOrder(){
+    public void testUpdateOrder() throws JsonProcessingException {
         oService.register(fakeOrderRegister);
         result = oService.update(fakeOrder1Response.id(), fakeOrderUpdate);
 
@@ -131,7 +132,7 @@ public class OrderServiceTest {
 
     @Test
     @DisplayName("Test if Order is being deleted correctly")
-    public void testDeleteOrder(){
+    public void testDeleteOrder() throws JsonProcessingException {
         oService.register(fakeOrderRegister);
 
         oService.delete(fakeOrder1Response.id());
@@ -141,7 +142,7 @@ public class OrderServiceTest {
 
     @Test
     @DisplayName("Test if all Orders registered are being returned on method getAll()")
-    public void testGetAllOrders(){
+    public void testGetAllOrders() throws JsonProcessingException {
         oService.register(fakeOrderRegister);
         oService.register(fakeOrderRegister);
         assertEquals(2, oService.getAll().size());
@@ -150,7 +151,7 @@ public class OrderServiceTest {
 
     @Test
     @DisplayName("Test if Order is being returned by id on method getById()")
-    public void testGetOrderById(){
+    public void testGetOrderById() throws JsonProcessingException {
         oService.register(fakeOrderRegister);
         result = oService.getById(1);
         assertAll(

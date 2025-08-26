@@ -73,10 +73,10 @@ public class OrderRepositoryTest {
         ));
 
         fakeOrder1 = oRepository.save(new Order(
-            BigDecimal.valueOf(400.00F), 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1
+            BigDecimal.valueOf(400.00F), BigDecimal.valueOf(80.00F), 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1
         ));
         fakeOrder2 = oRepository.save(new Order(
-            BigDecimal.valueOf(800.00F), 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2
+            BigDecimal.valueOf(800.00F), BigDecimal.valueOf(100.00F), 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2
         ));
     }
 

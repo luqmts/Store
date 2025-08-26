@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 public record OrderUpdateDTO(
     Integer id,
+    BigDecimal unitPrice,
     BigDecimal totalPrice,
     Integer quantity,
     LocalDate orderDate,

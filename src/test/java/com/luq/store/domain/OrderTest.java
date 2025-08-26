@@ -59,7 +59,7 @@ public class OrderTest {
         );
 
         fakeOrder = new Order(
-            1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
+            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(400.00), 2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
     }

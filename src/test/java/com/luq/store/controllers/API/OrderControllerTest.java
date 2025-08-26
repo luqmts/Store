@@ -93,20 +93,20 @@ public class OrderControllerTest {
         );
 
         fakeOrder1Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(400.00), 2, LocalDate.now(),
+            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
         fakeOrder2Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(600.00), 4, LocalDate.now().plusDays(5),
+            1, BigDecimal.valueOf(600.00), BigDecimal.valueOf(150.00), 4, LocalDate.now().plusDays(5),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
 
         fakeOrderRegister = new OrderRegisterDTO(
-            BigDecimal.valueOf(400.00), 2, LocalDate.now(), fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
+            BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(), fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
         );
 
         fakeOrderUpdate = new OrderUpdateDTO(
-            1, BigDecimal.valueOf(600.00), 4, LocalDate.now().plusDays(5), fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
+            1, BigDecimal.valueOf(600.00), BigDecimal.valueOf(150.00), 4, LocalDate.now().plusDays(5), fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
         );
     }
 

@@ -103,6 +103,7 @@ public class OrderMapper {
     public Order toEntity(OrderResponseDTO data) {
         return new Order(
             data.id(),
+            data.unitPrice(),
             data.totalPrice(),
             data.quantity(),
             data.orderDate(),
@@ -119,6 +120,7 @@ public class OrderMapper {
     public OrderResponseDTO toDTO(Order order) {
         return new OrderResponseDTO(
             order.getId(),
+            order.getUnitPrice(),
             order.getTotalPrice(),
             order.getQuantity(),
             order.getOrderDate(),

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 public record OrderResponseDTO(
     Integer id,
+    BigDecimal unitPrice,
     BigDecimal totalPrice,
     Integer quantity,
     LocalDate orderDate,
