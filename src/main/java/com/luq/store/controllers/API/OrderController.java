@@ -1,5 +1,6 @@
 package com.luq.store.controllers.API;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.luq.store.dto.request.order.OrderRegisterDTO;
 import com.luq.store.dto.request.order.OrderUpdateDTO;
 import com.luq.store.dto.response.order.OrderResponseDTO;
@@ -28,7 +29,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderResponseDTO registerOrder(@RequestBody OrderRegisterDTO data){
+    public OrderResponseDTO registerOrder(@RequestBody OrderRegisterDTO data) throws JsonProcessingException {
         return oService.register(data);
     }
 

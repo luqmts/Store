@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.luq.store.domain.Supply;
 import com.luq.store.dto.request.customer.CustomerUpdateDTO;
 import com.luq.store.dto.request.order.OrderRegisterDTO;
@@ -121,6 +122,8 @@ public class OrderWebController {
             model.addAttribute("supplyError", e.getMessage());
 
             return "order-form";
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
