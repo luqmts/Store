@@ -1,5 +1,4 @@
-package
- com.luq.store.domain;
+package com.luq.store.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
