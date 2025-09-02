@@ -85,12 +85,12 @@ public class ProductService {
     }
 
     public ProductResponseDTO update(int id, ProductUpdateDTO data) {
-        if (data.price().compareTo(BigDecimal.valueOf(1)) < 0)
-            throw new InvalidProductPriceException("Product's price must be greater or equal than 1");
-
         Product product = pRepository.findById(id).orElse(null);
-
         if (product == null) throw new NotFoundException("Product not found");
+
+        if (data.price().compareTo(BigDecimal.valueOf(1)) < 0) {
+            throw new InvalidProductPriceException("Product's price must be greater or equal than 1");
+        }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

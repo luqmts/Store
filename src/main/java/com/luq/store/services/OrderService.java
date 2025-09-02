@@ -1,20 +1,29 @@
 package com.luq.store.services;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.luq.store.domain.*;
 import com.luq.store.dto.request.order.OrderRegisterDTO;
 import com.luq.store.dto.request.order.OrderUpdateDTO;
 import com.luq.store.dto.request.payment.PaymentRequestDTO;
 import com.luq.store.dto.response.order.OrderResponseDTO;
+import com.luq.store.dto.response.payment.PaymentStatusDTO;
 import com.luq.store.exceptions.InvalidQuantityException;
 import com.luq.store.exceptions.NotFoundException;
 import com.luq.store.mapper.*;
+import com.luq.store.repositories.ProductRepository;
 import com.luq.store.repositories.SupplyRepository;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -54,16 +63,18 @@ public class OrderService {
     private SupplyService supplyService;
     @Autowired
     private SellerService sellerService;
+    @Autowired
+    private ProductRepository pRepository;
 
     public List<OrderResponseDTO> getAll() {
         return oMapper.toDTOList(oRepository.findAll());
     }
 
-    public List<OrderResponseDTO> getAllSorted(String sortBy, String direction, Integer productId, Integer sellerId, Integer customerId) {
+    public List<OrderResponseDTO> getAllSorted(String sortBy, String direction, String status, Integer productId, Integer sellerId, Integer customerId) {
         Sort sort = direction.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        if (productId != null || sellerId != null || customerId != null)
-            return oMapper.toDTOList(oRepository.findByProductSellerCustomer(sort, productId, sellerId, customerId));
+        if (productId != null || sellerId != null || customerId != null || status != null)
+            return oMapper.toDTOList(oRepository.findByStatusProductSellerCustomer(sort, OrderStatus.getOrderStatus(status), productId, sellerId, customerId));
 
         return oMapper.toDTOList(oRepository.findAll(sort));
     }
@@ -74,10 +85,12 @@ public class OrderService {
         return oMapper.toDTO(order);
     }
 
-    public OrderResponseDTO register(OrderRegisterDTO data) throws JsonProcessingException {
+    public OrderResponseDTO register(OrderRegisterDTO data) throws JsonProcessingException, URISyntaxException {
         Supply supply = supplyMapper.toEntity(supplyService.getByProductId(data.product_id()));
-
         if (supply.getId() == null) throw new NotFoundException("Supply not found for this product");
+
+        Product product = pRepository.findById(data.product_id()).orElse(null);
+        if (product == null) throw new NotFoundException("Product not found");
 
         if (data.quantity().compareTo(supply.getQuantity()) > 0)
             throw new InvalidQuantityException("A quantity greater that actually have in supply was inserted, please change it");
@@ -85,11 +98,7 @@ public class OrderService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Order order = oMapper.toEntity(data);
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        PaymentRequestDTO paymentDTO = new PaymentRequestDTO(data.unitPrice(), data.quantity(), supply.getProduct().getName());
-        String message = mapper.writeValueAsString(paymentDTO);
-
+        order.setStatus(OrderStatus.PENDING_PAYMENT);
         order.setModifiedBy(authentication.getName());
         order.setModified(LocalDateTime.now());
         order.setCreatedBy(authentication.getName());
@@ -100,16 +109,51 @@ public class OrderService {
         supply.setModified(LocalDateTime.now());
         supply.setModifiedBy(authentication.getName());
 
-        kafkaTemplate.send("payment-topic", message);
         order = oRepository.save(order);
         sRepository.save(supply);
+        setCheckoutUrl(order);
+
         return oMapper.toDTO(order);
+    }
+
+    public void setCheckoutUrl(Order order) throws URISyntaxException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        PaymentRequestDTO paymentDTO = new PaymentRequestDTO(
+            order.getId(),
+            order.getProduct().getPrice(),
+            order.getQuantity(),
+            order.getProduct().getName()
+        );
+        String payment_info = mapper.writeValueAsString(paymentDTO);
+
+        try{
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI("http://localhost:8081/api/payments/create-checkout"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(payment_info))
+                .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            JSONObject responseJson = new JSONObject(response.body());
+
+            String checkoutUrl = responseJson.getString("checkoutUrl");
+
+            if (checkoutUrl != null) {
+                order.setCheckoutUrl(checkoutUrl);
+                oRepository.save(order);
+            }
+        } catch (URISyntaxException | IOException | InterruptedException ex) {
+            System.out.println(ex);
+        }
     }
 
     public OrderResponseDTO update(int id, OrderUpdateDTO data) {
         Order order = oRepository.findById(id).orElse(null);
-
         if (order == null) throw new NotFoundException("Order not found");
+
+        Product product = pRepository.findById(data.product_id()).orElse(null);
+        if (product == null) throw new NotFoundException("Product not found");
 
         Supply supply = sRepository.getByProductId(order.getProduct().getId());
 
@@ -118,7 +162,8 @@ public class OrderService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        order.setTotalPrice(data.totalPrice());
+        order.setUnitPrice(product.getPrice());
+        order.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(data.quantity())));
         order.setQuantity(data.quantity());
         order.setOrderDate(data.orderDate());
         order.setProduct(pMapper.toEntity(pService.getById(data.product_id())));
@@ -140,5 +185,18 @@ public class OrderService {
 
     public void delete(int id) {
         oRepository.deleteById(id);
+    }
+
+    public void updateStatus(PaymentStatusDTO data) {
+        Order order = oRepository.findById(data.orderId()).orElse(null);
+
+        if (order == null) throw new NotFoundException("Order not found");
+
+        order.setStatus(data.status());
+        order.setModifiedBy("STRIPE_WEBHOOK");
+        order.setModified(LocalDateTime.now());
+
+        System.out.println("order " + order.getId() + " updated. new status: " + order.getStatus());
+        oRepository.save(order);
     }
 }
