@@ -34,6 +34,7 @@ public class Seller implements Identifiable{
     @Column(name="Phone", length = 11)
     private Phone phone;
     @Column(name="Department", length = 25)
+    @Enumerated(EnumType.STRING)
     private Department department;
 
     private String createdBy;
