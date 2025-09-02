@@ -24,6 +24,7 @@ public class OrderCSVExportController {
     public void exportToCsv(
         HttpServletResponse response,
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
+        @RequestParam(name="status", required=false, defaultValue="asc") String status,
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
         @RequestParam(name="product.id", required=false) Integer productId,
         @RequestParam(name="seller.id", required=false) Integer sellerId,
@@ -36,7 +37,7 @@ public class OrderCSVExportController {
         try (PrintWriter writer = response.getWriter()) {
             writer.println("id,product,seller,customer,orderDate,quantity,totalPrice,created,created_by,modified,modified_by");
 
-            List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, productId, sellerId, customerId);
+            List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, status, productId, sellerId, customerId);
 
             oList
                 .stream()

@@ -1,10 +1,13 @@
 package com.luq.store.controllers.Web;
 
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.luq.store.domain.Department;
+import com.luq.store.domain.OrderStatus;
 import com.luq.store.domain.Supply;
 import com.luq.store.dto.request.customer.CustomerUpdateDTO;
 import com.luq.store.dto.request.order.OrderRegisterDTO;
@@ -55,11 +58,12 @@ public class OrderWebController {
     public ModelAndView orderList(
         @RequestParam(name="sortBy", required=false, defaultValue="orderDate") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="desc") String direction,
+        @RequestParam(name="status", required=false) String status,
         @RequestParam(name="product.id", required=false) Integer productId,
         @RequestParam(name="seller.id", required=false) Integer sellerId,
         @RequestParam(name="customer.id", required=false) Integer customerId
     ){
-        List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, productId, sellerId, customerId);
+        List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, status, productId, sellerId, customerId);
 
         ModelAndView mv = new ModelAndView("order-list");
         mv.addObject("orders", oList);
@@ -67,9 +71,11 @@ public class OrderWebController {
         mv.addObject("products", pService.getAll());
         mv.addObject("sellers", sellerService.getAll());
         mv.addObject("customers", cService.getAll());
+        mv.addObject("statuses", OrderStatus.values());
         mv.addObject("productId", productId);
         mv.addObject("sellerId", sellerId);
         mv.addObject("customerId", customerId);
+        mv.addObject("selectedStatus", status);
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
 
@@ -87,6 +93,7 @@ public class OrderWebController {
         mv.addObject("products", pService.getAllRegisteredOnSupply());
         mv.addObject("sellers", sellerService.getAll());
         mv.addObject("customers", cService.getAll());
+        mv.addObject("status", OrderStatus.values());
 
         return mv;
     }
@@ -103,7 +110,8 @@ public class OrderWebController {
         mv.addObject("products", pService.getAllRegisteredOnSupply(supply.id()));
         mv.addObject("sellers", sellerService.getAll());
         mv.addObject("customers", cService.getAll());
-        
+        mv.addObject("status", OrderStatus.values());
+
         return mv;
     }
 
@@ -122,7 +130,7 @@ public class OrderWebController {
             model.addAttribute("supplyError", e.getMessage());
 
             return "order-form";
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
@@ -136,7 +144,7 @@ public class OrderWebController {
             model.addAttribute("order", oMapper.toEntity(data));
             model.addAttribute("products", pService.getAllRegisteredOnSupply(data.product_id()));
             model.addAttribute("page", "order");
-            model.addAttribute("page", data.id());
+            model.addAttribute("page", id);
             model.addAttribute("sellers", sellerService.getAll());
             model.addAttribute("customers", cService.getAll());
             model.addAttribute("quantityError", e.getMessage());

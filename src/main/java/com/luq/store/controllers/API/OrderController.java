@@ -6,6 +6,7 @@ import com.luq.store.dto.request.order.OrderUpdateDTO;
 import com.luq.store.dto.response.order.OrderResponseDTO;
 import com.luq.store.services.OrderService;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderResponseDTO registerOrder(@RequestBody OrderRegisterDTO data) throws JsonProcessingException {
+    public OrderResponseDTO registerOrder(@RequestBody OrderRegisterDTO data) throws JsonProcessingException, URISyntaxException {
         return oService.register(data);
     }
 
