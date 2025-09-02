@@ -69,16 +69,15 @@ public class SellerService {
     }
 
     public SellerResponseDTO update(int id, SellerUpdateDTO data) {
+        Seller seller = sRepository.findById(id).orElse(null);
+        if (seller == null) throw new NotFoundException("Seller not found");
+
         List<IllegalArgumentException> errors = new ArrayList<>();
 
         if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
         if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
 
         if (!errors.isEmpty()) throw new MultipleValidationException(errors);
-
-        Seller seller = sRepository.findById(id).orElse(null);
-
-        if (seller == null) throw new NotFoundException("Seller not found");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

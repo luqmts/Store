@@ -66,6 +66,9 @@ public class SupplierService {
     }
 
     public SupplierResponseDTO update(int id, SupplierUpdateDTO data) {
+        Supplier supplier = sRepository.findById(id).orElse(null);
+        if (supplier == null) throw new NotFoundException("Supplier not found");
+
         List<IllegalArgumentException> errors = new ArrayList<>();
 
         if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
@@ -74,9 +77,6 @@ public class SupplierService {
 
         if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 
-        Supplier supplier = sRepository.findById(id).orElse(null);
-
-        if (supplier == null) throw new NotFoundException("Supplier not found");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
