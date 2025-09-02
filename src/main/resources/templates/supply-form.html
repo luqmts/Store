@@ -14,13 +14,12 @@
         <input type="hidden" name="createdBy" th:value="${supply.createdBy}">
         <div class="mb-3">
             <label for="inputProduct" class="form-label">Product</label>
-            <select name="product.id" class="form-control" id="inputProduct" required>
+            <select name="product_id" class="form-control" id="inputProduct" required>
                 <option value="" disabled selected>Select a Product</option>
                 <option
                     th:each="product: ${products}"
                     th:value="${product.id}"
                     th:text="${product.name}"
-                    th:attr="data-price=${product.price}"
                     th:selected="${supply.product != null} ? ${product.id} == ${supply.product.id} : false">
                 </option>
             </select>
