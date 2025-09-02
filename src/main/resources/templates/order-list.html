@@ -19,8 +19,8 @@
             <input type="hidden" name="direction" th:value="${direction}" />
             <div class="row align-items-end">
                 <div class="mb-3 col-2">
-                    <label for="productInput" class="form-label">Product</label>
-                    <select name="product.id" class="form-control" id="productInput">
+                    <label for="inputProduct" class="form-label">Product</label>
+                    <select name="product.id" class="form-control" id="inputProduct">
                         <option value="" disabled selected>Select a Product</option>
                         <option th:each="product: ${products}"
                                 th:value="${product.id}"
@@ -51,10 +51,21 @@
                         </option>
                     </select>
                 </div>
-                <div class="mb-3 col-3"></div>
+                <div class="mb-3 col-2">
+                    <label for="inputStatus" class="form-label">Status</label>
+                    <select name="status" class="form-control" id="inputStatus">
+                        <option value="" disabled selected>Select a Status</option>
+                        <option th:each="status: ${statuses}"
+                                th:value="${status.name()}"
+                                th:text="${status}"
+                                th:selected="${selectedStatus} == ${status.name()}">
+                        </option>
+                    </select>
+                </div>
+                <div class="mb-3 col-1"></div>
                 <div class="mb-3 col-1 d-flex justify-content-end">
                     <a
-                        th:href="@{/order/csv(sortBy=${sortBy},direction=${direction},product.id=${productId},seller.id=${sellerId},customer.id=${customerId})}"
+                        th:href="@{/order/csv(sortBy=${sortBy},direction=${direction},status=${selectedStatus},product.id=${productId},seller.id=${sellerId},customer.id=${customerId})}"
                         type="submit" class="btn btn-outline-dark w-30"><i class="bi bi-filetype-csv"></i></a>
                 </div>
                 <div class="mb-3 col-1 d-flex justify-content-end">
@@ -108,6 +119,7 @@
                         <span th:text="${sortBy == 'quantity' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
                 </th>
+                <th scope="col">Unit Price</th>
                 <th scope="col">
                     <a th:href="@{/order/list(
                         sortBy='totalPrice', 
@@ -118,6 +130,18 @@
                     )}">
                         Total Sold
                         <span th:text="${sortBy == 'totalPrice' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
+                </th>
+                <th scope="col">
+                    <a th:href="@{/order/list(
+                        sortBy='status',
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        productId=${productId},
+                        sellerId=${sellerId},
+                        customerId=${customerId}
+                    )}">
+                        Status
+                        <span th:text="${sortBy == 'status' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
                 </th>
                 <th scope="col">Actions</th>
@@ -131,8 +155,15 @@
                 <td data-th-text="${order.seller}"></td>
                 <td data-th-text="${order.customer}"></td>
                 <td data-th-text="${order.quantity}"></td>
+                <td data-th-text="${order.unitPrice}"></td>
                 <td data-th-text="${order.totalPrice}"></td>
+                <td data-th-text="${order.status}"></td>
                 <td>
+                    <a
+                        th:href="${order.checkoutUrl}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    ><i th:if="${order.status.name() == 'PENDING_PAYMENT' && order.checkoutUrl != null}" class="bi bi-wallet"></i></a>
                     <a th:href="@{/order/form/{id}(id=${order.id})}"><i class="bi bi-pencil"></i></a>
                     <a th:href="@{/order/delete/{id}(id=${order.id})}"><i class="bi bi-trash3"></i></a>
                 </td>

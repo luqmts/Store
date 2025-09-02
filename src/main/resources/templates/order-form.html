@@ -9,12 +9,20 @@
     <div th:replace="~{fragments :: navbar}"></div>
 
     <form method="POST" th:action="@{/order/form}" th:object="${order}">
-        <input type="hidden" name="id" th:value="${order.id}">
-        <input type="hidden" name="created" th:value="${order.created}">
-        <input type="hidden" name="createdBy" th:value="${order.createdBy}">
+        <div class="mb-3" th:unless="${order.id == null}">
+            <label for="inputStatus" class="form-label">Status</label>
+            <select name="status" class="form-control" id="inputStatus" disabled>
+                <option th:each="status: ${status}"
+                        th:value="${status}"
+                        th:text="${status}"
+                        th:selected="${order.status} == ${status}">
+                </option>
+            </select>
+        </div>
+        <input type="hidden" name="id" th:value="${id}">
         <div class="mb-3">
             <label for="inputProduct" class="form-label">Product</label>
-            <select name="product.id" class="form-control" id="inputProduct" required>
+            <select name="product_id" class="form-control" id="inputProduct" required>
                 <option value="" disabled selected>Select a Product</option>
                 <option 
                     th:each="product: ${products}"
@@ -26,10 +34,15 @@
             </select>
             <div id="productHelp" class="form-text">Select a Product.</div>
         </div>
-
+        <div class="mb-3">
+            <label for="inputUnitPrice" class="form-label">Unit price</label>
+            <input class="form-control"
+               name="unitPrice" id="inputUnitPrice" type="number" placeholder="Readonly input here…" aria-describedby="unitPriceHelp" readonly required>
+            <div id="unitPriceHelp" class="form-text">Fillable with unit price for this product.</div>
+        </div>
         <div class="mb-3">
             <label for="inputSeller" class="form-label">Seller</label>
-            <select id="inputSeller" name="seller.id" class="form-control" required>
+            <select name="seller_id" id="inputSeller" class="form-control" required>
                 <option value="" disabled selected>Select a Seller</option>
                 <option 
                     th:each="seller: ${sellers}"
@@ -49,7 +62,7 @@
 
         <div class="mb-3">
             <label for="inputCustomer" class="form-label">Customer</label>
-            <select name="customer.id" class="form-control" id="inputCustomer" required>
+            <select name="customer_id" class="form-control" id="inputCustomer" required>
                 <option value="" disabled selected>Select a Customer</option>
                 <option 
                     th:each="customer: ${customers}"
@@ -69,9 +82,9 @@
         </div>
 
         <div class="mb-3">
-            <label for="inputTotalSold" class="form-label">Total sold</label>
-            <input class="form-control" name="totalPrice" id="inputTotalSold" type="number" placeholder="Readonly input here…" aria-describedby="totalSoldHelp" readonly required>
-            <div id="totalSoldHelp" class="form-text">Fillable with total sold for this product.</div>
+            <label for="inputTotalPrice" class="form-label">Total price</label>
+            <input class="form-control" name="totalPrice" id="inputTotalPrice" type="number" placeholder="Readonly input here…" aria-describedby="totalPriceHelp" readonly required>
+            <div id="totalPriceHelp" class="form-text">Fillable with total price for this product multiplied by quantity.</div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -80,13 +93,16 @@
         document.addEventListener('DOMContentLoaded', function() {
             const productSelect = document.getElementById('inputProduct');
             const quantityInput = document.getElementById('inputQuantity');
-            const totalSoldInput = document.getElementById('inputTotalSold');
+            const unitPriceInput = document.getElementById('inputUnitPrice');
+            const totalPriceInput = document.getElementById('inputTotalPrice');
 
             function updateTotal() {
                 const selectedOption = productSelect.options[productSelect.selectedIndex];
                 const price = parseFloat(selectedOption.getAttribute('data-price')) || 0;
                 const quantity = parseInt(quantityInput.value) || 0;
-                totalSoldInput.value = (price * quantity).toFixed(2);
+
+                unitPriceInput.value = price.toFixed(2);
+                totalPriceInput.value = (price * quantity).toFixed(2);
             }
 
             productSelect.addEventListener('change', updateTotal);
