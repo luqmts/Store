@@ -14,6 +14,7 @@ import com.luq.store.services.SellerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -56,7 +57,8 @@ public class OrderMapper {
         }
 
         Order order = new Order();
-        order.setTotalPrice(data.totalPrice());
+        order.setUnitPrice(product.getPrice());
+        order.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(data.quantity())));
         order.setQuantity(data.quantity());
         order.setOrderDate(data.orderDate());
         order.setProduct(product);
@@ -90,7 +92,8 @@ public class OrderMapper {
         }
 
         Order order = new Order();
-        order.setTotalPrice(data.totalPrice());
+        order.setUnitPrice(product.getPrice());
+        order.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(data.quantity())));
         order.setQuantity(data.quantity());
         order.setOrderDate(data.orderDate());
         order.setProduct(product);
@@ -105,8 +108,10 @@ public class OrderMapper {
             data.id(),
             data.unitPrice(),
             data.totalPrice(),
+            data.status(),
             data.quantity(),
             data.orderDate(),
+            data.checkoutUrl(),
             data.product(),
             data.seller(),
             data.customer(),
@@ -120,8 +125,10 @@ public class OrderMapper {
     public OrderResponseDTO toDTO(Order order) {
         return new OrderResponseDTO(
             order.getId(),
+            order.getCheckoutUrl(),
             order.getUnitPrice(),
             order.getTotalPrice(),
+            order.getStatus(),
             order.getQuantity(),
             order.getOrderDate(),
             order.getProduct(),
