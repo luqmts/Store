@@ -17,6 +17,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Order implements Identifiable{
+
     @Id
     @ToString.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,11 +29,16 @@ public class Order implements Identifiable{
     @Column(name="UnitPrice")
     @ToString.Include
     private BigDecimal unitPrice;
+    @Column(name="status")
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
     @Column(name="Quantity")
     @ToString.Include
     private Integer quantity;
     @Column(name="OrderDate")
     private LocalDate orderDate;
+    @Column(name="checkoutUrl", length = 2048)
+    private String checkoutUrl;
     
     @ManyToOne
     @JoinColumn(name="Product")
@@ -52,7 +58,8 @@ public class Order implements Identifiable{
     private String modifiedBy;
     private LocalDateTime modified;
 
-    public Order(BigDecimal totalPrice, BigDecimal unitPrice, Integer quantity, LocalDate orderDate, Product product, Seller seller, Customer customer){
+    public Order(BigDecimal totalPrice, BigDecimal unitPrice,OrderStatus status, Integer quantity, LocalDate orderDate, Product product, Seller seller, Customer customer){
+        this.status = status;
         this.totalPrice = totalPrice;
         this.unitPrice = unitPrice;
         this.quantity = quantity;

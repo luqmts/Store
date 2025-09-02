@@ -1,12 +1,11 @@
 package com.luq.store.dto.request.order;
 
-import java.math.BigDecimal;
+import com.luq.store.domain.OrderStatus;
+
 import java.time.LocalDate;
 
 public record OrderUpdateDTO(
-    Integer id,
-    BigDecimal unitPrice,
-    BigDecimal totalPrice,
+    OrderStatus status,
     Integer quantity,
     LocalDate orderDate,
     Integer product_id,
