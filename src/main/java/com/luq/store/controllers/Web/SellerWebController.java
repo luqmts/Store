@@ -1,10 +1,8 @@
 package com.luq.store.controllers.Web;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import com.luq.store.dto.request.customer.CustomerUpdateDTO;
 import com.luq.store.dto.request.seller.SellerRegisterDTO;
 import com.luq.store.dto.request.seller.SellerUpdateDTO;
 import com.luq.store.dto.response.seller.SellerResponseDTO;
@@ -13,8 +11,6 @@ import com.luq.store.exceptions.InvalidPhoneException;
 import com.luq.store.exceptions.MultipleValidationException;
 import com.luq.store.mapper.SellerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +36,7 @@ public class SellerWebController {
     public ModelAndView sellerList(
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
-        @RequestParam(name="department", required=false) String department,
+        @RequestParam(name="selectedDepartment", required=false) String selectedDepartment,
         @RequestParam(name="name", required=false) String name,
         @RequestParam(name="mail", required=false) String mail,
         @RequestParam(name="phone", required=false) String phone
@@ -49,7 +45,7 @@ public class SellerWebController {
         mail = (Objects.equals(mail, "")) ? null : mail;
         phone = (Objects.equals(phone, "")) ? null : phone;
 
-        List<SellerResponseDTO> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
+        List<SellerResponseDTO> sList = sService.getAllSorted(sortBy, direction, selectedDepartment, name, mail, phone);
         
         ModelAndView mv = new ModelAndView("seller-list");
         mv.addObject("page", "seller");
@@ -57,7 +53,7 @@ public class SellerWebController {
         mv.addObject("departments", Department.values());
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
-        mv.addObject("selectedDepartment", department);
+        mv.addObject("selectedDepartment", selectedDepartment);
         mv.addObject("name", name);
         mv.addObject("mail", mail);
         mv.addObject("phone", phone);

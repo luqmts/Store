@@ -43,12 +43,12 @@ public class AuthenticationWebController {
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
         @RequestParam(name="name", required=false) String name,
         @RequestParam(name="login", required=false) String login,
-        @RequestParam(name="role", required=false) String role
+        @RequestParam(name="selectedRole", required=false) String selectedRole
     ){
         name = (Objects.equals(name, "")) ? null : name;
         login = (Objects.equals(login, "")) ? null : login;
 
-        List<User> uList = uService.getAllSorted(sortBy, direction, name, login, role);
+        List<User> uList = uService.getAllSorted(sortBy, direction, name, login, selectedRole);
 
         ModelAndView mv = new ModelAndView("user-list");
         mv.addObject("page", "user");
@@ -56,7 +56,7 @@ public class AuthenticationWebController {
         mv.addObject("roles", UserRole.values());
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
-        mv.addObject("selectedRole", role);
+        mv.addObject("selectedRole", selectedRole);
         mv.addObject("name", name);
         mv.addObject("login", login);
 

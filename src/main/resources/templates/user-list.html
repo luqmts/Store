@@ -27,7 +27,7 @@
                 </div>
                 <div class="mb-3 col-2">
                     <label for="inputRole" class="form-label">Role</label>
-                    <select name="role" class="form-control" id="inputRole">
+                    <select name="selectedRole" class="form-control" id="inputRole">
                         <option value="" disabled selected>Select a Role</option>
                         <option th:each="role: ${roles}"
                                 th:value="${role.name()}"
@@ -50,25 +50,49 @@
         <thead>
             <tr>
                 <th scope="col">
-                    <a th:href="@{/user/list(sortBy='id', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    <a th:href="@{/user/list(
+                        sortBy='id',
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        selectedRole=${selectedRole},
+                        name=${name},
+                        login=${login}
+                    )}">
                         #
                         <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
                 </th>
                 <th scope="col">
-                    <a th:href="@{/user/list(sortBy='name', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    <a th:href="@{/user/list(
+                        sortBy='name',
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        selectedRole=${selectedRole},
+                        name=${name},
+                        login=${login}
+                    )}">
                         Name
                     <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                 </a>
                 </th>
                 <th scope="col">
-                    <a th:href="@{/user/list(sortBy='login', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    <a th:href="@{/user/list(
+                        sortBy='login',
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        selectedRole=${selectedRole},
+                        name=${name},
+                        login=${login}
+                    )}">
                         Login
                         <span th:text="${sortBy == 'login' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
                 </th>
                 <th scope="col">
-                    <a th:href="@{/user/list(sortBy='role', direction=${direction == 'asc' ? 'desc' : 'asc'})}">
+                    <a th:href="@{/user/list(
+                        sortBy='role',
+                        direction=${direction == 'asc' ? 'desc' : 'asc'},
+                        selectedRole=${selectedRole},
+                        name=${name},
+                        login=${login}
+                    )}">
                         Role
                         <span th:text="${sortBy == 'role' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>

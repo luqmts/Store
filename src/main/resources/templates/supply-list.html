@@ -20,7 +20,7 @@
             <div class="row align-items-end">
                 <div class="mb-3 col-2">
                     <label for="productInput" class="form-label">Product</label>
-                    <select name="product.id" class="form-control" id="productInput">
+                    <select name="productId" class="form-control" id="productInput">
                         <option value="" disabled selected>Select a Product</option>
                         <option th:each="product: ${products}"
                                 th:value="${product.id}"
@@ -32,7 +32,7 @@
                 <div class="mb-3 col-7"></div>
                 <div class="mb-3 col-1 d-flex justify-content-end">
                     <a
-                        th:href="@{/supply/csv(sortBy=${sortBy},direction=${direction},product.id=${productId})}"
+                        th:href="@{/supply/csv(sortBy=${sortBy},direction=${direction},productId=${productId})}"
                         type="submit" class="btn btn-outline-dark w-30"><i class="bi bi-filetype-csv"></i></a>
                 </div>
                 <div class="mb-3 col-1 d-flex justify-content-end">

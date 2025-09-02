@@ -60,7 +60,7 @@
                         cnpj=${cnpj},
                         mail=${mail},
                         phone=${phone}
-                        )}">
+                    )}">
                         #
                         <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
@@ -73,7 +73,7 @@
                         cnpj=${cnpj},
                         mail=${mail},
                         phone=${phone}
-                        )}">
+                    )}">
                         Name
                         <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
@@ -86,7 +86,7 @@
                         cnpj=${cnpj},
                         mail=${mail},
                         phone=${phone}
-                        )}">
+                    )}">
                         CNPJ
                         <span th:text="${sortBy == 'cnpj' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
@@ -99,7 +99,7 @@
                         cnpj=${cnpj},
                         mail=${mail},
                         phone=${phone}
-                        )}">
+                    )}">
                         Mail
                         <span th:text="${sortBy == 'mail' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
@@ -112,10 +112,10 @@
                         cnpj=${cnpj},
                         mail=${mail},
                         phone=${phone}
-                        )}">
-                    Phone
-                    <span th:text="${sortBy == 'phone' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
-                </a>
+                    )}">
+                        Phone
+                        <span th:text="${sortBy == 'phone' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
+                    </a>
                 </th>
             <th scope="col" sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
             </tr>

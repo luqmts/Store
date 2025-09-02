@@ -24,20 +24,20 @@ public class OrderCSVExportController {
     public void exportToCsv(
         HttpServletResponse response,
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
-        @RequestParam(name="status", required=false, defaultValue="asc") String status,
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
-        @RequestParam(name="product.id", required=false) Integer productId,
-        @RequestParam(name="seller.id", required=false) Integer sellerId,
-        @RequestParam(name="customer.id", required=false) Integer customerId
+        @RequestParam(name="selectedStatus", required=false, defaultValue="asc") String selectedStatus,
+        @RequestParam(name="productId", required=false) Integer productId,
+        @RequestParam(name="sellerId", required=false) Integer sellerId,
+        @RequestParam(name="customerId", required=false) Integer customerId
     ) throws IOException {
 
         response.setContentType("text/csv; charset=UTF-8");
         response.setHeader("Content-Disposition", "attachment; filename=\"orders.csv\"");
 
         try (PrintWriter writer = response.getWriter()) {
-            writer.println("id,product,seller,customer,orderDate,quantity,totalPrice,created,created_by,modified,modified_by");
+            writer.println("id,product,seller,customer,orderDate,quantity,unitPrice,totalPrice,status,created,created_by,modified,modified_by");
 
-            List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, status, productId, sellerId, customerId);
+            List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, selectedStatus, productId, sellerId, customerId);
 
             oList
                 .stream()
@@ -50,7 +50,9 @@ public class OrderCSVExportController {
                     escapeCsv(data.customer().getName()),
                     escapeCsv(data.orderDate().toString()),
                     data.quantity(),
+                    data.unitPrice(),
                     data.totalPrice(),
+                    data.status(),
                     escapeCsv(data.created().toString()),
                     escapeCsv(data.createdBy()),
                     escapeCsv(data.modified().toString()),

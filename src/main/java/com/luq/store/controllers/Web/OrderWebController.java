@@ -3,6 +3,7 @@ package com.luq.store.controllers.Web;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,12 +59,13 @@ public class OrderWebController {
     public ModelAndView orderList(
         @RequestParam(name="sortBy", required=false, defaultValue="orderDate") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="desc") String direction,
-        @RequestParam(name="status", required=false) String status,
-        @RequestParam(name="product.id", required=false) Integer productId,
-        @RequestParam(name="seller.id", required=false) Integer sellerId,
-        @RequestParam(name="customer.id", required=false) Integer customerId
+        @RequestParam(name="selectedStatus", required=false) String selectedStatus,
+        @RequestParam(name="productId", required=false) Integer productId,
+        @RequestParam(name="sellerId", required=false) Integer sellerId,
+        @RequestParam(name="customerId", required=false) Integer customerId
     ){
-        List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, status, productId, sellerId, customerId);
+        System.out.println("selectedStatus: " + selectedStatus);
+        List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, selectedStatus, productId, sellerId, customerId);
 
         ModelAndView mv = new ModelAndView("order-list");
         mv.addObject("orders", oList);
@@ -75,7 +77,7 @@ public class OrderWebController {
         mv.addObject("productId", productId);
         mv.addObject("sellerId", sellerId);
         mv.addObject("customerId", customerId);
-        mv.addObject("selectedStatus", status);
+        mv.addObject("selectedStatus", selectedStatus);
         mv.addObject("direction", direction);
         mv.addObject("sortBy", sortBy);
 

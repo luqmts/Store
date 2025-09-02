@@ -39,7 +39,7 @@ public class SupplyWebController {
     public ModelAndView supplyList(
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="desc") String direction,
-        @RequestParam(name="product.id", required=false) Integer productId
+        @RequestParam(name="productId", required=false) Integer productId
     ){
         List<SupplyResponseDTO> sList = sService.getAllSorted(sortBy, direction, productId);
 

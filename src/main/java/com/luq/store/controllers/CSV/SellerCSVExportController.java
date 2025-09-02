@@ -26,7 +26,7 @@ public class SellerCSVExportController {
         HttpServletResponse response,
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
-        @RequestParam(name="department", required=false) String department,
+        @RequestParam(name="selectedDepartment", required=false) String selectedDepartment,
         @RequestParam(name="name", required=false) String name,
         @RequestParam(name="mail", required=false) String mail,
         @RequestParam(name="phone", required=false) String phone
@@ -39,8 +39,8 @@ public class SellerCSVExportController {
         response.setHeader("Content-Disposition", "attachment; filename=\"sellers.csv\"");
 
         try (PrintWriter writer = response.getWriter()) {
-            writer.println("id,name,mail,phone,department,created,created_by,modified,modified_by");
-            List<SellerResponseDTO> sList = sService.getAllSorted(sortBy, direction, department, name, mail, phone);
+            writer.println("id,name,mail,phone,selectedDepartment,created,created_by,modified,modified_by");
+            List<SellerResponseDTO> sList = sService.getAllSorted(sortBy, direction, selectedDepartment, name, mail, phone);
 
             sList
                 .stream()

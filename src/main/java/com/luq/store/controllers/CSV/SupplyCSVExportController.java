@@ -25,7 +25,7 @@ public class SupplyCSVExportController {
         HttpServletResponse response,
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
-        @RequestParam(name="product.id", required=false) Integer productId
+        @RequestParam(name="productId", required=false) Integer productId
     ) throws IOException {
 
         response.setContentType("text/csv; charset=UTF-8");

@@ -45,7 +45,7 @@
                         sortBy='id', 
                         direction=${direction == 'asc' ? 'desc' : 'asc'},
                         name=${name}
-                        )}">
+                    )}">
                         #
                         <span th:text="${sortBy == 'id' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
@@ -55,7 +55,7 @@
                         sortBy='name', 
                         direction=${direction == 'asc' ? 'desc' : 'asc'},   
                         name=${name}
-                        )}">
+                    )}">
                         Name
                         <span th:text="${sortBy == 'name' ? (direction == 'asc' ? '↑' : '↓') : ''}"></span>
                     </a>
