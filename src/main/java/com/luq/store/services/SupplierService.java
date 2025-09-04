@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.luq.store.valueobjects.Cnpj;
+import com.luq.store.valueobjects.Mail;
+import com.luq.store.valueobjects.Phone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
@@ -77,13 +80,16 @@ public class SupplierService {
 
         if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 
+        Cnpj cnpj = new Cnpj(data.cnpj());
+        Mail mail = new Mail(data.mail());
+        Phone phone = new Phone(data.phone());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         supplier.setName(data.name());
-        supplier.setCnpj(data.cnpj());
-        supplier.setMail(data.mail());
-        supplier.setPhone(data.phone());
+        supplier.setCnpj(cnpj);
+        supplier.setMail(mail);
+        supplier.setPhone(phone);
 
         supplier.setModifiedBy(authentication.getName());
         supplier.setModified(LocalDateTime.now());

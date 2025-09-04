@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 public record SellerResponseDTO(
     Integer id,
     String name,
-    Mail mail,
-    Phone phone,
+    String mail,
+    String phone,
     Department department,
     String createdBy,
     LocalDateTime created,

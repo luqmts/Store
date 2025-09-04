@@ -6,7 +6,7 @@ import com.luq.store.valueobjects.Phone;
 
 public record SellerUpdateDTO(
     String name,
-    Mail mail,
-    Phone phone,
+    String mail,
+    String phone,
     Department department
 ){}

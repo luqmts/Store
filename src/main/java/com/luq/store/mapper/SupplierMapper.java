@@ -4,6 +4,9 @@ import com.luq.store.domain.Supplier;
 import com.luq.store.dto.request.supplier.SupplierRegisterDTO;
 import com.luq.store.dto.request.supplier.SupplierUpdateDTO;
 import com.luq.store.dto.response.supplier.SupplierResponseDTO;
+import com.luq.store.valueobjects.Cnpj;
+import com.luq.store.valueobjects.Mail;
+import com.luq.store.valueobjects.Phone;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,20 +15,28 @@ import java.util.List;
 public class SupplierMapper {
     public Supplier toEntity(SupplierRegisterDTO data) {
         Supplier supplier = new Supplier();
+        Cnpj cnpj = new Cnpj(data.cnpj());
+        Mail mail = new Mail(data.mail());
+        Phone phone = new Phone(data.phone());
+
         supplier.setName(data.name());
-        supplier.setCnpj(data.cnpj());
-        supplier.setMail(data.mail());
-        supplier.setPhone(data.phone());
+        supplier.setCnpj(cnpj);
+        supplier.setMail(mail);
+        supplier.setPhone(phone);
 
         return supplier;
     }
 
     public Supplier toEntity(SupplierUpdateDTO data) {
         Supplier supplier = new Supplier();
+        Cnpj cnpj = new Cnpj(data.cnpj());
+        Mail mail = new Mail(data.mail());
+        Phone phone = new Phone(data.phone());
+
         supplier.setName(data.name());
-        supplier.setCnpj(data.cnpj());
-        supplier.setMail(data.mail());
-        supplier.setPhone(data.phone());
+        supplier.setCnpj(cnpj);
+        supplier.setMail(mail);
+        supplier.setPhone(phone);
 
         return supplier;
     }
@@ -34,9 +45,9 @@ public class SupplierMapper {
         return new Supplier(
             data.id(),
             data.name(),
-            data.cnpj(),
-            data.mail(),
-            data.phone(),
+            new Cnpj(data.cnpj()),
+            new Mail(data.mail()),
+            new Phone(data.phone()),
             data.createdBy(),
             data.created(),
             data.modifiedBy(),
@@ -48,9 +59,9 @@ public class SupplierMapper {
         return new SupplierResponseDTO(
             supplier.getId(),
             supplier.getName(),
-            supplier.getCnpj(),
-            supplier.getMail(),
-            supplier.getPhone(),
+            supplier.getCnpj().toString(),
+            supplier.getMail().toString(),
+            supplier.getPhone().toString(),
             supplier.getCreatedBy(),
             supplier.getCreated(),
             supplier.getModifiedBy(),

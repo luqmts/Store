@@ -12,6 +12,8 @@ import com.luq.store.exceptions.InvalidPhoneException;
 import com.luq.store.exceptions.MultipleValidationException;
 import com.luq.store.exceptions.NotFoundException;
 import com.luq.store.mapper.SellerMapper;
+import com.luq.store.valueobjects.Mail;
+import com.luq.store.valueobjects.Phone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
@@ -78,12 +80,14 @@ public class SellerService {
         if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
 
         if (!errors.isEmpty()) throw new MultipleValidationException(errors);
+        Mail mail = new Mail(data.mail());
+        Phone phone = new Phone(data.phone());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         seller.setName(data.name());
-        seller.setMail(data.mail());
-        seller.setPhone(data.phone());
+        seller.setMail(mail);
+        seller.setPhone(phone);
         seller.setDepartment(data.department());
 
         seller.setModifiedBy(authentication.getName());

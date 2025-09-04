@@ -74,7 +74,6 @@ public class SupplyService {
 
     public SupplyResponseDTO update(int id, SupplyUpdateDTO data) {
         Supply supply = sRepository.findById(id).orElse(null);
-
         if (supply == null) throw new NotFoundException("Supply not found");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

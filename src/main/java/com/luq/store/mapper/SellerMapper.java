@@ -4,6 +4,8 @@ import com.luq.store.domain.Seller;
 import com.luq.store.dto.request.seller.SellerRegisterDTO;
 import com.luq.store.dto.request.seller.SellerUpdateDTO;
 import com.luq.store.dto.response.seller.SellerResponseDTO;
+import com.luq.store.valueobjects.Mail;
+import com.luq.store.valueobjects.Phone;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,9 +14,12 @@ import java.util.List;
 public class SellerMapper {
     public Seller toEntity(SellerRegisterDTO data) {
         Seller seller = new Seller();
+        Mail mail = new Mail(data.mail());
+        Phone phone = new Phone(data.phone());
+
         seller.setName(data.name());
-        seller.setMail(data.mail());
-        seller.setPhone(data.phone());
+        seller.setMail(mail);
+        seller.setPhone(phone);
         seller.setDepartment(data.department());
 
         return seller;
@@ -22,20 +27,26 @@ public class SellerMapper {
 
     public Seller toEntity(SellerUpdateDTO data) {
         Seller seller = new Seller();
+        Mail mail = new Mail(data.mail());
+        Phone phone = new Phone(data.phone());
+
         seller.setName(data.name());
-        seller.setMail(data.mail());
-        seller.setPhone(data.phone());
+        seller.setMail(mail);
+        seller.setPhone(phone);
         seller.setDepartment(data.department());
 
         return seller;
     }
 
     public Seller toEntity(SellerResponseDTO data) {
+        Mail mail = new Mail(data.mail());
+        Phone phone = new Phone(data.phone());
+
         return new Seller(
             data.id(),
             data.name(),
-            data.mail(),
-            data.phone(),
+            mail,
+            phone,
             data.department(),
             data.createdBy(),
             data.created(),
@@ -48,8 +59,8 @@ public class SellerMapper {
         return new SellerResponseDTO(
             seller.getId(),
             seller.getName(),
-            seller.getMail(),
-            seller.getPhone(),
+            seller.getMail().toString(),
+            seller.getPhone().toString(),
             seller.getDepartment(),
             seller.getCreatedBy(),
             seller.getCreated(),
