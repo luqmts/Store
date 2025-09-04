@@ -89,8 +89,14 @@ public class OrderCSVControllerTest {
             new Phone("11904040404"), Department.FOOD
         ));
 
-        fakeOrder1 = new Order(BigDecimal.valueOf(400.00), BigDecimal.valueOf(80.00), 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1);
-        fakeOrder2 = new Order(BigDecimal.valueOf(800.00), BigDecimal.valueOf(100.00), 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2);
+        fakeOrder1 = new Order(
+            BigDecimal.valueOf(400.00), BigDecimal.valueOf(80.00), OrderStatus.PENDING_PAYMENT, 5,
+            LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1
+        );
+        fakeOrder2 = new Order(
+            BigDecimal.valueOf(800.00), BigDecimal.valueOf(100.00), OrderStatus.PENDING_PAYMENT, 8,
+            LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2
+        );
         fakeOrder1.setCreated(now);
         fakeOrder1.setCreatedBy(user);
         fakeOrder1.setModified(now);
@@ -107,16 +113,18 @@ public class OrderCSVControllerTest {
     @WithMockUser
     @DisplayName("Testing if csv is being exported correctly with only one Order")
     public void testExportOneOrderToCsvMethod() throws Exception {
-        String csvHeader = "id,product,seller,customer,orderDate,quantity,totalPrice,created,created_by,modified,modified_by\n";
+        String csvHeader = "id,product,seller,customer,orderDate,quantity,unitPrice,totalPrice,status,created,created_by,modified,modified_by\n";
         String row = csvHeader.concat(String.format(Locale.ROOT,
-            "%d,%s,%s,%s,%s,%d,%.2f,%s,%s,%s,%s\n",
+            "%d,%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s\n",
             this.fakeOrder1.getId(),
             escapeCsv(this.fakeOrder1.getProduct().getName()),
             escapeCsv(this.fakeOrder1.getSeller().getName()),
             escapeCsv(this.fakeOrder1.getCustomer().getName()),
             escapeCsv(this.fakeOrder1.getOrderDate().toString()),
             this.fakeOrder1.getQuantity(),
+            this.fakeOrder1.getUnitPrice(),
             this.fakeOrder1.getTotalPrice(),
+            this.fakeOrder1.getStatus(),
             escapeCsv(this.fakeOrder1.getCreated().toString()),
             escapeCsv(this.fakeOrder1.getCreatedBy()),
             escapeCsv(this.fakeOrder1.getModified().toString()),
@@ -127,7 +135,7 @@ public class OrderCSVControllerTest {
             get("/order/csv")
                 .param("sortBy", "id")
                 .param("direction", "asc")
-                .param("product.id", "1")
+                .param("productId", "1")
         ).andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"orders.csv\""))
         .andExpect(content().contentType("text/csv;charset=UTF-8"))
@@ -138,29 +146,33 @@ public class OrderCSVControllerTest {
     @WithMockUser
     @DisplayName("Testing if csv is being exported correctly with multiples Orders")
     public void testExportMultipleOrdersToCsvMethod() throws Exception {
-        String csvHeader = "id,product,seller,customer,orderDate,quantity,totalPrice,created,created_by,modified,modified_by\n";
+        String csvHeader = "id,product,seller,customer,orderDate,quantity,unitPrice,totalPrice,status,created,created_by,modified,modified_by\n";
         String row = csvHeader + String.format(Locale.ROOT,
-            "%d,%s,%s,%s,%s,%d,%.2f,%s,%s,%s,%s\n",
+            "%d,%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s\n",
             this.fakeOrder1.getId(),
             escapeCsv(this.fakeOrder1.getProduct().getName()),
             escapeCsv(this.fakeOrder1.getSeller().getName()),
             escapeCsv(this.fakeOrder1.getCustomer().getName()),
             escapeCsv(this.fakeOrder1.getOrderDate().toString()),
             this.fakeOrder1.getQuantity(),
+            this.fakeOrder1.getUnitPrice(),
             this.fakeOrder1.getTotalPrice(),
+            this.fakeOrder1.getStatus(),
             escapeCsv(this.fakeOrder1.getCreated().toString()),
             escapeCsv(this.fakeOrder1.getCreatedBy()),
             escapeCsv(this.fakeOrder1.getModified().toString()),
             escapeCsv(this.fakeOrder1.getModifiedBy())
         ) + String.format(Locale.ROOT,
-            "%d,%s,%s,%s,%s,%d,%.2f,%s,%s,%s,%s\n",
+            "%d,%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s\n",
             this.fakeOrder2.getId(),
             escapeCsv(this.fakeOrder2.getProduct().getName()),
             escapeCsv(this.fakeOrder2.getSeller().getName()),
             escapeCsv(this.fakeOrder2.getCustomer().getName()),
             escapeCsv(this.fakeOrder2.getOrderDate().toString()),
             this.fakeOrder2.getQuantity(),
+            this.fakeOrder2.getUnitPrice(),
             this.fakeOrder2.getTotalPrice(),
+            this.fakeOrder2.getStatus(),
             escapeCsv(this.fakeOrder2.getCreated().toString()),
             escapeCsv(this.fakeOrder2.getCreatedBy()),
             escapeCsv(this.fakeOrder2.getModified().toString()),
@@ -181,13 +193,13 @@ public class OrderCSVControllerTest {
     @WithMockUser
     @DisplayName("Testing if csv is being exported correctly with no Orders")
     public void testExportNoOrdersToCsvMethod() throws Exception {
-        String row = "id,product,seller,customer,orderDate,quantity,totalPrice,created,created_by,modified,modified_by\n";
+        String row = "id,product,seller,customer,orderDate,quantity,unitPrice,totalPrice,status,created,created_by,modified,modified_by\n";
 
         mockMvc.perform(
             get("/order/csv")
                 .param("sortBy", "id")
                 .param("direction", "asc")
-                .param("product.id", "1000")
+                .param("productId", "1000")
         ).andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"orders.csv\""))
         .andExpect(content().contentType("text/csv;charset=UTF-8"))
