@@ -96,13 +96,13 @@ public class ProductControllerTest {
     @DisplayName("Testing if correct product's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
         when(pService.getAll()).thenReturn(List.of(fakeProduct1Response));
-        String productJson = objectMapper.writeValueAsString(fakeProduct1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeProduct1Response);
 
         mockMvc.perform(get("/api/product"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
-            .andExpect(content().json("[" + productJson + "]"));
+            .andExpect(content().json("[" + responseJson + "]"));
 
         verify(pService, times(1)).getAll();
     }
@@ -112,12 +112,12 @@ public class ProductControllerTest {
     @DisplayName("Testing if correct product's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
         when(pService.getById(1)).thenReturn(fakeProduct1Response);
-        String productJson = objectMapper.writeValueAsString(fakeProduct1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeProduct1Response);
 
         mockMvc.perform(get("/api/product/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json(productJson));
+                .andExpect(content().json(responseJson));
 
         verify(pService, times(1)).getById(1);
     }
@@ -127,15 +127,16 @@ public class ProductControllerTest {
     @DisplayName("Testing if registering a new Product with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
         when(pService.register(fakeProductRegister)).thenReturn(fakeProduct1Response);
-        String productJson = objectMapper.writeValueAsString(fakeProduct1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeProductRegister);
+        String responseJson = objectMapper.writeValueAsString(fakeProduct1Response);
 
         mockMvc.perform(
             post("/api/product")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(productJson)
+                .content(registerJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(productJson));
+            .andExpect(content().json(responseJson));
 
 
         verify(pService, times(1)).register(fakeProductRegister);
@@ -146,12 +147,12 @@ public class ProductControllerTest {
     @DisplayName("Testing if registering a new Product with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
         when(pService.register(fakeProductRegister)).thenReturn(fakeProduct1Response);
-        String productJson = objectMapper.writeValueAsString(fakeProduct1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeProductRegister);
 
         mockMvc.perform(
             post("/api/product")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(productJson)
+                .content(registerJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(pService);
@@ -162,15 +163,16 @@ public class ProductControllerTest {
     @DisplayName("Testing if updating a Product with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
         when(pService.update(1, fakeProductUpdate)).thenReturn(fakeProduct2Response);
-        String productJson = objectMapper.writeValueAsString(fakeProduct2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeProductUpdate);
+        String responseJson = objectMapper.writeValueAsString(fakeProduct2Response);
 
         mockMvc.perform(
             put("/api/product/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(productJson)
+                .content(updateJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(productJson));
+            .andExpect(content().json(responseJson));
 
         verify(pService, times(1)).update(1, fakeProductUpdate);
     }
@@ -180,12 +182,12 @@ public class ProductControllerTest {
     @DisplayName("Testing if updating a Product with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
         when(pService.update(1, fakeProductUpdate)).thenReturn(fakeProduct2Response);
-        String productJson = objectMapper.writeValueAsString(fakeProduct2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeProductUpdate);
 
         mockMvc.perform(
             put("/api/product/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(productJson)
+                .content(updateJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(pService);

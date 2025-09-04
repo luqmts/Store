@@ -65,13 +65,13 @@ public class CustomerControllerTest {
     @DisplayName("Testing if correct customer's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
         when(cService.getAll()).thenReturn(List.of(fakeCustomer1Response));
-        String customerJson = objectMapper.writeValueAsString(fakeCustomer1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeCustomer1Response);
 
         mockMvc.perform(get("/api/customer"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
-            .andExpect(content().json("[" + customerJson + "]"));
+            .andExpect(content().json("[" + responseJson + "]"));
 
         verify(cService, times(1)).getAll();
     }
@@ -81,12 +81,12 @@ public class CustomerControllerTest {
     @DisplayName("Testing if correct customer's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
         when(cService.getById(1)).thenReturn(fakeCustomer1Response);
-        String customerJson = objectMapper.writeValueAsString(fakeCustomer1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeCustomer1Response);
 
         mockMvc.perform(get("/api/customer/1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(customerJson));
+            .andExpect(content().json(responseJson));
 
         verify(cService, times(1)).getById(1);
     }
@@ -96,14 +96,16 @@ public class CustomerControllerTest {
     @DisplayName("Testing if registering a new Customer with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
         when(cService.register(fakeCustomerRegister)).thenReturn(fakeCustomer1Response);
-        String customerJson = objectMapper.writeValueAsString(fakeCustomer1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeCustomerRegister);
+        String responseJson = objectMapper.writeValueAsString(fakeCustomer1Response);
 
         mockMvc.perform(
             post("/api/customer")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(customerJson)
+                .content(registerJson)
             ).andExpect(status().isOk())
-            .andExpect(content().json(customerJson));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().json(responseJson));
 
         verify(cService, times(1)).register(fakeCustomerRegister);
     }
@@ -113,12 +115,12 @@ public class CustomerControllerTest {
     @DisplayName("Testing if registering a new Customer with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
         when(cService.register(fakeCustomerRegister)).thenReturn(fakeCustomer1Response);
-        String customerJson = objectMapper.writeValueAsString(fakeCustomer1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeCustomerRegister);
 
         mockMvc.perform(
             post("/api/customer")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(customerJson)
+                .content(registerJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(cService);
@@ -129,15 +131,16 @@ public class CustomerControllerTest {
     @DisplayName("Testing if updating a Customer with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
         when(cService.update(1, fakeCustomerUpdate)).thenReturn(fakeCustomer2Response);
-        String customerJson = objectMapper.writeValueAsString(fakeCustomer2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeCustomerUpdate);
+        String responseJson = objectMapper.writeValueAsString(fakeCustomer2Response);
 
         mockMvc.perform(
             put("/api/customer/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(customerJson)
+                .content(updateJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(customerJson));
+            .andExpect(content().json(responseJson));
 
         verify(cService, times(1)).update(1, fakeCustomerUpdate);
     }
@@ -147,12 +150,12 @@ public class CustomerControllerTest {
     @DisplayName("Testing if updating a Customer with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
         when(cService.update(1, fakeCustomerUpdate)).thenReturn(fakeCustomer2Response);
-        String customerJson = objectMapper.writeValueAsString(fakeCustomer2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeCustomerUpdate);
 
         mockMvc.perform(
             put("/api/customer/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(customerJson)
+                .content(updateJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(cService);

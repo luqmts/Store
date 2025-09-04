@@ -93,20 +93,22 @@ public class OrderControllerTest {
         );
 
         fakeOrder1Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(),
+            1, "", fakeProduct1.getPrice(), fakeProduct1.getPrice().multiply(BigDecimal.valueOf(2)),
+            OrderStatus.PENDING_PAYMENT, 2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
         fakeOrder2Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(600.00), BigDecimal.valueOf(150.00), 4, LocalDate.now().plusDays(5),
-            fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
+            1, "", fakeProduct2.getPrice(), fakeProduct2.getPrice().multiply(BigDecimal.valueOf(4)),
+            OrderStatus.PENDING_PAYMENT, 4, LocalDate.now().plusDays(5),
+            fakeProduct2, fakeSeller2, fakeCustomer2, user, now, user, now
         );
 
         fakeOrderRegister = new OrderRegisterDTO(
-            BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(), fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
+            2, LocalDate.now(), fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
         );
 
         fakeOrderUpdate = new OrderUpdateDTO(
-            1, BigDecimal.valueOf(600.00), BigDecimal.valueOf(150.00), 4, LocalDate.now().plusDays(5), fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
+            OrderStatus.PAID, 4, LocalDate.now().plusDays(5), fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
         );
     }
 
@@ -115,13 +117,13 @@ public class OrderControllerTest {
     @DisplayName("Testing if correct order's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
         when(oService.getAll()).thenReturn(List.of(fakeOrder1Response));
-        String orderJson = objectMapper.writeValueAsString(fakeOrder1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeOrder1Response);
 
         mockMvc.perform(get("/api/order"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
-            .andExpect(content().json("[" + orderJson + "]"));
+            .andExpect(content().json("[" + responseJson + "]"));
 
 
         verify(oService, times(1)).getAll();
@@ -132,12 +134,12 @@ public class OrderControllerTest {
     @DisplayName("Testing if correct order's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
         when(oService.getById(1)).thenReturn(fakeOrder1Response);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeOrder1Response);
 
         mockMvc.perform(get("/api/order/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json(orderJson));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().json(responseJson));
 
         verify(oService, times(1)).getById(1);
     }
@@ -147,15 +149,16 @@ public class OrderControllerTest {
     @DisplayName("Testing if registering a new Customer with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
         when(oService.register(fakeOrderRegister)).thenReturn(fakeOrder1Response);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeOrderRegister);
+        String responseJson = objectMapper.writeValueAsString(fakeOrder1Response);
 
         mockMvc.perform(
             post("/api/order")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(orderJson)
+                .content(registerJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(orderJson));
+            .andExpect(content().json(responseJson));
 
         verify(oService, times(1)).register(fakeOrderRegister);
     }
@@ -165,12 +168,12 @@ public class OrderControllerTest {
     @DisplayName("Testing if registering a new Customer with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
         when(oService.register(fakeOrderRegister)).thenReturn(fakeOrder1Response);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeOrderRegister);
 
         mockMvc.perform(
             post("/api/order")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(orderJson)
+                .content(registerJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(oService);
@@ -181,15 +184,16 @@ public class OrderControllerTest {
     @DisplayName("Testing if updating a Customer with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
         when(oService.update(1, fakeOrderUpdate)).thenReturn(fakeOrder2Response);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeOrderUpdate);
+        String responseJson = objectMapper.writeValueAsString(fakeOrder2Response);
 
         mockMvc.perform(
             put("/api/order/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(orderJson)
+                .content(updateJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(orderJson));
+            .andExpect(content().json(responseJson));
 
 
         verify(oService, times(1)).update(1, fakeOrderUpdate);
@@ -200,12 +204,12 @@ public class OrderControllerTest {
     @DisplayName("Testing if updating a Customer with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
         when(oService.update(1, fakeOrderUpdate)).thenReturn(fakeOrder2Response);
-        String orderJson = objectMapper.writeValueAsString(fakeOrder2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeOrderUpdate);
 
         mockMvc.perform(
             put("/api/order/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(orderJson)
+                .content(updateJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(oService);

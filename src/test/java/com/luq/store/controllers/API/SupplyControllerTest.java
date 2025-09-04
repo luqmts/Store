@@ -91,13 +91,13 @@ public class SupplyControllerTest {
     @DisplayName("Testing if correct supply's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
         when(sService.getAll()).thenReturn(List.of(fakeSupply1Response));
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeSupply1Response);
 
         mockMvc.perform(get("/api/supply"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
-            .andExpect(content().json("[" + supplyJson + "]"));
+            .andExpect(content().json("[" + responseJson + "]"));
 
         verify(sService, times(1)).getAll();
     }
@@ -107,12 +107,12 @@ public class SupplyControllerTest {
     @DisplayName("Testing if correct supply's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
         when(sService.getById(1)).thenReturn(fakeSupply1Response);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeSupply1Response);
 
         mockMvc.perform(get("/api/supply/1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(supplyJson));
+            .andExpect(content().json(responseJson));
 
         verify(sService, times(1)).getById(1);
     }
@@ -122,15 +122,16 @@ public class SupplyControllerTest {
     @DisplayName("Testing if registering a new Supply with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
         when(sService.register(fakeSupplyRegister)).thenReturn(fakeSupply1Response);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeSupplyRegister);
+        String responseJson = objectMapper.writeValueAsString(fakeSupply1Response);
 
         mockMvc.perform(
             post("/api/supply")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(supplyJson)
+                .content(registerJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(supplyJson));
+            .andExpect(content().json(responseJson));
 
         verify(sService, times(1)).register(fakeSupplyRegister);
     }
@@ -140,12 +141,12 @@ public class SupplyControllerTest {
     @DisplayName("Testing if registering a new Supply with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
         when(sService.register(fakeSupplyRegister)).thenReturn(fakeSupply1Response);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeSupplyRegister);
 
         mockMvc.perform(
             post("/api/supply")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(supplyJson)
+                .content(registerJson)
             ).andExpect(status().isForbidden());
 
         verifyNoInteractions(sService);
@@ -156,15 +157,16 @@ public class SupplyControllerTest {
     @DisplayName("Testing if updating a Supply with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
         when(sService.update(1, fakeSupplyUpdate)).thenReturn(fakeSupply2Response);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeSupplyUpdate);
+        String responseJson = objectMapper.writeValueAsString(fakeSupply2Response);
 
         mockMvc.perform(
             put("/api/supply/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(supplyJson)
+                .content(updateJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(supplyJson));
+            .andExpect(content().json(responseJson));
 
         verify(sService, times(1)).update(1, fakeSupplyUpdate);
     }
@@ -174,12 +176,12 @@ public class SupplyControllerTest {
     @DisplayName("Testing if updating a Supply with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
         when(sService.update(1, fakeSupplyUpdate)).thenReturn(fakeSupply2Response);
-        String supplyJson = objectMapper.writeValueAsString(fakeSupply2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeSupplyUpdate);
 
         mockMvc.perform(
             put("/api/supply/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(supplyJson)
+                .content(updateJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(sService);

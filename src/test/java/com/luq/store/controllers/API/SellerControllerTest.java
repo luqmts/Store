@@ -57,21 +57,21 @@ public class SellerControllerTest {
 
         fakeSeller1Response = new SellerResponseDTO(
             1, "Walter White",
-            new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.FOOD,
+            "WalterWhite@Cooking.com", "11901010101", Department.FOOD,
             user, now, user, now
         );
         fakeSeller2Response = new SellerResponseDTO(
             1, "Jesse Pinkman",
-            new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.TECHNOLOGY,
+            "JessePinkman@Cooking.com", "11904040404", Department.TECHNOLOGY,
             user, now, user, now
         );
 
         fakeSellerRegister = new SellerRegisterDTO(
-            "Jesse Pinkman", new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD
+            "Jesse Pinkman", "JessePinkman@Cooking.com", "11904040404", Department.FOOD
         );
 
         fakeSellerUpdate = new SellerUpdateDTO(
-            "Walter White", new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.TECHNOLOGY
+            "Walter White", "WalterWhite@Cooking.com", "11901010101", Department.TECHNOLOGY
         );
     }
 
@@ -80,13 +80,13 @@ public class SellerControllerTest {
     @DisplayName("Testing if correct seller's parameters are being returned on get all method")
     public void testGetAllMethod() throws Exception {
         when(sService.getAll()).thenReturn(List.of(fakeSeller1Response));
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeSeller1Response);
 
         mockMvc.perform(get("/api/seller"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
-            .andExpect(content().json("[" + sellerJson + "]"));
+            .andExpect(content().json("[" + responseJson + "]"));
 
         verify(sService, times(1)).getAll();
     }
@@ -96,12 +96,12 @@ public class SellerControllerTest {
     @DisplayName("Testing if correct seller's parameters are being returned on get by id")
     public void testGetByIdMethod() throws Exception {
         when(sService.getById(1)).thenReturn(fakeSeller1Response);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller1Response);
+        String responseJson = objectMapper.writeValueAsString(fakeSeller1Response);
 
         mockMvc.perform(get("/api/seller/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json(sellerJson));
+                .andExpect(content().json(responseJson));
 
         verify(sService, times(1)).getById(1);
     }
@@ -111,15 +111,16 @@ public class SellerControllerTest {
     @DisplayName("Testing if registering a new Seller with a admin's role user is going successfully")
     public void testRegisterMethodWithAdmin() throws Exception {
         when(sService.register(fakeSellerRegister)).thenReturn(fakeSeller1Response);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller1Response);
+        String registerJson = objectMapper.writeValueAsString(fakeSellerRegister);
+        String responseJson = objectMapper.writeValueAsString(fakeSeller1Response);
 
         mockMvc.perform(
             post("/api/seller")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(sellerJson)
+                .content(registerJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(sellerJson));
+            .andExpect(content().json(responseJson));
 
 
         verify(sService, times(1)).register(fakeSellerRegister);
@@ -130,12 +131,12 @@ public class SellerControllerTest {
     @DisplayName("Testing if registering a new Seller with a user's role user is going unauthorized")
     public void testRegisterMethodWithUser() throws Exception {
         when(sService.register(fakeSellerRegister)).thenReturn(fakeSeller2Response);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller2Response);
+        String registerJson = objectMapper.writeValueAsString(fakeSeller2Response);
 
         mockMvc.perform(
             post("/api/seller")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(sellerJson)
+                .content(registerJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(sService);
@@ -146,15 +147,16 @@ public class SellerControllerTest {
     @DisplayName("Testing if updating a Seller with a admin's role user is going successfully")
     public void testUpdateMethodWithAdmin() throws Exception {
         when(sService.update(1, fakeSellerUpdate)).thenReturn(fakeSeller2Response);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeSellerUpdate);
+        String responseJson = objectMapper.writeValueAsString(fakeSeller2Response);
 
         mockMvc.perform(
             put("/api/seller/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(sellerJson)
+                .content(updateJson)
             ).andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(content().json(sellerJson));
+            .andExpect(content().json(responseJson));
 
         verify(sService, times(1)).update(1, fakeSellerUpdate);
     }
@@ -164,12 +166,12 @@ public class SellerControllerTest {
     @DisplayName("Testing if updating a Seller with a user's role user is going unauthorized")
     public void testUpdateMethodWithUser() throws Exception {
         when(sService.update(1, fakeSellerUpdate)).thenReturn(fakeSeller2Response);
-        String sellerJson = objectMapper.writeValueAsString(fakeSeller2Response);
+        String updateJson = objectMapper.writeValueAsString(fakeSellerUpdate);
 
         mockMvc.perform(
             put("/api/seller/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(sellerJson)
+                .content(updateJson)
         ).andExpect(status().isForbidden());
 
         verifyNoInteractions(sService);
