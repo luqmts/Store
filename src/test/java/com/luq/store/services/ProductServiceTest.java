@@ -8,10 +8,16 @@ import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
+import com.luq.store.domain.Product;
 import com.luq.store.dto.request.product.ProductRegisterDTO;
 import com.luq.store.dto.request.product.ProductUpdateDTO;
 import com.luq.store.dto.response.product.ProductResponseDTO;
+import com.luq.store.dto.response.supplier.SupplierResponseDTO;
+import com.luq.store.mapper.ProductMapper;
+import com.luq.store.mapper.SupplierMapper;
 import com.luq.store.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,59 +31,97 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
     @Mock
-    ProductRepository pRepository;
+    private ProductRepository pRepository;
     @InjectMocks
-    ProductService pService;
+    private ProductService pService;
+    @Mock
+    private ProductMapper pMapper;
 
-    Supplier fakeSupplier1, fakeSupplier2;
+    @Mock
+    private SupplierService sService;
+    @Mock
+    private SupplierMapper sMapper;
+
     private ProductResponseDTO fakeProduct1Response, fakeProduct2Response, result;
     private ProductRegisterDTO fakeProductRegister;
     private ProductUpdateDTO fakeProductUpdate;
+    private Product fakeProduct1, fakeProduct2;
+    private SupplierResponseDTO fakeSupplierResponse;
+    private Supplier fakeSupplier2;
+
+    Authentication authentication;
+    SecurityContext securityContext;
+
+    String user;
+    LocalDateTime now;
 
     @BeforeEach
     public void setUp(){
-        String user = "Jimmy McGill";
-        LocalDateTime now = LocalDateTime.now();
+        user = "Jimmy McGill";
+        now = LocalDateTime.now();
 
-        fakeSupplier1 = new Supplier(
-            1,  "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
-            new Mail("microsoft@mail.com"), new Phone("11000001111"),
+        fakeSupplierResponse = new SupplierResponseDTO(
+            2, "Sony Brasil LTDA.", "04.542.534/0001-09",
+            "sony@mail.com", "11222225555",
             user, now, user, now
         );
+        Supplier fakeSupplier1 = new Supplier(
+                1, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
+                new Mail("microsoft@mail.com"), new Phone("11000001111"),
+                user, now, user, now
+        );
         fakeSupplier2 = new Supplier(
-            2,   "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
-            new Mail("sony@mail.com"), new Phone("11222225555"),
-            user, now, user, now
+                2, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
+                new Mail("sony@mail.com"), new Phone("11222225555"),
+                user, now, user, now
         );
 
         fakeProduct1Response = new ProductResponseDTO(
-            1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
+                1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
             BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
-
         fakeProduct2Response = new ProductResponseDTO(
             1, "PS5 Controller", "PS5Cont", "Controller for PlayStation 5 Console",
             BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
-
         fakeProductRegister = new ProductRegisterDTO(
             "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
             BigDecimal.valueOf(200.00), fakeSupplier1.getId()
         );
-
         fakeProductUpdate = new ProductUpdateDTO(
             "PS5 Controller", "PS5Cont", "Controller for PlayStation 5 Console",
             BigDecimal.valueOf(250.00), fakeSupplier2.getId()
         );
+        fakeProduct1 = new Product(
+            1, "XOneCont", "Xbox One Controller", "Controller for Xbox One Console",
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
+        );
+        fakeProduct2 = new Product(
+            1, "PS5Cont", "PS5 Controller", "Controller for Playstation 5 Console",
+            BigDecimal.valueOf(250.00), fakeSupplier2 , user, now, user, now
+        );
+
+        authentication = mock(Authentication.class);
+        securityContext = mock(SecurityContext.class);
+        SecurityContextHolder.setContext(securityContext);
     }
     
     @Test
     @DisplayName("Test if Product is being registered correctly")
     public void testRegisterProduct(){
+        when(authentication.getName()).thenReturn(user);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(pRepository.save(fakeProduct1)).thenReturn(fakeProduct1);
+        when(pMapper.toEntity(fakeProductRegister)).thenReturn(fakeProduct1);
+        when(pMapper.toDTO(fakeProduct1)).thenReturn(fakeProduct1Response);
+
         result = pService.register(fakeProductRegister);
 
         assertAll(
@@ -90,7 +134,16 @@ public class ProductServiceTest {
     @Test
     @DisplayName("Test if Product is being updated correctly")
     public void testUpdateProduct(){
-        pService.register(fakeProductRegister);
+        when(authentication.getName()).thenReturn(user);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        when(pRepository.findById(fakeProduct1Response.id())).thenReturn(Optional.ofNullable(fakeProduct1));
+        when(pRepository.save(fakeProduct2)).thenReturn(fakeProduct2);
+        when(pMapper.toDTO(fakeProduct2)).thenReturn(fakeProduct2Response);
+
+        when(sService.getById(fakeProductUpdate.supplier_id())).thenReturn(fakeSupplierResponse);
+        when(sMapper.toEntity(fakeSupplierResponse)).thenReturn(fakeSupplier2);
+
         result = pService.update(fakeProduct1Response.id(), fakeProductUpdate);
 
         assertAll(
@@ -103,8 +156,6 @@ public class ProductServiceTest {
     @Test
     @DisplayName("Test if Product is being deleted correctly")
     public void testDeleteProduct(){
-        pService.register(fakeProductRegister);
-
         pService.delete(fakeProduct1Response.id());
 
         verify(pRepository, atMostOnce()).deleteById(fakeProduct1Response.id());
@@ -113,16 +164,20 @@ public class ProductServiceTest {
     @Test
     @DisplayName("Test if all Products registered are being returned on method getALl()")
     public void testGetAllProducts() {
-        pService.register(fakeProductRegister);
-        pService.register(fakeProductRegister);
-        assertEquals(2, pService.getAll().size());
+        when(pRepository.findAll()).thenReturn(List.of(fakeProduct1, fakeProduct2));
+        when(pMapper.toDTOList(List.of(fakeProduct1, fakeProduct2))).thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        List<ProductResponseDTO> result = pService.getAll();
+
+        assertEquals(2, result.size());
         verify(pRepository, atMostOnce()).findAll();
     }
 
     @Test
     @DisplayName("Test if Product is being returned by id on method getById()")
     public void testGetProductById(){
-        pService.register(fakeProductRegister);
+        when(pRepository.findById(1)).thenReturn(Optional.ofNullable(fakeProduct1));
+        when(pMapper.toDTO(fakeProduct1)).thenReturn(fakeProduct1Response);
+
         result = pService.getById(1);
         assertAll(
                 () -> verify(pRepository, atMostOnce()).findById(1),
