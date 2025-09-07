@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.luq.store.exceptions.InvalidPhoneException;
 
 public class Phone {
     private String phone;
@@ -21,11 +22,11 @@ public class Phone {
 
     public void setPhone(String stringPhone){
         if (validatePhone(stringPhone)) this.phone = stringPhone;
-        else throw new IllegalArgumentException("Invalid phone format.");   
+        else throw new InvalidPhoneException("Invalid phone format.");
     }
 
     public boolean validatePhone(String stringPhone){
-        if (stringPhone == null) throw new NullPointerException("Phone must not be null!");
+        if (stringPhone == null) throw new InvalidPhoneException("Phone must not be null!");
 
         Pattern pattern = Pattern.compile("[0-9]{2}[0-9]{8,9}");
         Matcher matcher = pattern.matcher(stringPhone);

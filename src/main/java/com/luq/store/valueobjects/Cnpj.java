@@ -4,6 +4,7 @@ import java.util.InputMismatchException;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.luq.store.exceptions.InvalidCnpjException;
 
 public class Cnpj {
     private String cnpj;
@@ -21,12 +22,12 @@ public class Cnpj {
     public void setcnpj(String stringcnpj){
         if (validatecnpj(stringcnpj)) {
             this.cnpj = stringcnpj;
-        } else throw new IllegalArgumentException("Invalid cnpj format.");   
+        } else throw new InvalidCnpjException("Invalid cnpj format.");
     }
 
 
     public boolean validatecnpj(String stringcnpj) {
-        if (stringcnpj == null) throw new NullPointerException("cnpj must not be null!");
+        if (stringcnpj == null) throw new InvalidCnpjException("cnpj must not be null!");
 
         if (stringcnpj.length() == 18) {
             stringcnpj = stringcnpj.replace(".", "")

@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.luq.store.exceptions.InvalidMailException;
 
 public class Mail {
     private String mail;
@@ -21,11 +22,11 @@ public class Mail {
 
     public void setMail(String stringMail){
         if (validateMail(stringMail)) this.mail = stringMail;
-        else throw new IllegalArgumentException("Invalid mail format.");   
+        else throw new InvalidMailException("Invalid mail format.");
     }
 
     public boolean validateMail(String stringMail){
-        if (stringMail == null) throw new NullPointerException("Mail must not be null!");
+        if (stringMail == null) throw new InvalidMailException("Mail must not be null!");
 
         Pattern pattern = Pattern.compile("^.+@.+\\..+$");
         Matcher matcher = pattern.matcher(stringMail);
