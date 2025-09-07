@@ -50,9 +50,14 @@ public class SupplierService {
     public SupplierResponseDTO register(SupplierRegisterDTO data) {
         List<IllegalArgumentException> errors = new ArrayList<>();
 
-        if (data.cnpj() == null) errors.add(new InvalidCnpjException("Invalid cnpj"));
-        if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
-        if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
+        try{new Cnpj(data.cnpj());}
+        catch (InvalidCnpjException e) { errors.add(new InvalidCnpjException("Invalid cnpj")); }
+
+        try{new Mail(data.mail());}
+        catch (InvalidMailException e) { errors.add(new InvalidMailException("Invalid mail")); }
+
+        try{new Phone(data.phone());}
+        catch (InvalidPhoneException e) { errors.add(new InvalidPhoneException("Invalid phone")); }
 
         if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 
@@ -74,9 +79,15 @@ public class SupplierService {
 
         List<IllegalArgumentException> errors = new ArrayList<>();
 
-        if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
-        if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
-        if (data.cnpj() == null) errors.add(new InvalidCnpjException("Invalid cnpj"));
+        try{supplier.setCnpj(new Cnpj(data.cnpj()));}
+        catch (InvalidCnpjException e) { errors.add(new InvalidCnpjException("Invalid cnpj")); }
+
+        try{supplier.setMail(new Mail(data.mail()));}
+        catch (InvalidMailException e) { errors.add(new InvalidMailException("Invalid mail")); }
+
+        try{supplier.setPhone(new Phone(data.phone()));}
+        catch (InvalidPhoneException e) { errors.add(new InvalidPhoneException("Invalid phone")); }
+
 
         if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 

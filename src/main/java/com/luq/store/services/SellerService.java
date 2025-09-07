@@ -53,8 +53,11 @@ public class SellerService {
     public SellerResponseDTO register(SellerRegisterDTO data) {
         List<IllegalArgumentException> errors = new ArrayList<>();
 
-        if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
-        if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
+        try{new Mail(data.mail());}
+        catch (InvalidMailException e) { errors.add(new InvalidMailException("Invalid mail")); }
+
+        try{new Phone(data.phone());}
+        catch (InvalidPhoneException e) { errors.add(new InvalidPhoneException("Invalid phone")); }
 
         if (!errors.isEmpty()) throw new MultipleValidationException(errors);
 
@@ -76,18 +79,23 @@ public class SellerService {
 
         List<IllegalArgumentException> errors = new ArrayList<>();
 
-        if (data.mail() == null) errors.add(new InvalidMailException("Invalid mail"));
-        if (data.phone() == null) errors.add(new InvalidPhoneException("Invalid phone"));
+        try {
+            seller.setMail(new Mail(data.mail()));
+        } catch (InvalidMailException e) {
+            errors.add(new InvalidMailException("Invalid mail"));
+        }
+
+        try {
+            seller.setPhone(new Phone(data.phone()));
+        } catch (InvalidPhoneException e) {
+            errors.add(new InvalidPhoneException("Invalid phone"));
+        }
 
         if (!errors.isEmpty()) throw new MultipleValidationException(errors);
-        Mail mail = new Mail(data.mail());
-        Phone phone = new Phone(data.phone());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         seller.setName(data.name());
-        seller.setMail(mail);
-        seller.setPhone(phone);
         seller.setDepartment(data.department());
 
         seller.setModifiedBy(authentication.getName());
