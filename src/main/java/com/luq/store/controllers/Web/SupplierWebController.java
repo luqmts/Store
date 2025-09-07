@@ -1,10 +1,8 @@
 package com.luq.store.controllers.Web;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import com.luq.store.dto.request.customer.CustomerUpdateDTO;
 import com.luq.store.dto.request.supplier.SupplierRegisterDTO;
 import com.luq.store.dto.request.supplier.SupplierUpdateDTO;
 import com.luq.store.dto.response.supplier.SupplierResponseDTO;
@@ -14,8 +12,6 @@ import com.luq.store.exceptions.InvalidPhoneException;
 import com.luq.store.exceptions.MultipleValidationException;
 import com.luq.store.mapper.SupplierMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -107,15 +103,27 @@ public class SupplierWebController {
         }
     }
 
-    @PutMapping(path="/supplier/form/{id}")
+    @PostMapping(path="/supplier/form/{id}")
     public String postSupplier(@PathVariable("id") int id, SupplierUpdateDTO data, Model model){
         try {
             sService.update(id, data);
             return "redirect:/supplier/list";
-        } catch (InvalidCnpjException | InvalidMailException | InvalidPhoneException e) {
-            if (e.getClass().equals(InvalidCnpjException.class)) model.addAttribute("cnpjError", e.getMessage());
-            if (e.getClass().equals(InvalidMailException.class)) model.addAttribute("mailError", e.getMessage());
-            if (e.getClass().equals(InvalidPhoneException.class)) model.addAttribute("phoneError", e.getMessage());
+        } catch (MultipleValidationException e) {
+            e.getExceptions()
+                .stream()
+                .filter(ex -> ex instanceof  InvalidCnpjException)
+                .findFirst()
+                .ifPresent(ex -> model.addAttribute("cnpjError", ex.getMessage()));
+            e.getExceptions()
+                .stream()
+                .filter(ex -> ex instanceof  InvalidMailException)
+                .findFirst()
+                .ifPresent(ex -> model.addAttribute("mailError", ex.getMessage()));
+            e.getExceptions()
+                .stream()
+                .filter(ex -> ex instanceof  InvalidPhoneException)
+                .findFirst()
+                .ifPresent(ex -> model.addAttribute("phoneError", ex.getMessage()));
             model.addAttribute("supplier", sMapper.toEntity(data));
             return "supplier-form";
         }
