@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.luq.store.exceptions.InvalidCnpjException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ public class CnpjTest {
     @Test
     @DisplayName("Validate if null cnpj is not being created and returning a exception for")
     public void testNullCnpj(){
-        Exception exception = assertThrows(NullPointerException.class, () -> new Cnpj(null));
+        Exception exception = assertThrows(InvalidCnpjException.class, () -> new Cnpj(null));
         assertTrue(exception.getMessage().toLowerCase().contains("cnpj"));
     }
 

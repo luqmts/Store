@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.luq.store.exceptions.InvalidPhoneException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ public class PhoneTest {
     @Test
     @DisplayName("Validate if null phone is not being created and returning a exception for")
     public void testNullPhone(){
-        Exception exception = assertThrows(NullPointerException.class, () -> new Phone(null));
+        Exception exception = assertThrows(InvalidPhoneException.class, () -> new Phone(null));
         assertTrue(exception.getMessage().toLowerCase().contains("phone"));
     }
 

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.luq.store.exceptions.InvalidMailException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ public class MailTest {
     @Test
     @DisplayName("Validate if null mail is not being created and returning a exception for")
     public void testNullMail(){
-        Exception exception = assertThrows(NullPointerException.class, () -> new Mail(null));
+        Exception exception = assertThrows(InvalidMailException.class, () -> new Mail(null));
         assertTrue(exception.getMessage().toLowerCase().contains("mail"));
     }
 
