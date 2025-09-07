@@ -26,7 +26,7 @@ public class ProductCSVExportController {
         HttpServletResponse response,
         @RequestParam(name="sortBy", required=false, defaultValue="id") String sortBy,
         @RequestParam(name="direction", required=false, defaultValue="asc") String direction,
-        @RequestParam(name="supplier.id", required=false) Integer supplierId,
+        @RequestParam(name="supplierId", required=false) Integer supplierId,
         @RequestParam(name="name", required=false) String name,
         @RequestParam(name="sku", required=false) String sku
     ) throws IOException {

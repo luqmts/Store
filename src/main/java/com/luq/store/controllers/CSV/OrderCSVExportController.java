@@ -43,7 +43,7 @@ public class OrderCSVExportController {
                 .stream()
                 .map(data -> String.format(
                     Locale.ROOT,
-                    "%d,%s,%s,%s,%s,%d,%.2f,%s,%s,%s,%s",
+                    "%d,%s,%s,%s,%s,%d,%.2f,%.2f,%s,%s,%s,%s,%s",
                     data.id(),
                     escapeCsv(data.product().getName()),
                     escapeCsv(data.seller().getName()),

@@ -39,7 +39,7 @@ public class SellerCSVExportController {
         response.setHeader("Content-Disposition", "attachment; filename=\"sellers.csv\"");
 
         try (PrintWriter writer = response.getWriter()) {
-            writer.println("id,name,mail,phone,selectedDepartment,created,created_by,modified,modified_by");
+            writer.println("id,name,mail,phone,department,created,created_by,modified,modified_by");
             List<SellerResponseDTO> sList = sService.getAllSorted(sortBy, direction, selectedDepartment, name, mail, phone);
 
             sList
@@ -49,8 +49,8 @@ public class SellerCSVExportController {
                         "%d,%s,%s,%s,%s,%s,%s,%s,%s",
                         data.id(),
                         escapeCsv(data.name()),
-                        escapeCsv(data.mail().toString()),
-                        escapeCsv(data.phone().toString()),
+                        escapeCsv(data.mail()),
+                        escapeCsv(data.phone()),
                         escapeCsv(data.department().toString()),
                         escapeCsv(data.created().toString()),
                         escapeCsv(data.createdBy()),
