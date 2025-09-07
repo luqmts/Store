@@ -91,7 +91,7 @@ public class ProductWebController {
         }
     }
 
-    @PutMapping(path="/product/form/{id}")
+    @PostMapping(path="/product/form/{id}")
     public String postProduct(@PathVariable("id") int id, ProductUpdateDTO data, Model model){
         try {
             pService.update(id, data);

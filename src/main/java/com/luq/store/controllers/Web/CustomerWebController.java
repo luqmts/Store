@@ -67,7 +67,7 @@ public class CustomerWebController {
         return "redirect:/customer/list";
     }
 
-    @PutMapping(path="/customer/form/{id}")
+    @PostMapping(path="/customer/form/{id}")
     public String postCustomer(@PathVariable("id") int id, CustomerUpdateDTO data){
         cService.update(id, data);
         return "redirect:/customer/list";
