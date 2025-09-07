@@ -8,7 +8,9 @@
 <body>
     <div th:replace="~{fragments :: navbar}"></div>
 
-    <form method="POST" th:action="@{/order/form}" th:object="${order}">
+    <form method="POST"
+      th:action="${order.id} == null ? @{/order/form} : @{/order/form/{id}(id=${order.id})}"
+      th:object="${order}">
         <div class="mb-3" th:unless="${order.id == null}">
             <label for="inputStatus" class="form-label">Status</label>
             <select name="status" class="form-control" id="inputStatus" disabled>
