@@ -4,6 +4,8 @@ import com.luq.store.domain.Seller;
 import com.luq.store.dto.request.seller.SellerRegisterDTO;
 import com.luq.store.dto.request.seller.SellerUpdateDTO;
 import com.luq.store.dto.response.seller.SellerResponseDTO;
+import com.luq.store.exceptions.InvalidMailException;
+import com.luq.store.exceptions.InvalidPhoneException;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.Phone;
 import org.springframework.stereotype.Component;
@@ -27,12 +29,14 @@ public class SellerMapper {
 
     public Seller toEntity(SellerUpdateDTO data) {
         Seller seller = new Seller();
-        Mail mail = new Mail(data.mail());
-        Phone phone = new Phone(data.phone());
+
+        try{seller.setMail(new Mail(data.mail()));}
+        catch(InvalidMailException e){seller.setMail(null);}
+
+        try{seller.setPhone(new Phone(data.phone()));}
+        catch(InvalidPhoneException e){seller.setPhone(null);}
 
         seller.setName(data.name());
-        seller.setMail(mail);
-        seller.setPhone(phone);
         seller.setDepartment(data.department());
 
         return seller;

@@ -4,6 +4,9 @@ import com.luq.store.domain.Supplier;
 import com.luq.store.dto.request.supplier.SupplierRegisterDTO;
 import com.luq.store.dto.request.supplier.SupplierUpdateDTO;
 import com.luq.store.dto.response.supplier.SupplierResponseDTO;
+import com.luq.store.exceptions.InvalidCnpjException;
+import com.luq.store.exceptions.InvalidMailException;
+import com.luq.store.exceptions.InvalidPhoneException;
 import com.luq.store.valueobjects.Cnpj;
 import com.luq.store.valueobjects.Mail;
 import com.luq.store.valueobjects.Phone;
@@ -29,14 +32,17 @@ public class SupplierMapper {
 
     public Supplier toEntity(SupplierUpdateDTO data) {
         Supplier supplier = new Supplier();
-        Cnpj cnpj = new Cnpj(data.cnpj());
-        Mail mail = new Mail(data.mail());
-        Phone phone = new Phone(data.phone());
+
+        try{supplier.setCnpj(new Cnpj(data.cnpj()));}
+        catch (InvalidCnpjException e){supplier.setCnpj(null);}
+
+        try{supplier.setMail(new Mail(data.mail()));}
+        catch(InvalidMailException e){supplier.setMail(null);}
+
+        try{supplier.setPhone(new Phone(data.phone()));}
+        catch(InvalidPhoneException e){supplier.setPhone(null);}
 
         supplier.setName(data.name());
-        supplier.setCnpj(cnpj);
-        supplier.setMail(mail);
-        supplier.setPhone(phone);
 
         return supplier;
     }
