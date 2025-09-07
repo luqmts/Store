@@ -73,10 +73,10 @@ public class OrderRepositoryTest {
         ));
 
         fakeOrder1 = oRepository.save(new Order(
-            BigDecimal.valueOf(400.00F), BigDecimal.valueOf(80.00F), 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1
+            BigDecimal.valueOf(400.00F), BigDecimal.valueOf(80.00F), OrderStatus.PENDING_PAYMENT, 5, LocalDate.now(), fakeProduct1, fakeSeller1, fakeCustomer1
         ));
         fakeOrder2 = oRepository.save(new Order(
-            BigDecimal.valueOf(800.00F), BigDecimal.valueOf(100.00F), 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2
+            BigDecimal.valueOf(800.00F), BigDecimal.valueOf(100.00F), OrderStatus.PENDING_PAYMENT, 8, LocalDate.now(), fakeProduct2, fakeSeller2, fakeCustomer2
         ));
     }
 
@@ -84,7 +84,7 @@ public class OrderRepositoryTest {
     @DisplayName("Test if Order filtered by only one filter is being returned correctly")
     public void testFindByOneFilter() {
         Sort sort = Sort.by("id").ascending();
-        List<Order> result = oRepository.findByProductSellerCustomer(sort, null, 1, null);
+        List<Order> result = oRepository.findByStatusProductSellerCustomer(sort, null, null, 1, null);
 
         assertAll(
             () -> assertEquals(1, result.size()),
@@ -96,7 +96,7 @@ public class OrderRepositoryTest {
     @DisplayName("Test if Order filtered by no filter is being returned correctly")
     public void testFindByNoFilter() {
         Sort sort = Sort.by("id").ascending();
-        List<Order> result = oRepository.findByProductSellerCustomer(sort, null, null, null);
+        List<Order> result = oRepository.findByStatusProductSellerCustomer(sort, null, null, null, null);
 
         assertAll(
             () -> assertEquals(2, result.size()),
@@ -109,7 +109,7 @@ public class OrderRepositoryTest {
     @DisplayName("Test if Order filtered by all filters is being returned correctly")
     public void testFindByAllFilters() {
         Sort sort = Sort.by("id").ascending();
-        List<Order> result = oRepository.findByProductSellerCustomer(sort, 2, 2, 2);
+        List<Order> result = oRepository.findByStatusProductSellerCustomer(sort, OrderStatus.PENDING_PAYMENT, 2, 2, 2);
 
         assertAll(
             () -> assertEquals(1, result.size()),
