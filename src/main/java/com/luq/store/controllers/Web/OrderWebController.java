@@ -2,15 +2,10 @@ package com.luq.store.controllers.Web;
 
 import java.net.URISyntaxException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.luq.store.domain.Department;
 import com.luq.store.domain.OrderStatus;
-import com.luq.store.domain.Supply;
-import com.luq.store.dto.request.customer.CustomerUpdateDTO;
 import com.luq.store.dto.request.order.OrderRegisterDTO;
 import com.luq.store.dto.request.order.OrderUpdateDTO;
 import com.luq.store.dto.response.order.OrderResponseDTO;
@@ -20,8 +15,6 @@ import com.luq.store.exceptions.NotFoundException;
 import com.luq.store.mapper.OrderMapper;
 import com.luq.store.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +57,6 @@ public class OrderWebController {
         @RequestParam(name="sellerId", required=false) Integer sellerId,
         @RequestParam(name="customerId", required=false) Integer customerId
     ){
-        System.out.println("selectedStatus: " + selectedStatus);
         List<OrderResponseDTO> oList = oService.getAllSorted(sortBy, direction, selectedStatus, productId, sellerId, customerId);
 
         ModelAndView mv = new ModelAndView("order-list");
@@ -95,7 +87,7 @@ public class OrderWebController {
         mv.addObject("products", pService.getAllRegisteredOnSupply());
         mv.addObject("sellers", sellerService.getAll());
         mv.addObject("customers", cService.getAll());
-        mv.addObject("status", OrderStatus.values());
+        mv.addObject("statuses", OrderStatus.values());
 
         return mv;
     }
@@ -112,7 +104,7 @@ public class OrderWebController {
         mv.addObject("products", pService.getAllRegisteredOnSupply(supply.id()));
         mv.addObject("sellers", sellerService.getAll());
         mv.addObject("customers", cService.getAll());
-        mv.addObject("status", OrderStatus.values());
+        mv.addObject("statuses", OrderStatus.values());
 
         return mv;
     }
@@ -137,16 +129,15 @@ public class OrderWebController {
         }
     }
 
-    @PutMapping(path="/order/form/{id}")
+    @PostMapping(path="/order/form/{id}")
     public String postOrder(@PathVariable("id") int id, OrderUpdateDTO data, Model model){
         try {
             oService.update(id, data);
             return "redirect:/order/list";
         } catch (InvalidQuantityException e) {
             model.addAttribute("order", oMapper.toEntity(data));
-            model.addAttribute("products", pService.getAllRegisteredOnSupply(data.product_id()));
+            model.addAttribute("products", pService.getAllRegisteredOnSupply(data.productId()));
             model.addAttribute("page", "order");
-            model.addAttribute("page", id);
             model.addAttribute("sellers", sellerService.getAll());
             model.addAttribute("customers", cService.getAll());
             model.addAttribute("quantityError", e.getMessage());
