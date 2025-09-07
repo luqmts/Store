@@ -3,11 +3,13 @@ package com.luq.store.controllers.Web;
 import com.luq.store.domain.*;
 import com.luq.store.dto.request.order.OrderRegisterDTO;
 import com.luq.store.dto.request.order.OrderUpdateDTO;
+import com.luq.store.dto.response.customer.CustomerResponseDTO;
 import com.luq.store.dto.response.order.OrderResponseDTO;
-import com.luq.store.mapper.CustomerMapper;
-import com.luq.store.mapper.ProductMapper;
-import com.luq.store.mapper.SellerMapper;
-import com.luq.store.mapper.SupplyMapper;
+import com.luq.store.dto.response.product.ProductResponseDTO;
+import com.luq.store.dto.response.seller.SellerResponseDTO;
+import com.luq.store.dto.response.supply.SupplyResponseDTO;
+import com.luq.store.exceptions.InvalidQuantityException;
+import com.luq.store.mapper.*;
 import com.luq.store.services.CustomerService;
 import com.luq.store.services.OrderService;
 import com.luq.store.services.ProductService;
@@ -60,15 +62,16 @@ public class OrderWebControllerTest {
     @MockBean
     private SupplyService supplyService;
 
-    @Autowired
+    @MockBean
     ProductMapper pMapper;
-    @Autowired
+    @MockBean
     SellerMapper sellerMapper;
-    @Autowired
+    @MockBean
     SupplyMapper supplyMapper;
-    @Autowired
+    @MockBean
     CustomerMapper cMapper;
-
+    @MockBean
+    OrderMapper oMapper;
     @MockBean
     private TokenService tService;
 
@@ -78,9 +81,13 @@ public class OrderWebControllerTest {
     private OrderResponseDTO fakeOrder1Response, fakeOrder2Response;
     private OrderRegisterDTO fakeOrderRegister;
     private OrderUpdateDTO fakeOrderUpdate;
-    private Supply fakeSupply;
+    private Order fakeOrder;
+    private SupplyResponseDTO fakeSupplyResponse;
+    private ProductResponseDTO fakeProduct1Response, fakeProduct2Response;
     private Product fakeProduct1, fakeProduct2;
+    private SellerResponseDTO fakeSeller1Response, fakeSeller2Response;
     private Seller fakeSeller1, fakeSeller2;
+    private CustomerResponseDTO fakeCustomer1Response, fakeCustomer2Response;
     private Customer fakeCustomer1, fakeCustomer2;
 
     @BeforeEach
@@ -88,9 +95,21 @@ public class OrderWebControllerTest {
         String user = "Jimmy McGill";
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
+        fakeCustomer1Response = new CustomerResponseDTO(1, "Test Customer 01", user, now, user, now);
+        fakeCustomer2Response = new CustomerResponseDTO(2, "Test Customer 02", user, now, user, now);
         fakeCustomer1 = new Customer(1, "Test Customer 01", user, now, user, now);
         fakeCustomer2 = new Customer(2, "Test Customer 02", user, now, user, now);
 
+        fakeSeller1Response = new SellerResponseDTO(
+                1, "Walter White",
+                "WalterWhite@Cooking.com", "11901010101", Department.FOOD,
+                user, now, user, now
+        );
+        fakeSeller2Response = new SellerResponseDTO(
+                2, "Jesse Pinkman",
+                "Jesse Pinkman@Cooking.com", "11904040404", Department.FOOD,
+                user, now, user, now
+        );
         fakeSeller1 = new Seller(
             1, "Walter White",
             new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.FOOD,
@@ -112,7 +131,14 @@ public class OrderWebControllerTest {
             new Mail("sony@mail.com"), new Phone("11222225555"),
             user, now, user, now
         );
-
+        fakeProduct1Response = new ProductResponseDTO(
+                1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
+                BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
+        );
+        fakeProduct2Response = new ProductResponseDTO(
+                2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
+                BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
+        );
         fakeProduct1 = new Product(
             1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
             BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
@@ -122,24 +148,28 @@ public class OrderWebControllerTest {
             BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
-        fakeSupply = new Supply(1, 50, fakeProduct1, user, now, user, now);
+        fakeSupplyResponse = new SupplyResponseDTO(1, 50, fakeProduct1, user, now, user, now);
+        Supply fakeSupply = new Supply(1, 50, fakeProduct1, user, now, user, now);
 
         fakeOrder1Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(),
+            1, "", BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), OrderStatus.PENDING_PAYMENT, 2, LocalDate.now(),
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
         fakeOrder2Response = new OrderResponseDTO(
-            1, BigDecimal.valueOf(1000.00), BigDecimal.valueOf(250.00), 4, LocalDate.now(),
+            1, "", BigDecimal.valueOf(1000.00), BigDecimal.valueOf(250.00), OrderStatus.PENDING_PAYMENT, 4, LocalDate.now(),
             fakeProduct2, fakeSeller2, fakeCustomer2, user, now, user, now
         );
-
         fakeOrderRegister = new OrderRegisterDTO(
-            BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), 2, LocalDate.now(),
+            2, LocalDate.now(),
             fakeProduct1.getId(), fakeSeller1.getId(), fakeCustomer1.getId()
         );
         fakeOrderUpdate = new OrderUpdateDTO(
-            1, BigDecimal.valueOf(1000.00), BigDecimal.valueOf(250.00), 4, LocalDate.now(),
+            OrderStatus.PAID,4, LocalDate.now(),
             fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
+        );
+        fakeOrder = new Order(
+            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), OrderStatus.PENDING_PAYMENT,  2, LocalDate.now(), "",
+            fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
     }
 
@@ -147,11 +177,14 @@ public class OrderWebControllerTest {
     @WithMockUser
     @DisplayName("Test if all Orders are being returned on getAllSorted method with no filters applied and default user")
     public void testListAllOrders() throws Exception{
-        when(oService.getAllSorted("name", "asc", null, null, null))
+        when(oService.getAllSorted("name", "asc", null,null, null, null))
             .thenReturn(List.of(fakeOrder1Response, fakeOrder2Response));
-        when(pService.getAll()).thenReturn(List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2)));
-        when(sellerService.getAll()).thenReturn(List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2)));
-        when(cService.getAll()).thenReturn(List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2)));
+        when(pService.getAll())
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
 
         mockMvc.perform(
             get("/order/list")
@@ -164,26 +197,39 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("page", "order"))
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
-        .andExpect(model().attribute("products", List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2))))
-        .andExpect(model().attribute("customers", List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2))))
-        .andExpect(model().attribute("sellers", List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2))));
+        .andExpect(model().attribute("statuses", OrderStatus.values()))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)));
+
+        verify(oService, times(1))
+            .getAllSorted("name", "asc", null, null, null, null);
+        verify(pService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
+        verify(sellerService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("Test if Order is being returned on getAllSorted method with one filter applied and default user")
     public void testListOrdersWithOneFilter() throws Exception{
-        when(oService.getAllSorted("name", "asc", 1, null, null))
+        when(oService.getAllSorted("name", "asc", null,1, null, null))
             .thenReturn(List.of(fakeOrder1Response));
-        when(pService.getAll()).thenReturn(List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2)));
-        when(sellerService.getAll()).thenReturn(List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2)));
-        when(cService.getAll()).thenReturn(List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2)));
+        when(pService.getAll())
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
 
         mockMvc.perform(
             get("/order/list")
                 .param("sortBy", "name")
                 .param("direction", "asc")
-                .param("product.id", "1")
+                .param("productId", "1")
         ).andExpect(status().isOk())
         .andExpect(view().name("order-list"))
         .andExpect(model().attributeExists("orders"))
@@ -192,28 +238,42 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("productId", 1))
-        .andExpect(model().attribute("products", List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2))))
-        .andExpect(model().attribute("customers", List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2))))
-        .andExpect(model().attribute("sellers", List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2))));
+        .andExpect(model().attribute("statuses", OrderStatus.values()))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)));
+
+        verify(oService, times(1))
+            .getAllSorted("name", "asc", null, 1, null, null);
+        verify(pService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
+        verify(sellerService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("Test if Order is being returned on getAllSorted method with all filters applied and default user")
     public void testListOrdersWithAllFilters() throws Exception{
-        when(oService.getAllSorted("name", "asc", 1, 1, 1))
+        when(oService.getAllSorted("name", "asc", "PENDING_PAYMENT",1, 1, 1))
             .thenReturn(List.of(fakeOrder1Response));
-        when(pService.getAll()).thenReturn(List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2)));
-        when(sellerService.getAll()).thenReturn(List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2)));
-        when(cService.getAll()).thenReturn(List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2)));
+        when(pService.getAll())
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
 
         mockMvc.perform(
             get("/order/list")
                 .param("sortBy", "name")
                 .param("direction", "asc")
-                .param("product.id", "1")
-                .param("seller.id", "1")
-                .param("customer.id", "1")
+                .param("selectedStatus", "PENDING_PAYMENT")
+                .param("productId", "1")
+                .param("sellerId", "1")
+                .param("customerId", "1")
         ).andExpect(status().isOk())
         .andExpect(view().name("order-list"))
         .andExpect(model().attributeExists("orders"))
@@ -224,25 +284,40 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("productId", 1))
         .andExpect(model().attribute("sellerId", 1))
         .andExpect(model().attribute("customerId", 1))
-        .andExpect(model().attribute("products", List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2))))
-        .andExpect(model().attribute("customers", List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2))))
-        .andExpect(model().attribute("sellers", List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2))));
+        .andExpect(model().attribute("statuses", OrderStatus.values()))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)))
+        .andExpect(model().attribute("selectedStatus", "PENDING_PAYMENT"));
+
+        verify(oService, times(1))
+            .getAllSorted("name", "asc", "PENDING_PAYMENT", 1, 1, 1);
+        verify(pService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
+        verify(sellerService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("Test if no Order is being returned on getAllSorted method correctly as a default user")
     public void testListWithNoOrders() throws Exception{
-        when(oService.getAllSorted("name", "asc", 5, null, null)).thenReturn(List.of());
-        when(pService.getAll()).thenReturn(List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2)));
-        when(sellerService.getAll()).thenReturn(List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2)));
-        when(cService.getAll()).thenReturn(List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2)));
+        when(oService.getAllSorted("name", "asc", null, 5, null, null))
+            .thenReturn(List.of());
+        when(pService.getAll())
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
 
         mockMvc.perform(
             get("/order/list")
                 .param("sortBy", "name")
                 .param("direction", "asc")
-                .param("product.id", "5")
+                .param("productId", "5")
         ).andExpect(status().isOk())
         .andExpect(view().name("order-list"))
         .andExpect(model().attributeExists("orders"))
@@ -251,77 +326,93 @@ public class OrderWebControllerTest {
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("productId", 5))
-        .andExpect(model().attribute("products", List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2))))
-        .andExpect(model().attribute("customers", List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2))))
-        .andExpect(model().attribute("sellers", List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2))));
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)))
+        .andExpect(model().attribute("statuses", OrderStatus.values()));
+
+        verify(oService, times(1))
+            .getAllSorted("name", "asc", null, 5, null, null);
+        verify(pService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
+        verify(sellerService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("Default user can access Order form page (New Order)")
     public void testOrderFormAsDefaultUser() throws Exception{
-        when(pService.getAll()).thenReturn(List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2)));
-        when(sellerService.getAll()).thenReturn(List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2)));
-        when(cService.getAll()).thenReturn(List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2)));
-
-        mockMvc.perform(get("/order/form"))
-            .andExpect(status().isOk())
-            .andExpect(view().name("order-form"))
-            .andExpect(model().attributeExists("order"))
-            .andExpect(model().attribute("page", "order"))
-            .andExpect(model().attribute("products", List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2))))
-            .andExpect(model().attribute("customers", List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2))))
-            .andExpect(model().attribute("sellers", List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2))));
-    }
-
-    @Test
-    @WithMockUser(username = "Admin", roles = {"ADMIN"})
-    @DisplayName("Admin user can access Order form page (New Order)")
-    public void testOrderFormAsAdmin() throws Exception{
-        when(pService.getAll()).thenReturn(List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2)));
-        when(sellerService.getAll()).thenReturn(List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2)));
-        when(cService.getAll()).thenReturn(List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2)));
+        when(pService.getAllRegisteredOnSupply())
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(get("/order/form"))
         .andExpect(status().isOk())
         .andExpect(view().name("order-form"))
         .andExpect(model().attributeExists("order"))
         .andExpect(model().attribute("page", "order"))
-        .andExpect(model().attribute("products", List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2))))
-        .andExpect(model().attribute("customers", List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2))))
-        .andExpect(model().attribute("sellers", List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2))));
+        .andExpect(model().attribute("statuses", OrderStatus.values()))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)));
+
+        verify(pService, times(1))
+            .getAllRegisteredOnSupply();
+        verify(sellerService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
+    @DisplayName("Admin user can access Order form page (New Order)")
+    public void testOrderFormAsAdmin() throws Exception{
+        when(pService.getAllRegisteredOnSupply())
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+
+        mockMvc.perform(get("/order/form"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("order-form"))
+        .andExpect(model().attributeExists("order"))
+        .andExpect(model().attribute("page", "order"))
+        .andExpect(model().attribute("statuses", OrderStatus.values()))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)));
+
+        verify(pService, times(1))
+            .getAllRegisteredOnSupply();
+        verify(sellerService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("Default user can access Order form page (Edit Order)")
     public void testOrderEditFormAsDefaultUser() throws Exception{
-        when(oService.getById(1)).thenReturn(fakeOrder1Response);
-        when(supplyService.getByProductId(fakeOrder1Response.product().getId())).thenReturn(supplyMapper.toDTO(fakeSupply));
-        when(pService.getAll()).thenReturn(List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2)));
-        when(sellerService.getAll()).thenReturn(List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2)));
-        when(cService.getAll()).thenReturn(List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2)));
-
-        mockMvc.perform(get("/order/form/1"))
-            .andExpect(status().isOk())
-            .andExpect(view().name("order-form"))
-            .andExpect(model().attributeExists("order"))
-            .andExpect(model().attribute("order", fakeOrder1Response))
-            .andExpect(model().attribute("page", "order"))
-            .andExpect(model().attribute("products", List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2))))
-            .andExpect(model().attribute("customers", List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2))))
-            .andExpect(model().attribute("sellers", List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2))));
-    }
-
-    @Test
-    @WithMockUser(username = "Admin", roles = {"ADMIN"})
-    @DisplayName("Admin user can access Order form page (Edit Order)")
-    public void testOrderEditFormAsAdmin() throws Exception{
-        when(oService.getById(1)).thenReturn(fakeOrder1Response);
-        when(supplyService.getByProductId(fakeOrder1Response.product().getId())).thenReturn(supplyMapper.toDTO(fakeSupply));
-        when(pService.getAll()).thenReturn(List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2)));
-        when(sellerService.getAll()).thenReturn(List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2)));
-        when(cService.getAll()).thenReturn(List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2)));
+        when(oService.getById(1))
+            .thenReturn(fakeOrder1Response);
+        when(supplyService.getByProductId(fakeOrder1Response.product().getId()))
+            .thenReturn(fakeSupplyResponse);
+        when(pService.getAllRegisteredOnSupply(fakeSupplyResponse.product().getId()))
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
 
         mockMvc.perform(get("/order/form/1"))
         .andExpect(status().isOk())
@@ -329,144 +420,267 @@ public class OrderWebControllerTest {
         .andExpect(model().attributeExists("order"))
         .andExpect(model().attribute("order", fakeOrder1Response))
         .andExpect(model().attribute("page", "order"))
-        .andExpect(model().attribute("products", List.of(pMapper.toDTO(fakeProduct1), pMapper.toDTO(fakeProduct2))))
-        .andExpect(model().attribute("customers", List.of(sellerMapper.toDTO(fakeSeller1), sellerMapper.toDTO(fakeSeller2))))
-        .andExpect(model().attribute("sellers", List.of(cMapper.toDTO(fakeCustomer1), cMapper.toDTO(fakeCustomer2))));
+        .andExpect(model().attribute("statuses", OrderStatus.values()))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)));
+
+        verify(oService, times(1))
+            .getById(1);
+        verify(supplyService, times(1))
+            .getByProductId(fakeOrder1Response.product().getId());
+        verify(pService, times(1))
+            .getAllRegisteredOnSupply(fakeOrder1Response.product().getId());
+        verify(sellerService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
+    }
+
+    @Test
+    @WithMockUser(username = "Admin", roles = {"ADMIN"})
+    @DisplayName("Admin user can access Order form page (Edit Order)")
+    public void testOrderEditFormAsAdmin() throws Exception{
+        when(oService.getById(1))
+            .thenReturn(fakeOrder1Response);
+        when(supplyService.getByProductId(fakeOrder1Response.product().getId()))
+            .thenReturn(fakeSupplyResponse);
+        when(pService.getAllRegisteredOnSupply(fakeSupplyResponse.product().getId()))
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+
+        mockMvc.perform(get("/order/form/1"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("order-form"))
+        .andExpect(model().attributeExists("order"))
+        .andExpect(model().attribute("order", fakeOrder1Response))
+        .andExpect(model().attribute("page", "order"))
+        .andExpect(model().attribute("statuses", OrderStatus.values()))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)));
+
+        verify(oService, times(1))
+            .getById(1);
+        verify(supplyService, times(1))
+            .getByProductId(fakeOrder1Response.product().getId());
+        verify(pService, times(1))
+            .getAllRegisteredOnSupply(fakeOrder1Response.product().getId());
+        verify(sellerService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("Default user can submit new Orders")
     public void testSubmitNewOrderAsUser() throws Exception{
-        when(supplyService.getById(1)).thenReturn(supplyMapper.toDTO(fakeSupply));
-        when(supplyService.getByProductId(fakeProduct1.getId())).thenReturn(supplyMapper.toDTO(fakeSupply));
-
         mockMvc.perform(
             post("/order/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("totalPrice", fakeOrderRegister.totalPrice().toString())
                 .param("quantity", fakeOrderRegister.quantity().toString())
                 .param("orderDate", fakeOrderRegister.orderDate().toString())
-                .param("product.id", fakeOrderRegister.product_id().toString())
-                .param("seller.id", fakeOrderRegister.seller_id().toString())
-                .param("customer.id", fakeOrderRegister.customer_id().toString())
+                .param("productId", fakeOrderRegister.productId().toString())
+                .param("sellerId", fakeOrderRegister.sellerId().toString())
+                .param("customerId", fakeOrderRegister.customerId().toString())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/order/list"));
 
-        verify(oService, times(1)).register(fakeOrderRegister);
+        verify(oService, times(1))
+            .register(fakeOrderRegister);
+        verify(oMapper, times(0))
+            .toEntity(fakeOrderRegister);
+        verify(pService, times(0))
+            .getAllRegisteredOnSupply();
+        verify(sellerService, times(0))
+            .getAll();
+        verify(cService, times(0))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("If order's quantity is greater than on supply's quantity, error will be returned on quantityError model registering a new Order")
     public void testSubmitNewOrderAsUserWithInvalidQuantity() throws Exception{
-        when(supplyService.getById(1)).thenReturn(supplyMapper.toDTO(fakeSupply));
-        when(supplyService.getByProductId(fakeProduct1.getId())).thenReturn(supplyMapper.toDTO(fakeSupply));
+        fakeOrderRegister = new OrderRegisterDTO(
+            51, LocalDate.now(), fakeProduct1.getId(),
+            fakeSeller1.getId(), fakeCustomer1.getId()
+        );
+
+        when(oMapper.toEntity(any(OrderRegisterDTO.class)))
+            .thenReturn(fakeOrder);
+        when(pService.getAllRegisteredOnSupply())
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+        when(oService.register(fakeOrderRegister))
+            .thenThrow(new InvalidQuantityException("You inserted a quantity greater that actually have in supply, please change it"));
 
         mockMvc.perform(
             post("/order/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("totalPrice", fakeOrderRegister.totalPrice().toString())
-                .param("quantity", "51")
+                .param("quantity", fakeOrderRegister.quantity().toString())
                 .param("orderDate", fakeOrderRegister.orderDate().toString())
-                .param("product.id", fakeOrderRegister.product_id().toString())
-                .param("seller.id", fakeOrderRegister.seller_id().toString())
-                .param("customer.id", fakeOrderRegister.customer_id().toString())
+                .param("productId", fakeOrderRegister.productId().toString())
+                .param("sellerId", fakeOrderRegister.sellerId().toString())
+                .param("customerId", fakeOrderRegister.customerId().toString())
         ).andExpect(status().isOk())
-        .andExpect(model().attribute("quantityError", "You  inserted a quantity greater that actually have in supply, please change it"))
-        .andExpect(view().name("order-form"));
+        .andExpect(model().attribute("quantityError", "You inserted a quantity greater that actually have in supply, please change it"))
+        .andExpect(view().name("order-form"))
+        .andExpect(model().attribute("page", "order"))
+        .andExpect(model().attribute("order", fakeOrder))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)));
 
-        verify(oService, times(0)).register(fakeOrderRegister);
+        verify(oService, times(1))
+            .register(fakeOrderRegister);
+        verify(oMapper, times(1))
+            .toEntity(fakeOrderRegister);
+        verify(pService, times(1))
+            .getAllRegisteredOnSupply();
+        verify(sellerService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can submit new Orders")
     public void testSubmitNewOrderAsAdmin() throws Exception{
-        when(supplyService.getById(1)).thenReturn(supplyMapper.toDTO(fakeSupply));
-        when(supplyService.getByProductId(fakeProduct1.getId())).thenReturn(supplyMapper.toDTO(fakeSupply));
-
         mockMvc.perform(
             post("/order/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("totalPrice", fakeOrderRegister.totalPrice().toString())
                 .param("quantity", fakeOrderRegister.quantity().toString())
                 .param("orderDate", fakeOrderRegister.orderDate().toString())
-                .param("product.id", fakeOrderRegister.product_id().toString())
-                .param("seller.id", fakeOrderRegister.seller_id().toString())
-                .param("customer.id", fakeOrderRegister.customer_id().toString())
+                .param("productId", fakeOrderRegister.productId().toString())
+                .param("sellerId", fakeOrderRegister.sellerId().toString())
+                .param("customerId", fakeOrderRegister.customerId().toString())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/order/list"));
 
-        verify(oService, times(1)).register(fakeOrderRegister);
+        verify(oService, times(1))
+            .register(fakeOrderRegister);
+        verify(oMapper, times(0))
+            .toEntity(fakeOrderRegister);
+        verify(pService, times(0))
+            .getAllRegisteredOnSupply();
+        verify(sellerService, times(0))
+            .getAll();
+        verify(cService, times(0))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("Default user can submit a edit in Order")
     public void testSubmitEditOrderAsUser() throws Exception{
-        when(oService.getById(1)).thenReturn(fakeOrder1Response);
-        when(supplyService.getByProductId(fakeProduct1.getId())).thenReturn(supplyMapper.toDTO(fakeSupply));
-
         mockMvc.perform(
-            post("/order/form")
+            post("/order/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
-                .param("totalPrice", fakeOrderUpdate.totalPrice().toString())
                 .param("quantity", fakeOrderUpdate.quantity().toString())
                 .param("orderDate", fakeOrderUpdate.orderDate().toString())
-                .param("product.id", fakeOrderUpdate.product_id().toString())
-                .param("seller.id", fakeOrderUpdate.seller_id().toString())
-                .param("customer.id", fakeOrderUpdate.customer_id().toString())
+                .param("productId", fakeOrderUpdate.productId().toString())
+                .param("sellerId", fakeOrderUpdate.sellerId().toString())
+                .param("customerId", fakeOrderUpdate.customerId().toString())
+                .param("status", fakeOrderUpdate.status().toString())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/order/list"));
 
-        verify(oService, times(1)).update(eq(1), fakeOrderUpdate);
+        verify(oService, times(1))
+            .update(1, fakeOrderUpdate);
+        verify(oMapper, times(0))
+            .toEntity(fakeOrderUpdate);
+        verify(pService, times(0))
+            .getAllRegisteredOnSupply(fakeOrderUpdate.productId());
+        verify(sellerService, times(0))
+            .getAll();
+        verify(cService, times(0))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("If order's quantity is greater than on supply's quantity, error will be returned on quantityError model registering a new Order")
     public void testSubmitEditOrderAsUserWithInvalidQuantity() throws Exception{
-        when(oService.getById(1)).thenReturn(fakeOrder1Response);
-        when(supplyService.getByProductId(fakeProduct1.getId())).thenReturn(supplyMapper.toDTO(fakeSupply));
+        fakeOrderUpdate = new OrderUpdateDTO(
+            OrderStatus.PAID,51, LocalDate.now(),
+            fakeProduct2.getId(), fakeSeller2.getId(), fakeCustomer2.getId()
+        );
+
+        when(oMapper.toEntity(any(OrderUpdateDTO.class)))
+            .thenReturn(fakeOrder);
+        when(pService.getAllRegisteredOnSupply(fakeOrderUpdate.productId()))
+            .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(sellerService.getAll())
+            .thenReturn(List.of(fakeSeller1Response, fakeSeller2Response));
+        when(cService.getAll())
+            .thenReturn(List.of(fakeCustomer1Response, fakeCustomer2Response));
+        when(oService.update(1, fakeOrderUpdate))
+            .thenThrow(new InvalidQuantityException("You inserted a quantity greater that actually have in supply, please change it"));
 
         mockMvc.perform(
-            post("/order/form")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("totalPrice", fakeOrderRegister.totalPrice().toString())
-                .param("quantity", "51")
-                .param("orderDate", fakeOrderRegister.orderDate().toString())
-                .param("product.id", fakeOrderRegister.product_id().toString())
-                .param("seller.id", fakeOrderRegister.seller_id().toString())
-                .param("customer.id", fakeOrderRegister.customer_id().toString())
-        ).andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("/order/list"));
+            post("/order/form/{id}", 1)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .param("quantity", fakeOrderUpdate.quantity().toString())
+            .param("status", fakeOrderUpdate.status().toString())
+            .param("orderDate", fakeOrderUpdate.orderDate().toString())
+            .param("productId", fakeOrderUpdate.productId().toString())
+            .param("sellerId", fakeOrderUpdate.sellerId().toString())
+            .param("customerId", fakeOrderUpdate.customerId().toString())
+        ).andExpect(status().isOk())
+        .andExpect(view().name("order-form"))
+        .andExpect(model().attribute("quantityError", "You inserted a quantity greater that actually have in supply, please change it"))
+        .andExpect(model().attribute("page", "order"))
+        .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("sellers", List.of(fakeSeller1Response, fakeSeller2Response)))
+        .andExpect(model().attribute("customers", List.of(fakeCustomer1Response, fakeCustomer2Response)));;
 
-        verify(oService, times(1)).update(eq(1), fakeOrderUpdate);
+        verify(oService, times(1))
+            .update(1, fakeOrderUpdate);
+        verify(oMapper, times(1))
+            .toEntity(fakeOrderUpdate);
+        verify(pService, times(1))
+            .getAllRegisteredOnSupply(fakeOrderUpdate.productId());
+        verify(sellerService, times(1))
+            .getAll();
+        verify(cService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can submit a edit on Order")
     public void testSubmitEditOrderAsAdmin() throws Exception{
-        when(oService.getById(1)).thenReturn(fakeOrder1Response);
-        when(supplyService.getByProductId(fakeProduct1.getId())).thenReturn(supplyMapper.toDTO(fakeSupply));
-
         mockMvc.perform(
-            post("/order/form")
+            post("/order/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
-                .param("totalPrice", fakeOrderUpdate.totalPrice().toString())
                 .param("quantity", fakeOrderUpdate.quantity().toString())
+                .param("status", fakeOrderUpdate.status().toString())
                 .param("orderDate", fakeOrderUpdate.orderDate().toString())
-                .param("product.id", fakeOrderUpdate.product_id().toString())
-                .param("seller.id", fakeOrderUpdate.seller_id().toString())
-                .param("customer.id", fakeOrderUpdate.customer_id().toString())
+                .param("productId", fakeOrderUpdate.productId().toString())
+                .param("sellerId", fakeOrderUpdate.sellerId().toString())
+                .param("customerId", fakeOrderUpdate.customerId().toString())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/order/list"));
 
-        verify(oService, times(1)).update(eq(1), fakeOrderUpdate);
+        verify(oService, times(1))
+            .update(1, fakeOrderUpdate);
+        verify(oMapper, times(0))
+            .toEntity(fakeOrderUpdate);
+        verify(pService, times(0))
+            .getAllRegisteredOnSupply(fakeOrderUpdate.productId());
+        verify(sellerService, times(0))
+            .getAll();
+        verify(cService, times(0))
+            .getAll();
     }
 
     @Test
@@ -477,7 +691,8 @@ public class OrderWebControllerTest {
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/order/list"));
 
-        verify(oService, times(1)).delete(eq(1));
+        verify(oService, times(1))
+            .delete(1);
     }
 
     @Test
@@ -488,6 +703,7 @@ public class OrderWebControllerTest {
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/order/list"));
 
-        verify(oService, times(1)).delete(eq(1));
+        verify(oService, times(1))
+            .delete(1);
     }
 }

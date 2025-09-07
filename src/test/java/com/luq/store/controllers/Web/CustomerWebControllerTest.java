@@ -1,6 +1,5 @@
 package com.luq.store.controllers.Web;
 
-import com.luq.store.domain.Customer;
 import com.luq.store.dto.request.customer.CustomerRegisterDTO;
 import com.luq.store.dto.request.customer.CustomerUpdateDTO;
 import com.luq.store.dto.response.customer.CustomerResponseDTO;
@@ -21,8 +20,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -59,9 +57,7 @@ public class CustomerWebControllerTest {
 
         fakeCustomer1Response = new CustomerResponseDTO(1, "Test Customer 01", user, now, user, now);
         fakeCustomer2Response = new CustomerResponseDTO(1, "Test Customer 02", user, now, user, now);
-
         fakeCustomerRegister = new CustomerRegisterDTO("Test Customer 01");
-
         fakeCustomerUpdate = new CustomerUpdateDTO("Test Customer 02");
     }
 
@@ -197,9 +193,8 @@ public class CustomerWebControllerTest {
     @DisplayName("Default user must not edit Customers")
     public void testSubmitEditCustomerAsUser() throws Exception{
         mockMvc.perform(
-            post("/customer/form")
+            put("/customer/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
                 .param("name", "Customer being edited")
         ).andExpect(status().isForbidden());
     }
@@ -208,17 +203,14 @@ public class CustomerWebControllerTest {
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can submit a edit on Customer")
     public void testSubmitEditCustomerAsAdmin() throws Exception{
-        when(cService.getById(1)).thenReturn(fakeCustomer1Response);
-
         mockMvc.perform(
-            post("/customer/form")
+            post("/customer/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
                 .param("name", fakeCustomerUpdate.name())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/customer/list"));
 
-        verify(cService, times(1)).update(eq(1), fakeCustomerUpdate);
+       verify(cService, times(1)).update(1, fakeCustomerUpdate);
     }
 
     @Test

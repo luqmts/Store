@@ -5,7 +5,10 @@ import com.luq.store.domain.Supplier;
 import com.luq.store.dto.request.product.ProductRegisterDTO;
 import com.luq.store.dto.request.product.ProductUpdateDTO;
 import com.luq.store.dto.response.product.ProductResponseDTO;
+import com.luq.store.dto.response.supplier.SupplierResponseDTO;
+import com.luq.store.exceptions.InvalidProductPriceException;
 import com.luq.store.infra.security.SecurityConfig;
+import com.luq.store.mapper.ProductMapper;
 import com.luq.store.repositories.UserRepository;
 import com.luq.store.services.ProductService;
 import com.luq.store.services.SupplierService;
@@ -46,9 +49,11 @@ public class ProductWebControllerTest {
     private ProductService pService;
     @MockBean
     private SupplierService sService;
-
     @MockBean
     private TokenService tService;
+
+    @MockBean
+    private ProductMapper pMapper;
 
     @MockBean
     private UserRepository uRepository;
@@ -56,23 +61,35 @@ public class ProductWebControllerTest {
     private ProductResponseDTO fakeProduct1Response, fakeProduct2Response;
     private ProductRegisterDTO fakeProductRegister;
     private ProductUpdateDTO fakeProductUpdate;
+    private Product fakeProduct;
+    private SupplierResponseDTO fakeSupplier1Response, fakeSupplier2Response;
+    private Supplier fakeSupplier1, fakeSupplier2;
 
     @BeforeEach
     public void setUp(){
         String user = "Jimmy McGill";
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
-        Supplier fakeSupplier1 = new Supplier(
-                1, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
-                new Mail("sony@mail.com"), new Phone("11222225555"),
-                user, now, user, now
+        fakeSupplier1 = new Supplier(
+            1, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
+            new Mail("sony@mail.com"), new Phone("11222225555"),
+            user, now, user, now
         );
-        Supplier fakeSupplier2 = new Supplier(
+        fakeSupplier2 = new Supplier(
             2, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
             new Mail("microsoft@mail.com"), new Phone("11000001111"),
             user, now, user, now
         );
-
+        fakeSupplier1Response = new SupplierResponseDTO(
+            1, "Sony Brasil LTDA.", "04.542.534/0001-09",
+            "sony@mail.com", "11222225555",
+            user, now, user, now
+        );
+        fakeSupplier2Response = new SupplierResponseDTO(
+            2, "Microsoft Brasil LTDA.", "43.447.044/0004-10",
+            "microsoft@mail.com", "11000001111",
+            user, now, user, now
+        );
 
         fakeProduct1Response = new ProductResponseDTO(
             1, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
@@ -90,6 +107,10 @@ public class ProductWebControllerTest {
             "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
             BigDecimal.valueOf(200.00), fakeSupplier2.getId()
         );
+        fakeProduct = new Product(
+            1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
+            BigDecimal.valueOf(200.00), fakeSupplier2,  user, now, user, now
+        );
     }
 
     @Test
@@ -98,6 +119,8 @@ public class ProductWebControllerTest {
     public void testListAllProducts() throws Exception{
         when(pService.getAllSorted("name", "asc", null, null, null))
             .thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(sService.getAll())
+            .thenReturn(List.of(fakeSupplier1Response, fakeSupplier2Response));
 
         mockMvc.perform(
             get("/product/list")
@@ -107,9 +130,15 @@ public class ProductWebControllerTest {
         .andExpect(view().name("product-list"))
         .andExpect(model().attributeExists("products"))
         .andExpect(model().attribute("products", List.of(fakeProduct1Response, fakeProduct2Response)))
+        .andExpect(model().attribute("suppliers", List.of(fakeSupplier1Response, fakeSupplier2Response)))
         .andExpect(model().attribute("page", "product"))
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"));
+
+        verify(pService, times(1))
+            .getAllSorted("name", "asc", null, null, null);
+        verify(sService, times(1))
+            .getAll();
     }
 
     @Test
@@ -118,20 +147,28 @@ public class ProductWebControllerTest {
     public void testListProductsWithOneFilter() throws Exception{
         when(pService.getAllSorted("name", "asc", 1, null, null))
             .thenReturn(List.of(fakeProduct1Response));
+        when(sService.getAll())
+            .thenReturn(List.of(fakeSupplier1Response, fakeSupplier2Response));
 
         mockMvc.perform(
             get("/product/list")
                 .param("sortBy", "name")
                 .param("direction", "asc")
-                .param("supplier.id", "1")
+                .param("supplierId", "1")
         ).andExpect(status().isOk())
         .andExpect(view().name("product-list"))
         .andExpect(model().attributeExists("products"))
         .andExpect(model().attribute("products", List.of(fakeProduct1Response)))
+        .andExpect(model().attribute("suppliers", List.of(fakeSupplier1Response, fakeSupplier2Response)))
         .andExpect(model().attribute("page", "product"))
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("supplierId", 1));
+
+        verify(pService, times(1))
+            .getAllSorted("name", "asc", 1, null, null);
+        verify(sService, times(1))
+            .getAll();
     }
 
     @Test
@@ -140,46 +177,62 @@ public class ProductWebControllerTest {
     public void testListProductsWithAllFilters() throws Exception{
         when(pService.getAllSorted("name", "asc", 1, "Playstation 5 Controller", "PS5Cont"))
             .thenReturn(List.of(fakeProduct1Response));
-        when(pService.getAll()).thenReturn(List.of(fakeProduct1Response, fakeProduct2Response));
+        when(sService.getAll())
+            .thenReturn(List.of(fakeSupplier1Response, fakeSupplier2Response));
 
         mockMvc.perform(
             get("/product/list")
                 .param("sortBy", "name")
                 .param("direction", "asc")
-                .param("supplier.id", "1")
+                .param("supplierId", "1")
                 .param("name", "Playstation 5 Controller")
                 .param("sku", "PS5Cont")
         ).andExpect(status().isOk())
         .andExpect(view().name("product-list"))
         .andExpect(model().attributeExists("products"))
         .andExpect(model().attribute("products", List.of(fakeProduct1Response)))
+        .andExpect(model().attribute("suppliers", List.of(fakeSupplier1Response, fakeSupplier2Response)))
         .andExpect(model().attribute("page", "product"))
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("supplierId", 1))
         .andExpect(model().attribute("name", "Playstation 5 Controller"))
         .andExpect(model().attribute("sku", "PS5Cont"));
+
+        verify(pService, times(1))
+            .getAllSorted("name", "asc", 1, "Playstation 5 Controller", "PS5Cont");
+        verify(sService, times(1))
+            .getAll();
     }
 
     @Test
     @WithMockUser
     @DisplayName("Test if no Product is being returned on getAllSorted method correctly as a default user")
     public void testListWithNoProducts() throws Exception{
-        when(pService.getAllSorted("name", "asc", 5, null, null)).thenReturn(List.of());
+        when(pService.getAllSorted("name", "asc", 5, null, null))
+            .thenReturn(List.of());
+        when(sService.getAll())
+            .thenReturn(List.of(fakeSupplier1Response, fakeSupplier2Response));
 
         mockMvc.perform(
             get("/product/list")
                 .param("sortBy", "name")
                 .param("direction", "asc")
-                .param("supplier.id", "5")
+                .param("supplierId", "5")
         ).andExpect(status().isOk())
         .andExpect(view().name("product-list"))
         .andExpect(model().attributeExists("products"))
         .andExpect(model().attribute("products", List.of()))
+        .andExpect(model().attribute("suppliers", List.of(fakeSupplier1Response, fakeSupplier2Response)))
         .andExpect(model().attribute("page", "product"))
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("supplierId", 5));
+
+        verify(pService, times(1))
+            .getAllSorted("name", "asc", 5, null, null);
+        verify(sService, times(1))
+            .getAll();
     }
 
     @Test
@@ -188,17 +241,27 @@ public class ProductWebControllerTest {
     public void testProductFormAsDefaultUser() throws Exception{
         mockMvc.perform(get("/product/form"))
         .andExpect(status().isForbidden());
+
+        verify(sService, times(0))
+            .getAll();
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can access Product form page (New Product)")
     public void testProductFormAsAdmin() throws Exception{
+        when(sService.getAll())
+            .thenReturn(List.of(fakeSupplier1Response, fakeSupplier2Response));
+
         mockMvc.perform(get("/product/form"))
         .andExpect(status().isOk())
         .andExpect(view().name("product-form"))
         .andExpect(model().attributeExists("product"))
-        .andExpect(model().attribute("page", "product"));
+        .andExpect(model().attribute("page", "product"))
+        .andExpect(model().attribute("suppliers", List.of(fakeSupplier1Response, fakeSupplier2Response)));
+
+        verify(sService, times(1))
+            .getAll();
     }
 
     @Test
@@ -207,20 +270,34 @@ public class ProductWebControllerTest {
     public void testProductEditFormAsDefaultUser() throws Exception{
         mockMvc.perform(get("/product/form/1"))
         .andExpect(status().isForbidden());
+
+        verify(pService, times(0))
+            .getById(1);
+        verify(sService, times(0))
+            .getAll();
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can access Product form page (Edit Product)")
     public void testProductEditFormAsAdmin() throws Exception{
-        when(pService.getById(1)).thenReturn(fakeProduct1Response);
+        when(pService.getById(1))
+            .thenReturn(fakeProduct1Response);
+        when(sService.getAll())
+            .thenReturn(List.of(fakeSupplier1Response, fakeSupplier2Response));
 
         mockMvc.perform(get("/product/form/1"))
         .andExpect(status().isOk())
         .andExpect(view().name("product-form"))
         .andExpect(model().attributeExists("product"))
         .andExpect(model().attribute("product", fakeProduct1Response))
+        .andExpect(model().attribute("suppliers", List.of(fakeSupplier1Response, fakeSupplier2Response)))
         .andExpect(model().attribute("page", "product"));
+
+        verify(pService, times(1))
+            .getById(1);
+        verify(sService, times(1))
+            .getAll();
     }
 
     @Test
@@ -234,8 +311,15 @@ public class ProductWebControllerTest {
                 .param("sku", fakeProductRegister.sku())
                 .param("description", fakeProductRegister.description())
                 .param("price", fakeProductRegister.price().toString())
-                .param("supplier.id", fakeProductRegister.supplier_id().toString())
+                .param("supplierId", fakeProductRegister.supplierId().toString())
         ).andExpect(status().isForbidden());
+
+        verify(pService, times(0))
+            .register(fakeProductRegister);
+        verify(pMapper, times(0))
+            .toEntity(fakeProductRegister);
+        verify(sService, times(0))
+            .getAll();
     }
 
     @Test
@@ -249,30 +333,55 @@ public class ProductWebControllerTest {
                 .param("sku", fakeProductRegister.sku())
                 .param("description", fakeProductRegister.description())
                 .param("price", fakeProductRegister.price().toString())
-                .param("supplier.id", fakeProductRegister.supplier_id().toString())
+                .param("supplierId", fakeProductRegister.supplierId().toString())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/product/list"));
 
-        verify(pService, times(1)).register(fakeProductRegister);
+        verify(pService, times(1))
+            .register(fakeProductRegister);
+        verify(pMapper, times(0))
+            .toEntity(fakeProductRegister);
+        verify(sService, times(0))
+            .getAll();
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Products with price less than 1 is not registered and a error will be returned")
     public void testSubmitNewProductAsAdminWithInvalidPrice() throws Exception{
+        fakeProductRegister = new ProductRegisterDTO(
+            "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
+            BigDecimal.valueOf(-1), fakeSupplier1.getId()
+        );
+        fakeProduct = new Product();
+        fakeProduct.setId(1);
+
+        when(pService.register(any(ProductRegisterDTO.class)))
+            .thenThrow(new InvalidProductPriceException("Product's price must be greater or equal than 1"));
+        when(pMapper.toEntity(fakeProductRegister))
+            .thenReturn(fakeProduct);
+        when(sService.getAll())
+            .thenReturn(List.of(fakeSupplier1Response, fakeSupplier2Response));
+
         mockMvc.perform(
             post("/product/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("name", fakeProductRegister.name())
                 .param("sku", fakeProductRegister.sku())
                 .param("description", fakeProductRegister.description())
-                .param("price", BigDecimal.valueOf(-1).toString())
-                .param("supplier.id", fakeProductRegister.supplier_id().toString())
+                .param("price", fakeProductRegister.price().toString())
+                .param("supplierId", fakeProductRegister.supplierId().toString())
         ).andExpect(status().isOk())
         .andExpect(view().name("product-form"))
+        .andExpect(model().attribute("suppliers", List.of(fakeSupplier1Response, fakeSupplier2Response)))
         .andExpect(model().attribute("priceError", "Product's price must be greater or equal than 1"));
 
-        verify(pService, times(0)).register(fakeProductRegister);
+        verify(pService, times(1))
+            .register(fakeProductRegister);
+        verify(pMapper, times(1))
+            .toEntity(fakeProductRegister);
+        verify(sService, times(1))
+            .getAll();
     }
 
     @Test
@@ -287,49 +396,78 @@ public class ProductWebControllerTest {
                 .param("sku", fakeProductUpdate.sku())
                 .param("description", fakeProductUpdate.description())
                 .param("price", fakeProductUpdate.price().toString())
-                .param("supplier.id", fakeProductUpdate.supplier_id().toString())
+                .param("supplierId", fakeProductUpdate.supplierId().toString())
         ).andExpect(status().isForbidden());
+
+        verify(pService, times(0))
+            .update(1, fakeProductUpdate);
+        verify(pMapper, times(0))
+            .toEntity(fakeProductUpdate);
+        verify(sService, times(0))
+            .getAll();
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Admin user can submit a edit on Product")
     public void testSubmitEditProductAsAdmin() throws Exception{
-        when(pService.getById(1)).thenReturn(fakeProduct1Response);
-
         mockMvc.perform(
-            post("/product/form")
+            post("/product/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "1")
                 .param("name", fakeProductUpdate.name())
                 .param("sku", fakeProductUpdate.sku())
                 .param("description", fakeProductUpdate.description())
                 .param("price", fakeProductUpdate.price().toString())
-                .param("supplier.id", fakeProductUpdate.supplier_id().toString())
+                .param("supplierId", fakeProductUpdate.supplierId().toString())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/product/list"));
 
-        verify(pService, times(1)).update(eq(1), fakeProductUpdate);
-    }
+        verify(pService, times(1))
+            .update(1, fakeProductUpdate);
+        verify(pMapper, times(0))
+            .toEntity(fakeProductUpdate);
+        verify(sService, times(0))
+            .getAll();    }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Products with price less than 1 is not edited and a error will be returned")
-    public void testSubmitEditProductAsAdminWithInvalidPrice() throws Exception{
+    public void testSubmitEditProductAsAdminWithInvalidPrice() throws Exception {
+        fakeProductUpdate = new ProductUpdateDTO(
+            "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
+            BigDecimal.valueOf(-1), fakeSupplier2.getId()
+        );
+        fakeProduct = new Product();
+        fakeProduct.setId(1);
+
+        when(pService.update(eq(1), any(ProductUpdateDTO.class)))
+            .thenThrow(new InvalidProductPriceException("Product's price must be greater or equal than 1"));
+        when(pMapper.toEntity(fakeProductUpdate))
+            .thenReturn(fakeProduct);
+        when(sService.getAll())
+            .thenReturn(List.of(fakeSupplier1Response, fakeSupplier2Response));
+
         mockMvc.perform(
-            post("/product/form")
+            post("/product/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
-                .param("name", fakeProductRegister.name())
-                .param("sku", fakeProductRegister.sku())
-                .param("description", fakeProductRegister.description())
-                .param("price", BigDecimal.valueOf(-1).toString())
-                .param("supplier.id", fakeProductRegister.supplier_id().toString())
+                .param("name", fakeProductUpdate.name())
+                .param("sku", fakeProductUpdate.sku())
+                .param("description", fakeProductUpdate.description())
+                .param("price", fakeProductUpdate.price().toString())
+                .param("supplierId", fakeProductUpdate.supplierId().toString())
         ).andExpect(status().isOk())
         .andExpect(view().name("product-form"))
-        .andExpect(model().attribute("priceError", "Product's price must be greater or equal than 1"));
+        .andExpect(model().attributeExists("product"))
+        .andExpect(model().attribute("priceError", "Product's price must be greater or equal than 1"))
+        .andExpect(model().attribute("suppliers", List.of(fakeSupplier1Response, fakeSupplier2Response)));
 
-        verify(pService, times(0)).update(1, fakeProductUpdate);
+        verify(pService, times(1))
+            .update(1, fakeProductUpdate);
+        verify(pMapper, times(1))
+            .toEntity(fakeProductUpdate);
+        verify(sService, times(1))
+            .getAll();
     }
 
     @Test
@@ -338,6 +476,9 @@ public class ProductWebControllerTest {
     public void testDeleteProductAsUser() throws Exception{
         mockMvc.perform(get("/product/delete/1"))
         .andExpect(status().isForbidden());
+
+        verify(pService, times(0))
+            .delete(1);
     }
 
     @Test
@@ -348,6 +489,7 @@ public class ProductWebControllerTest {
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/product/list"));
 
-        verify(pService, times(1)).delete(eq(1));
+        verify(pService, times(1))
+            .delete(1);
     }
 }

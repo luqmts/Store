@@ -173,7 +173,7 @@ public class AuthenticationWebControllerTest {
                 .param("direction", "asc")
                 .param("name", "Test User 01")
                 .param("login", "user1@mail.com")
-                .param("role", "USER")
+                .param("selectedRole", "USER")
         ).andExpect(status().isOk())
         .andExpect(model().attribute("page", "user"))
         .andExpect(model().attribute("users", List.of(fakeUser1, fakeUser2)))

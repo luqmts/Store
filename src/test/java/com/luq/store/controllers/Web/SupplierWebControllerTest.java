@@ -4,7 +4,12 @@ import com.luq.store.domain.Supplier;
 import com.luq.store.dto.request.supplier.SupplierRegisterDTO;
 import com.luq.store.dto.request.supplier.SupplierUpdateDTO;
 import com.luq.store.dto.response.supplier.SupplierResponseDTO;
+import com.luq.store.exceptions.InvalidCnpjException;
+import com.luq.store.exceptions.InvalidMailException;
+import com.luq.store.exceptions.InvalidPhoneException;
+import com.luq.store.exceptions.MultipleValidationException;
 import com.luq.store.infra.security.SecurityConfig;
+import com.luq.store.mapper.SupplierMapper;
 import com.luq.store.repositories.UserRepository;
 import com.luq.store.services.SupplierService;
 import com.luq.store.services.TokenService;
@@ -41,9 +46,11 @@ public class SupplierWebControllerTest {
 
     @MockBean
     private SupplierService sService;
-
     @MockBean
     private TokenService tService;
+
+    @MockBean
+    SupplierMapper sMapper;
 
     @MockBean
     private UserRepository uRepository;
@@ -51,6 +58,7 @@ public class SupplierWebControllerTest {
     private SupplierResponseDTO fakeSupplier1Response, fakeSupplier2Response;
     private SupplierRegisterDTO fakeSupplierRegister;
     private SupplierUpdateDTO fakeSupplierUpdate;
+    private Supplier fakeSupplier;
 
     @BeforeEach
     public void setUp(){
@@ -58,25 +66,29 @@ public class SupplierWebControllerTest {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
         fakeSupplier1Response = new SupplierResponseDTO(
-            1, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
-            new Mail("microsoft@mail.com"), new Phone("11000001111"),
+            1, "Microsoft Brasil LTDA.","43.447.044/0004-10",
+            "microsoft@mail.com", "11000001111",
             user, now, user, now
         );
         fakeSupplier2Response = new SupplierResponseDTO(
+            1, "Sony Brasil LTDA.","04.542.534/0001-09",
+            "sony@mail.com", "11222225555",
+            user, now, user, now
+        );
+        fakeSupplierRegister = new SupplierRegisterDTO(
+            "Microsoft Brasil LTDA.", "43.447.044/0004-10",
+            "microsoft@mail.com", "11000001111"
+        );
+        fakeSupplierUpdate = new SupplierUpdateDTO(
+            "Sony Brasil LTDA.", "04.542.534/0001-09",
+            "sony@mail.com", "11222225555"
+        );
+        fakeSupplier = new Supplier(
             1, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
             new Mail("sony@mail.com"), new Phone("11222225555"),
             user, now, user, now
         );
 
-        fakeSupplierRegister = new SupplierRegisterDTO(
-            "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
-            new Mail("microsoft@mail.com"), new Phone("11000001111")
-        );
-
-        fakeSupplierUpdate = new SupplierUpdateDTO(
-            "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
-            new Mail("sony@mail.com"), new Phone("11222225555")
-        );
     }
 
     @Test
@@ -97,6 +109,9 @@ public class SupplierWebControllerTest {
         .andExpect(model().attribute("page", "supplier"))
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"));
+
+        verify(sService, times(1))
+            .getAllSorted("name", "asc", null, null, null, null);
     }
 
     @Test
@@ -119,6 +134,9 @@ public class SupplierWebControllerTest {
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("name", "Microsoft Brasil LTDA."));
+
+        verify(sService, times(1))
+            .getAllSorted("name", "asc", "Microsoft Brasil LTDA.", null, null, null);
     }
 
     @Test
@@ -134,7 +152,7 @@ public class SupplierWebControllerTest {
             get("/supplier/list")
                 .param("sortBy", "name")
                 .param("direction", "asc")
-                .param("supplier.id", "1")
+                .param("supplierId", "1")
                 .param("name", "Microsoft Brasil LTDA.")
                 .param("cnpj", "43.447.044/0004-10")
                 .param("mail", "microsoft@mail.com")
@@ -150,6 +168,9 @@ public class SupplierWebControllerTest {
         .andExpect(model().attribute("cnpj", "43.447.044/0004-10"))
         .andExpect(model().attribute("mail", "microsoft@mail.com"))
         .andExpect(model().attribute("phone", "11000001111"));
+
+        verify(sService, times(1))
+            .getAllSorted("name", "asc", "Microsoft Brasil LTDA.", "43.447.044/0004-10","microsoft@mail.com", "11000001111");
     }
 
     @Test
@@ -172,6 +193,9 @@ public class SupplierWebControllerTest {
         .andExpect(model().attribute("sortBy", "name"))
         .andExpect(model().attribute("direction", "asc"))
         .andExpect(model().attribute("name", "Nintendo"));
+
+        verify(sService, times(1))
+            .getAllSorted("name", "asc", "Nintendo", null,null, null);
     }
 
     @Test
@@ -199,6 +223,9 @@ public class SupplierWebControllerTest {
     public void testSupplierEditFormAsDefaultUser() throws Exception{
         mockMvc.perform(get("/supplier/form/1"))
         .andExpect(status().isForbidden());
+
+        verify(sService, times(0))
+            .getById(1);
     }
 
     @Test
@@ -213,6 +240,9 @@ public class SupplierWebControllerTest {
         .andExpect(model().attributeExists("supplier"))
         .andExpect(model().attribute("supplier", fakeSupplier1Response))
         .andExpect(model().attribute("page", "supplier"));
+
+        verify(sService, times(1))
+            .getById(1);
     }
 
     @Test
@@ -223,10 +253,13 @@ public class SupplierWebControllerTest {
             post("/supplier/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("name", fakeSupplierRegister.name())
-                .param("cnpj", fakeSupplierRegister.cnpj().getValue())
-                .param("mail", fakeSupplierRegister.mail().getValue())
-                .param("phone", fakeSupplierRegister.phone().getValue())
+                .param("cnpj", fakeSupplierRegister.cnpj())
+                .param("mail", fakeSupplierRegister.mail())
+                .param("phone", fakeSupplierRegister.phone())
         ).andExpect(status().isForbidden());
+
+        verify(sService, times(0))
+            .register(fakeSupplierRegister);
     }
 
     @Test
@@ -237,91 +270,144 @@ public class SupplierWebControllerTest {
             post("/supplier/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("name", fakeSupplierRegister.name())
-                .param("cnpj", fakeSupplierRegister.cnpj().getValue())
-                .param("mail", fakeSupplierRegister.mail().getValue())
-                .param("phone", fakeSupplierRegister.phone().getValue())
+                .param("cnpj", fakeSupplierRegister.cnpj())
+                .param("mail", fakeSupplierRegister.mail())
+                .param("phone", fakeSupplierRegister.phone())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/supplier/list"));
 
-        verify(sService, times(1)).register(fakeSupplierRegister);
+        verify(sService, times(1))
+            .register(fakeSupplierRegister);
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Suppliers with invalid cnpj must not be registered and returned a error on form page")
     public void testSubmitNewSupplierAsAdminWithInvalidCnpj() throws Exception{
+        fakeSupplierRegister = new SupplierRegisterDTO(
+            "Microsoft Brasil LTDA.", "3123",
+            "microsoft@mail.com", "11000001111"
+        );
+        fakeSupplier = new Supplier();
+
+        when(sService.register(any(SupplierRegisterDTO.class)))
+        .thenThrow(new MultipleValidationException(List.of(new InvalidCnpjException("Invalid cnpj"))));
+        when(sMapper.toEntity(fakeSupplierRegister)).thenReturn(fakeSupplier);
+
         mockMvc.perform(
             post("/supplier/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("name", fakeSupplierRegister.name())
-                .param("cnpj", "1235435")
-                .param("mail", fakeSupplierRegister.mail().getValue())
-                .param("phone", fakeSupplierRegister.phone().getValue())
+                .param("cnpj", fakeSupplierRegister.cnpj())
+                .param("mail", fakeSupplierRegister.mail())
+                .param("phone", fakeSupplierRegister.phone())
         ).andExpect(status().isOk())
         .andExpect(view().name("supplier-form"))
         .andExpect(model().attributeExists("supplier"))
+        .andExpect(model().attribute("supplier", fakeSupplier))
         .andExpect(model().attribute("cnpjError", "Invalid cnpj"));
 
-        verify(sService, times(0)).register(fakeSupplierRegister);
+        verify(sService, times(1))
+            .register(fakeSupplierRegister);
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Suppliers with invalid mail must not be registered and returned a error on form page")
     public void testSubmitNewSupplierAsAdminWithInvalidMail() throws Exception{
+        fakeSupplierRegister = new SupplierRegisterDTO(
+            "Microsoft Brasil LTDA.", "43.447.044/0004-10",
+            "invalidmail", "11000001111"
+        );
+        fakeSupplier = new Supplier();
+
+        when(sService.register(any(SupplierRegisterDTO.class)))
+        .thenThrow(new MultipleValidationException(List.of(new InvalidMailException("Invalid mail"))));
+        when(sMapper.toEntity(fakeSupplierRegister)).thenReturn(fakeSupplier);
+
         mockMvc.perform(
             post("/supplier/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("name", fakeSupplierRegister.name())
-                .param("cnpj", fakeSupplierRegister.cnpj().getValue())
-                .param("mail", "invalidmail")
-                .param("phone", fakeSupplierRegister.phone().getValue())
+                .param("cnpj", fakeSupplierRegister.cnpj())
+                .param("mail", fakeSupplierRegister.mail())
+                .param("phone", fakeSupplierRegister.phone())
         ).andExpect(status().isOk())
         .andExpect(view().name("supplier-form"))
         .andExpect(model().attributeExists("supplier"))
+        .andExpect(model().attribute("supplier", fakeSupplier))
         .andExpect(model().attribute("mailError", "Invalid mail"));
 
-        verify(sService, times(0)).register(fakeSupplierRegister);
+        verify(sService, times(1))
+            .register(fakeSupplierRegister);
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Suppliers with invalid phone must not be registered and returned a error on form page")
     public void testSubmitNewSupplierAsAdminWithInvalidPhone() throws Exception{
+        fakeSupplierRegister = new SupplierRegisterDTO(
+            "Microsoft Brasil LTDA.", "43.447.044/0004-10",
+            "microsoft@mail.com", "123"
+        );
+        fakeSupplier = new Supplier();
+
+        when(sService.register(any(SupplierRegisterDTO.class)))
+        .thenThrow(new MultipleValidationException(List.of(new InvalidPhoneException("Invalid phone"))));
+        when(sMapper.toEntity(fakeSupplierRegister)).thenReturn(fakeSupplier);
+
         mockMvc.perform(
             post("/supplier/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("name", fakeSupplierRegister.name())
-                .param("cnpj", fakeSupplierRegister.cnpj().getValue())
-                .param("mail", fakeSupplierRegister.mail().getValue())
-                .param("phone", "123")
+                .param("cnpj", fakeSupplierRegister.cnpj())
+                .param("mail", fakeSupplierRegister.mail())
+                .param("phone", fakeSupplierRegister.phone())
         ).andExpect(status().isOk())
         .andExpect(view().name("supplier-form"))
         .andExpect(model().attributeExists("supplier"))
+        .andExpect(model().attribute("supplier", fakeSupplier))
         .andExpect(model().attribute("phoneError", "Invalid phone"));
 
-        verify(sService, times(0)).register(fakeSupplierRegister);
+        verify(sService, times(1))
+            .register(fakeSupplierRegister);
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Suppliers with invalid cnpj, mail and phone must not be registered and returned a error on form page")
     public void testSubmitNewSupplierAsAdminWithInvalidCnpjMailAndPhone() throws Exception{
+        fakeSupplierRegister = new SupplierRegisterDTO(
+            "Microsoft Brasil LTDA.", "3242",
+            "invalidMail", "123"
+        );
+        fakeSupplier = new Supplier();
+
+        when(sService.register(any(SupplierRegisterDTO.class)))
+        .thenThrow(new MultipleValidationException(List.of(
+            new InvalidPhoneException("Invalid phone"),
+            new InvalidMailException("Invalid mail"),
+            new InvalidCnpjException("Invalid cnpj")
+        )));
+        when(sMapper.toEntity(fakeSupplierRegister)).thenReturn(fakeSupplier);
+
         mockMvc.perform(
             post("/supplier/form")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("name", fakeSupplierRegister.name())
-                .param("cnpj", "1235435")
-                .param("mail", "invalidmail")
-                .param("phone", "123")
+                .param("cnpj", fakeSupplierRegister.cnpj())
+                .param("mail", fakeSupplierRegister.mail())
+                .param("phone", fakeSupplierRegister.phone())
         ).andExpect(status().isOk())
         .andExpect(view().name("supplier-form"))
         .andExpect(model().attributeExists("supplier"))
+        .andExpect(model().attribute("supplier", fakeSupplier))
         .andExpect(model().attribute("cnpjError", "Invalid cnpj"))
         .andExpect(model().attribute("mailError", "Invalid mail"))
         .andExpect(model().attribute("phoneError", "Invalid phone"));
 
-        verify(sService, times(0)).register(fakeSupplierRegister);
+        verify(sService, times(1))
+            .register(fakeSupplierRegister);
     }
 
     @Test
@@ -329,14 +415,16 @@ public class SupplierWebControllerTest {
     @DisplayName("Default user must not edit Suppliers")
     public void testSubmitEditSupplierAsUser() throws Exception{
         mockMvc.perform(
-            post("/supplier/form")
+            post("/supplier/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
                 .param("name", fakeSupplierUpdate.name())
-                .param("cnpj", fakeSupplierUpdate.cnpj().getValue())
-                .param("mail", fakeSupplierUpdate.mail().getValue())
-                .param("phone", fakeSupplierUpdate.phone().getValue())
+                .param("cnpj", fakeSupplierUpdate.cnpj())
+                .param("mail", fakeSupplierUpdate.mail())
+                .param("phone", fakeSupplierUpdate.phone())
         ).andExpect(status().isForbidden());
+
+        verify(sService, times(0))
+            .update(1, fakeSupplierUpdate);
     }
 
     @Test
@@ -346,107 +434,150 @@ public class SupplierWebControllerTest {
         when(sService.getById(1)).thenReturn(fakeSupplier1Response);
 
         mockMvc.perform(
-            post("/supplier/form")
+            post("/supplier/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
                 .param("name", fakeSupplierUpdate.name())
-                .param("cnpj", fakeSupplierUpdate.cnpj().getValue())
-                .param("mail", fakeSupplierUpdate.mail().getValue())
-                .param("phone", fakeSupplierUpdate.phone().getValue())
+                .param("cnpj", fakeSupplierUpdate.cnpj())
+                .param("mail", fakeSupplierUpdate.mail())
+                .param("phone", fakeSupplierUpdate.phone())
         ).andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/supplier/list"));
 
-        verify(sService, times(1)).update(eq(1), fakeSupplierUpdate);
+        verify(sService, times(1))
+            .update(1, fakeSupplierUpdate);
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Suppliers with invalid cnpj must not be edited and returned a error on form page")
     public void testSubmitEditSupplierAsAdminWithInvalidCnpj() throws Exception{
-        when(sService.getById(1)).thenReturn(fakeSupplier1Response);
+        fakeSupplierUpdate = new SupplierUpdateDTO(
+            "Sony Brasil LTDA.", "4213",
+            "sony@mail.com", "11222225555"
+        );
+        fakeSupplier = new Supplier();
+        fakeSupplier.setId(1);
+
+        when(sService.update(eq(1), any(SupplierUpdateDTO.class)))
+        .thenThrow(new MultipleValidationException(List.of(new InvalidCnpjException("Invalid cnpj"))));
+        when(sMapper.toEntity(fakeSupplierUpdate)).thenReturn(fakeSupplier);
 
         mockMvc.perform(
-            post("/supplier/form")
+            post("/supplier/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
                 .param("name", fakeSupplierUpdate.name())
-                .param("cnpj", "1235435")
-                .param("mail", fakeSupplierUpdate.mail().getValue())
-                .param("phone", fakeSupplierUpdate.phone().getValue())
+                .param("cnpj", fakeSupplierUpdate.cnpj())
+                .param("mail", fakeSupplierUpdate.mail())
+                .param("phone", fakeSupplierUpdate.phone())
         ).andExpect(status().isOk())
         .andExpect(view().name("supplier-form"))
         .andExpect(model().attributeExists("supplier"))
+        .andExpect(model().attribute("supplier", fakeSupplier))
         .andExpect(model().attribute("cnpjError", "Invalid cnpj"));
 
-        verify(sService, times(0)).update(eq(1), fakeSupplierUpdate);
+        verify(sService, times(1))
+            .update(1, fakeSupplierUpdate);
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Suppliers with invalid mail must not be edited and returned a error on form page")
     public void testSubmitEditSupplierAsAdminWithInvalidMail() throws Exception{
-        when(sService.getById(1)).thenReturn(fakeSupplier1Response);
+        fakeSupplierUpdate = new SupplierUpdateDTO(
+            "Sony Brasil LTDA.", "04.542.534/0001-09",
+            "invalidMail", "11222225555"
+        );
+        fakeSupplier = new Supplier();
+        fakeSupplier.setId(1);
+
+        when(sService.update(eq(1), any(SupplierUpdateDTO.class)))
+        .thenThrow(new MultipleValidationException(List.of(new InvalidMailException("Invalid mail"))));
+        when(sMapper.toEntity(fakeSupplierUpdate)).thenReturn(fakeSupplier);
 
         mockMvc.perform(
-            post("/supplier/form")
+            post("/supplier/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
                 .param("name", fakeSupplierUpdate.name())
-                .param("cnpj", fakeSupplierUpdate.cnpj().getValue())
-                .param("mail", "invalidmail")
-                .param("phone", fakeSupplierUpdate.phone().getValue())
+                .param("cnpj", fakeSupplierUpdate.cnpj())
+                .param("mail", fakeSupplierUpdate.mail())
+                .param("phone", fakeSupplierUpdate.phone())
         ).andExpect(status().isOk())
         .andExpect(view().name("supplier-form"))
         .andExpect(model().attributeExists("supplier"))
-        .andExpect(model().attribute("cnpjError", "Invalid cnpj"));
+        .andExpect(model().attribute("supplier", fakeSupplier))
+        .andExpect(model().attribute("mailError", "Invalid mail"));
 
-        verify(sService, times(0)).update(eq(1), fakeSupplierUpdate);
+        verify(sService, times(1))
+            .update(1, fakeSupplierUpdate);
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Suppliers with invalid phone must not be edited and returned a error on form page")
     public void testSubmitEditSupplierAsAdminWithInvalidPhone() throws Exception{
-        when(sService.getById(1)).thenReturn(fakeSupplier1Response);
+        fakeSupplierUpdate = new SupplierUpdateDTO(
+            "Sony Brasil LTDA.", "04.542.534/0001-09",
+            "sony@mail.com", "123"
+        );
+        fakeSupplier = new Supplier();
+        fakeSupplier.setId(1);
+
+        when(sService.update(eq(1), any(SupplierUpdateDTO.class)))
+        .thenThrow(new MultipleValidationException(List.of(new InvalidPhoneException("Invalid phone"))));
+        when(sMapper.toEntity(fakeSupplierUpdate)).thenReturn(fakeSupplier);
 
         mockMvc.perform(
-            post("/supplier/form")
+            post("/supplier/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
                 .param("name", fakeSupplierUpdate.name())
-                .param("cnpj", fakeSupplierUpdate.cnpj().getValue())
-                .param("mail", fakeSupplierUpdate.mail().getValue())
-                .param("phone", "123")
+                .param("cnpj", fakeSupplierUpdate.cnpj())
+                .param("mail", fakeSupplierUpdate.mail())
+                .param("phone", fakeSupplierUpdate.phone())
         ).andExpect(status().isOk())
         .andExpect(view().name("supplier-form"))
         .andExpect(model().attributeExists("supplier"))
+        .andExpect(model().attribute("supplier", fakeSupplier))
         .andExpect(model().attribute("phoneError", "Invalid phone"));
 
-        verify(sService, times(0)).update(eq(1), fakeSupplierUpdate);
+        verify(sService, times(1))
+            .update(1, fakeSupplierUpdate);
     }
 
     @Test
     @WithMockUser(username = "Admin", roles = {"ADMIN"})
     @DisplayName("Suppliers with invalid cnpj, mail and phone must not be edited and returned a error on form page")
     public void testSubmitEditSupplierAsAdminWithInvalidCnpjMailAndPhone() throws Exception{
-        when(sService.getById(1)).thenReturn(fakeSupplier1Response);
+        fakeSupplierUpdate = new SupplierUpdateDTO(
+            "Sony Brasil LTDA.", "0534",
+            "invalidMail", "123"
+        );
+        fakeSupplier = new Supplier();
+
+        when(sService.update(eq(1), any(SupplierUpdateDTO.class)))
+            .thenThrow(new MultipleValidationException(List.of(
+                new InvalidPhoneException("Invalid phone"),
+                new InvalidMailException("Invalid mail"),
+                new InvalidCnpjException("Invalid cnpj")
+            )));
+        when(sMapper.toEntity(fakeSupplierUpdate)).thenReturn(fakeSupplier);
 
         mockMvc.perform(
-            post("/supplier/form")
+            post("/supplier/form/{id}", 1)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("id", "1")
                 .param("name", fakeSupplierUpdate.name())
-                .param("cnpj", "1235435")
-                .param("mail", "invalidmail")
-                .param("phone", "123")
+                .param("cnpj", fakeSupplierUpdate.cnpj())
+                .param("mail", fakeSupplierUpdate.mail())
+                .param("phone", fakeSupplierUpdate.phone())
         ).andExpect(status().isOk())
         .andExpect(view().name("supplier-form"))
         .andExpect(model().attributeExists("supplier"))
+        .andExpect(model().attribute("supplier", fakeSupplier))
         .andExpect(model().attribute("cnpjError", "Invalid cnpj"))
         .andExpect(model().attribute("phoneError", "Invalid phone"))
         .andExpect(model().attribute("mailError", "Invalid mail"));
 
-        verify(sService, times(0)).update(eq(1), fakeSupplierUpdate);
+        verify(sService, times(1))
+            .update(1, fakeSupplierUpdate);
     }
 
     @Test
@@ -455,6 +586,9 @@ public class SupplierWebControllerTest {
     public void testDeleteSupplierAsUser() throws Exception{
         mockMvc.perform(get("/supplier/delete/1"))
         .andExpect(status().isForbidden());
+
+        verify(sService, times(0))
+            .delete(1);
     }
 
     @Test
@@ -465,6 +599,7 @@ public class SupplierWebControllerTest {
         .andExpect(status().is3xxRedirection())
         .andExpect(redirectedUrl("/supplier/list"));
 
-        verify(sService, times(1)).delete(eq(1));
+        verify(sService, times(1))
+            .delete(1);
     }
 }
