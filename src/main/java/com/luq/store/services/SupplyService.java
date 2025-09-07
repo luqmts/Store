@@ -1,7 +1,6 @@
 package com.luq.store.services;
 
 import com.luq.store.domain.Supply;
-import com.luq.store.domain.Product;
 import com.luq.store.dto.request.supply.SupplyRegisterDTO;
 import com.luq.store.dto.request.supply.SupplyUpdateDTO;
 import com.luq.store.dto.response.supply.SupplyResponseDTO;
@@ -57,7 +56,7 @@ public class SupplyService {
         if (data.quantity().compareTo(0) < 0)
             throw new InvalidQuantityException("Quantity must be greater or equal to 0");
 
-        if (sRepository.getByProductId(data.product_id()) != null)
+        if (sRepository.getByProductId(data.productId()) != null)
             throw new ProductRegisteredException("This product is already registered on supply, please update it instead");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -78,7 +77,7 @@ public class SupplyService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        supply.setProduct(pMapper.toEntity(pService.getById(data.product_id())));
+        supply.setProduct(pMapper.toEntity(pService.getById(data.productId())));
         supply.setQuantity(data.quantity());
 
         supply.setModifiedBy(authentication.getName());

@@ -86,10 +86,10 @@ public class OrderService {
     }
 
     public OrderResponseDTO register(OrderRegisterDTO data) throws JsonProcessingException, URISyntaxException {
-        Supply supply = supplyMapper.toEntity(supplyService.getByProductId(data.product_id()));
+        Supply supply = supplyMapper.toEntity(supplyService.getByProductId(data.productId()));
         if (supply.getId() == null) throw new NotFoundException("Supply not found for this product");
 
-        Product product = pRepository.findById(data.product_id()).orElse(null);
+        Product product = pRepository.findById(data.productId()).orElse(null);
         if (product == null) throw new NotFoundException("Product not found");
 
         if (data.quantity().compareTo(supply.getQuantity()) > 0)
@@ -152,7 +152,7 @@ public class OrderService {
         Order order = oRepository.findById(id).orElse(null);
         if (order == null) throw new NotFoundException("Order not found");
 
-        Product product = pRepository.findById(data.product_id()).orElse(null);
+        Product product = pRepository.findById(data.productId()).orElse(null);
         if (product == null) throw new NotFoundException("Product not found");
 
         Supply supply = sRepository.getByProductId(order.getProduct().getId());
@@ -166,9 +166,9 @@ public class OrderService {
         order.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(data.quantity())));
         order.setQuantity(data.quantity());
         order.setOrderDate(data.orderDate());
-        order.setProduct(pMapper.toEntity(pService.getById(data.product_id())));
-        order.setSeller(sellerMapper.toEntity(sellerService.getById(data.seller_id())));
-        order.setCustomer(cMapper.toEntity(cService.getById(data.customer_id())));
+        order.setProduct(pMapper.toEntity(pService.getById(data.productId())));
+        order.setSeller(sellerMapper.toEntity(sellerService.getById(data.sellerId())));
+        order.setCustomer(cMapper.toEntity(cService.getById(data.customerId())));
 
         order.setModifiedBy(authentication.getName());
         order.setModified(LocalDateTime.now());

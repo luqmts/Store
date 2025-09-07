@@ -98,7 +98,7 @@ public class ProductService {
         product.setSku(data.sku());
         product.setDescription(data.description());
         product.setPrice(data.price());
-        product.setSupplier(sMapper.toEntity(sService.getById(data.supplier_id())));
+        product.setSupplier(sMapper.toEntity(sService.getById(data.supplierId())));
 
         product.setModifiedBy(authentication.getName());
         product.setModified(LocalDateTime.now());
