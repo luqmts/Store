@@ -88,8 +88,6 @@ public class OrderServiceTest {
     String user;
     LocalDateTime now;
 
-
-
     @BeforeEach
     public void setUp(){
         user = "Jimmy McGill";
@@ -115,12 +113,12 @@ public class OrderServiceTest {
             BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
         fakeProduct1 = new Product(
-                1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
-                BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
+            1, "Xbox One Controller", "XOneCont", "Controller for Xbox One Console",
+            BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
         Product fakeProduct2 = new Product(
-                2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-                BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
+            2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
+            BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
         fakeSellerResponse = new SellerResponseDTO(
@@ -128,14 +126,14 @@ public class OrderServiceTest {
             user, now, user, now
         );
         Seller fakeSeller1 = new Seller(
-                1, "Walter White",
-                new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.FOOD,
-                user, now, user, now
+            1, "Walter White",
+            new Mail("WalterWhite@Cooking.com"), new Phone("11901010101"), Department.FOOD,
+            user, now, user, now
         );
         Seller fakeSeller2 = new Seller(
-                2, "Jesse Pinkman",
-                new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD,
-                user, now, user, now
+            2, "Jesse Pinkman",
+            new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD,
+            user, now, user, now
         );
 
         fakeSupplyResponse = new SupplyResponseDTO(1, 50, fakeProduct1, user, now, user, now);
@@ -179,10 +177,10 @@ public class OrderServiceTest {
         when(oRepository.save(fakeOrder1)).thenReturn(fakeOrder1);
         when(oMapper.toEntity(fakeOrderRegister)).thenReturn(fakeOrder1);
         when(oMapper.toDTO(fakeOrder1)).thenReturn(fakeOrder1Response);
-        when(supplyService.getByProductId(fakeOrderRegister.product_id())).thenReturn(fakeSupplyResponse);
+        when(supplyService.getByProductId(fakeOrderRegister.productId())).thenReturn(fakeSupplyResponse);
         when(supplyMapper.toEntity(fakeSupplyResponse)).thenReturn(fakeSupply);
         when(sRepository.save(fakeSupply)).thenReturn(null);
-        when(pRepository.findById(fakeOrderRegister.product_id())).thenReturn(Optional.ofNullable(fakeProduct1));
+        when(pRepository.findById(fakeOrderRegister.productId())).thenReturn(Optional.ofNullable(fakeProduct1));
 
         result = oService.register(fakeOrderRegister);
 
@@ -201,11 +199,11 @@ public class OrderServiceTest {
         when(oRepository.findById(fakeOrder1Response.id())).thenReturn(Optional.ofNullable(fakeOrder1));
         when(oRepository.save(fakeOrder2)).thenReturn(fakeOrder2);
         when(oMapper.toDTO(fakeOrder2)).thenReturn(fakeOrder2Response);
-        when(pRepository.findById(fakeOrderUpdate.product_id())).thenReturn(Optional.ofNullable(fakeProduct1));
+        when(pRepository.findById(fakeOrderUpdate.productId())).thenReturn(Optional.ofNullable(fakeProduct1));
         when(sRepository.getByProductId(fakeOrder2.getProduct().getId())).thenReturn(fakeSupply);
-        when(pService.getById(fakeOrderUpdate.product_id())).thenReturn(fakeProductResponse);
-        when(sellerService.getById(fakeOrderUpdate.seller_id())).thenReturn(fakeSellerResponse);
-        when(cService.getById(fakeOrderUpdate.customer_id())).thenReturn(fakeCustomerResponse);
+        when(pService.getById(fakeOrderUpdate.productId())).thenReturn(fakeProductResponse);
+        when(sellerService.getById(fakeOrderUpdate.sellerId())).thenReturn(fakeSellerResponse);
+        when(cService.getById(fakeOrderUpdate.customerId())).thenReturn(fakeCustomerResponse);
 
         result = oService.update(1, fakeOrderUpdate);
 

@@ -128,7 +128,7 @@ public class SupplyServiceTest {
         when(sRepository.save(fakeSupply2)).thenReturn(fakeSupply2);
         when(sMapper.toDTO(fakeSupply2)).thenReturn(fakeSupply2Response);
 
-        when(pService.getById(fakeSupplyUpdate.product_id())).thenReturn(fakeProductResponse);
+        when(pService.getById(fakeSupplyUpdate.productId())).thenReturn(fakeProductResponse);
         when(pMapper.toEntity(fakeProductResponse)).thenReturn(fakeProduct2);
 
         result = sService.update(fakeSupply1Response.id(), fakeSupplyUpdate);
@@ -167,10 +167,10 @@ public class SupplyServiceTest {
 
         result = sService.getById(1);
         assertAll(
-                () -> verify(sRepository, atMostOnce()).findById(1),
-                () -> assertNotNull(result),
-                () -> assertInstanceOf(SupplyResponseDTO.class, result),
-                () -> assertEquals(fakeSupply1Response, result)
+            () -> verify(sRepository, atMostOnce()).findById(1),
+            () -> assertNotNull(result),
+            () -> assertInstanceOf(SupplyResponseDTO.class, result),
+            () -> assertEquals(fakeSupply1Response, result)
         );
     }
 }

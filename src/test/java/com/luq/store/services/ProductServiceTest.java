@@ -141,7 +141,7 @@ public class ProductServiceTest {
         when(pRepository.save(fakeProduct2)).thenReturn(fakeProduct2);
         when(pMapper.toDTO(fakeProduct2)).thenReturn(fakeProduct2Response);
 
-        when(sService.getById(fakeProductUpdate.supplier_id())).thenReturn(fakeSupplierResponse);
+        when(sService.getById(fakeProductUpdate.supplierId())).thenReturn(fakeSupplierResponse);
         when(sMapper.toEntity(fakeSupplierResponse)).thenReturn(fakeSupplier2);
 
         result = pService.update(fakeProduct1Response.id(), fakeProductUpdate);
