@@ -1,7 +1,6 @@
 package com.luq.store.controllers.Web;
 
 import com.luq.store.domain.Supply;
-import com.luq.store.dto.request.customer.CustomerUpdateDTO;
 import com.luq.store.dto.request.supply.SupplyRegisterDTO;
 import com.luq.store.dto.request.supply.SupplyUpdateDTO;
 import com.luq.store.dto.response.supply.SupplyResponseDTO;
@@ -11,14 +10,11 @@ import com.luq.store.mapper.SupplyMapper;
 import com.luq.store.services.SupplyService;
 import com.luq.store.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -92,18 +88,10 @@ public class SupplyWebController {
         }
     }
 
-    @PutMapping(path="/supply/form/{id}")
+    @PostMapping(path="/supply/form/{id}")
     public String postSupply(@PathVariable("id") int id, SupplyUpdateDTO data, Model model){
-        try {
-            sService.update(id, data);
-            return "redirect:/supply/list";
-        } catch (InvalidQuantityException e) {
-            model.addAttribute("quantityError", e.getMessage());
-            model.addAttribute("page", "supply");
-            model.addAttribute("supply", sMapper.toEntity(data));
-            model.addAttribute("products", pService.getAll());
-            return "supply-form";
-        }
+        sService.update(id, data);
+        return "redirect:/supply/list";
     }
 
     @GetMapping(path="/supply/delete/{id}")
