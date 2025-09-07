@@ -23,7 +23,7 @@ public class ProductMapper {
         Supplier supplier;
 
         try {
-            supplier = sMapper.toEntity(sService.getById(data.supplier_id()));
+            supplier = sMapper.toEntity(sService.getById(data.supplierId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Supplier not found");
         }
@@ -42,7 +42,7 @@ public class ProductMapper {
         Supplier supplier;
 
         try {
-            supplier = sMapper.toEntity(sService.getById(data.supplier_id()));
+            supplier = sMapper.toEntity(sService.getById(data.supplierId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Supplier not found");
         }

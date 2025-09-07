@@ -39,19 +39,19 @@ public class OrderMapper {
         Customer customer;
 
         try {
-            product = pMapper.toEntity(pService.getById(data.product_id()));
+            product = pMapper.toEntity(pService.getById(data.productId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Product not found");
         }
 
         try {
-            seller = sMapper.toEntity(sService.getById(data.seller_id()));
+            seller = sMapper.toEntity(sService.getById(data.sellerId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Seller not found");
         }
 
         try {
-            customer = cMapper.toEntity(cService.getById(data.customer_id()));
+            customer = cMapper.toEntity(cService.getById(data.customerId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Customer not found");
         }
@@ -74,19 +74,19 @@ public class OrderMapper {
         Customer customer;
 
         try {
-            product = pMapper.toEntity(pService.getById(data.product_id()));
+            product = pMapper.toEntity(pService.getById(data.productId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Product not found");
         }
 
         try {
-            seller = sMapper.toEntity(sService.getById(data.seller_id()));
+            seller = sMapper.toEntity(sService.getById(data.sellerId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Seller not found");
         }
 
         try {
-            customer = cMapper.toEntity(cService.getById(data.customer_id()));
+            customer = cMapper.toEntity(cService.getById(data.customerId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Customer not found");
         }

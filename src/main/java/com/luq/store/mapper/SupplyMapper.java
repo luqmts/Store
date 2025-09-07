@@ -23,7 +23,7 @@ public class SupplyMapper {
         Product product;
 
         try {
-            product = pMapper.toEntity(pService.getById(data.product_id()));
+            product = pMapper.toEntity(pService.getById(data.productId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Product not found");
         }
@@ -39,7 +39,7 @@ public class SupplyMapper {
         Product product;
 
         try {
-            product = pMapper.toEntity(pService.getById(data.product_id()));
+            product = pMapper.toEntity(pService.getById(data.productId()));
         } catch (NullPointerException e) {
             throw new NotFoundException("Product not found");
         }
