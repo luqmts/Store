@@ -7,5 +7,5 @@ public record ProductUpdateDTO(
     String sku,
     String description,
     BigDecimal price,
-    Integer supplier_id
+    Integer supplierId
 ){}

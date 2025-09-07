@@ -7,5 +7,5 @@ public record ProductRegisterDTO(
     String sku,
     String description,
     BigDecimal price,
-    Integer supplier_id
+    Integer supplierId
 ){}
