@@ -33,20 +33,20 @@ public class OrderTest {
             user, now, user, now
         );
         fakeSeller2 = new Seller(
-                2, "Jesse Pinkman",
-                new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD,
-                user, now, user, now
+            2, "Jesse Pinkman",
+            new Mail("Jesse Pinkman@Cooking.com"), new Phone("11904040404"), Department.FOOD,
+            user, now, user, now
         );
 
         Supplier fakeSupplier1 = new Supplier(
-                1, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
-                new Mail("microsoft@mail.com"), new Phone("11000001111"),
-                user, now, user, now
+            1, "Microsoft Brasil LTDA.", new Cnpj("43.447.044/0004-10"),
+            new Mail("microsoft@mail.com"), new Phone("11000001111"),
+            user, now, user, now
         );
         Supplier fakeSupplier2 = new Supplier(
-                2, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
-                new Mail("sony@mail.com"), new Phone("11222225555"),
-                user, now, user, now
+            2, "Sony Brasil LTDA.", new Cnpj("04.542.534/0001-09"),
+            new Mail("sony@mail.com"), new Phone("11222225555"),
+            user, now, user, now
         );
 
         fakeProduct1 = new Product(
@@ -54,12 +54,12 @@ public class OrderTest {
             BigDecimal.valueOf(200.00), fakeSupplier1, user, now, user, now
         );
         fakeProduct2 = new Product(
-                2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
-                BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
+            2, "Playstation 5 Controller", "PS5Cont", "Controller for Playstation 5 Console",
+            BigDecimal.valueOf(250.00), fakeSupplier2, user, now, user, now
         );
 
         fakeOrder = new Order(
-            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(400.00), 2, LocalDate.now(),
+            1, BigDecimal.valueOf(400.00), BigDecimal.valueOf(200.00), OrderStatus.PENDING_PAYMENT, 2, LocalDate.now(), "",
             fakeProduct1, fakeSeller1, fakeCustomer1, user, now, user, now
         );
     }
@@ -68,7 +68,7 @@ public class OrderTest {
     @DisplayName("Ensure toString method is returning correctly")
     public void testOrderToStringMethod() {
         assertEquals(
-            "Order(id=1, totalPrice=400.0, quantity=2, product=Product(id=1, name=Xbox One Controller), seller=Seller(id=1, name=Walter White), customer=Customer(id=1, name=Test Customer 01))",
+            "Order(id=1, totalPrice=400.0, unitPrice=200.0, quantity=2, product=Product(id=1, name=Xbox One Controller), seller=Seller(id=1, name=Walter White), customer=Customer(id=1, name=Test Customer 01))",
             fakeOrder.toString(),
             "Order toString() method must return on right format"
         );
@@ -84,6 +84,7 @@ public class OrderTest {
             () -> assertEquals(fakeProduct1, fakeOrder.getProduct()),
             () -> assertEquals(fakeSeller1, fakeOrder.getSeller()),
             () -> assertEquals(fakeCustomer1, fakeOrder.getCustomer()),
+            () -> assertEquals(OrderStatus.PENDING_PAYMENT, fakeOrder.getStatus()),
             () -> assertEquals(now, fakeOrder.getCreated()),
             () -> assertEquals("Jimmy McGill", fakeOrder.getCreatedBy()),
             () -> assertEquals(now, fakeOrder.getModified()),
@@ -103,6 +104,7 @@ public class OrderTest {
         fakeOrder.setProduct(fakeProduct2);
         fakeOrder.setCustomer(fakeCustomer2);
         fakeOrder.setSeller(fakeSeller2);
+        fakeOrder.setStatus(OrderStatus.PAID);
         fakeOrder.setCreatedBy(user);
         fakeOrder.setModifiedBy(user);
         fakeOrder.setCreated(now);
@@ -115,6 +117,7 @@ public class OrderTest {
             () -> assertEquals(fakeProduct2, fakeOrder.getProduct()),
             () -> assertEquals(fakeCustomer2, fakeOrder.getCustomer()),
             () -> assertEquals(fakeSeller2, fakeOrder.getSeller()),
+            () -> assertEquals(OrderStatus.PAID, fakeOrder.getStatus()),
             () -> assertEquals("Kim Wexler", fakeOrder.getCreatedBy()),
             () -> assertEquals("Kim Wexler", fakeOrder.getModifiedBy()),
             () -> assertEquals(now, fakeOrder.getCreated()),
@@ -133,6 +136,7 @@ public class OrderTest {
             () -> assertNotNull(fakeOrder.getProduct()),
             () -> assertNotNull(fakeOrder.getSeller()),
             () -> assertNotNull(fakeOrder.getCustomer()),
+            () -> assertNotNull(fakeOrder.getStatus()),
             () -> assertNotNull(fakeOrder.getCreatedBy()),
             () -> assertNotNull(fakeOrder.getCreated()),
             () -> assertNotNull(fakeOrder.getModifiedBy()),
